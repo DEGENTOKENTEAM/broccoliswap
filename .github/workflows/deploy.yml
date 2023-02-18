@@ -1,0 +1,24 @@
+name: Deploy production
+on:
+  release:
+    types: [published]
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v1
+
+      - name: Build
+        run: mkdir -p dist && echo "hello world" > ./dist/index.html
+
+      - name: Configure AWS Credentials
+        uses: aws-actions/configure-aws-credentials@v1
+        with:
+          aws-access-key-id: ${{ secrets.BROCCOLISWAP_WEBSITE_AWS_ACCOUNT_ID }}
+          aws-secret-access-key: ${{ secrets.BROCCOLISWAP_WEBSITE_AWS_ACCOUNT_KEY }}
+          aws-region: eu-west-1
+
+      - name: Deploy static site to S3 bucket
+        run: aws s3 sync ./dist/ s3://broccoliswap.com/ --delete
