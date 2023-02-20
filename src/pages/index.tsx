@@ -21,7 +21,7 @@ export default function Home() {
                 Brocolliswap 🥦
               </h2>
               <div className="mt-10 flex items-center justify-center gap-x-6 text-slate-200">
-                A swap aggregator that aggregates over multiple routes to obtain the best price. Coming soon™
+                Multichain swap aggregator with a DEX interface | Coming soon™
               </div>
               <a href="https://dgnx.finance/" target="_blank" rel="noreferrer" className="text-orange-500 leading-7">
                 Built by DegenX
