@@ -18,8 +18,9 @@ export default function Home() {
           <div className="py-24 px-6 sm:px-6 sm:py-32 lg:px-8">
             <div className="mx-auto w-full text-center">
               <h2 className="text-4xl  tracking-tight text-white">
-                Broccoliswap 🥦
+                Broccoliswap
               </h2>
+              <Image src="/swap.png" alt="Swap image" unoptimized width="300" height="300" className='mx-auto my-6' />
               <div className="mt-10 flex items-center justify-center gap-x-6 text-slate-200">
                 Multichain swap aggregator with a DEX interface | Coming soon™
               </div>
