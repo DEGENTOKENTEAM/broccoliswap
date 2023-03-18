@@ -1,8 +1,10 @@
 import Head from 'next/head'
-import Image from 'next/image'
-import { Inter } from '@next/font/google'
-
-const inter = Inter({ subsets: ['latin'] })
+import { Navbar } from '@/components/Navbar'
+import { BottomBar } from '@/components/BottomBar'
+import { Chart } from '@/components/Chart'
+import { TokenHeader } from '@/components/TokenHeader';
+import { TokenInfoTable } from '@/components/TokenInfoTable';
+import { Swap } from '@/components/Swap';
 
 export default function Home() {
   return (
@@ -13,23 +15,50 @@ export default function Home() {
         <meta name="viewport" content="width=device-width, initial-scale=1" />
         <link rel="icon" href="/logo.png" />
       </Head>
-      <main>
-        <div className="relative isolate overflow-hidden">
-          <div className="py-24 px-6 sm:px-6 sm:py-32 lg:px-8">
-            <div className="mx-auto w-full text-center">
-              <h2 className="text-4xl  tracking-tight text-white">
-                Broccoliswap
-              </h2>
-              <Image src="/swap.png" alt="Swap image" unoptimized width="300" height="300" className='mx-auto my-6' />
-              <div className="mt-10 flex items-center justify-center gap-x-6 text-slate-200">
-                Multichain swap aggregator with a DEX interface | Coming soon™
+      <main className="min-h-screen grid grid-rows-[min-content_1fr_min-content]">
+        <Navbar />
+
+        <main className="hidden lg:grid">
+
+          <div className="flex flex-row max-h-[calc(100vh-82px)] w-full">
+            <div className="flex flex-col w-3/4">
+              <div className="h-[10%] w-full">
+                <TokenHeader />
               </div>
-              <a href="https://dgnx.finance/" target="_blank" rel="noreferrer" className="text-orange-500 leading-7">
-                Built by DegenX
-              </a>
+              <div className="h-[50%] w-full">
+                <Chart />
+              </div>
+              <div className="h-[40%] w-full">
+                <TokenInfoTable />
+              </div>
+            </div>
+            <div className="w-1/4">
+              <Swap />
             </div>
           </div>
-        </div>
+
+        </main>
+
+        <main className="grid lg:hidden">
+
+          <div className="flex flex-col max-h-[calc(100vh-82px)] h-full w-full">
+            <div className="h-[10%] w-full">
+              <TokenHeader />
+            </div>
+            <div className="h-[30%] w-full">
+              <Chart />
+            </div>
+            <div className="h-[40%] w-full">
+              <TokenInfoTable />
+            </div>
+            <div className="h-[20%] w-1/4 mt-3">
+              <Swap />
+            </div>
+          </div>
+
+        </main>
+
+        <BottomBar />
       </main>
     </>
   )

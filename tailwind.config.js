@@ -4,6 +4,9 @@ const defaultTheme = require('tailwindcss/defaultTheme')
 module.exports = {
   darkMode: 'class',
   content: ['./src/**/*.{ts,tsx}'],
+  plugins: [
+    require('tailwind-scrollbar'),
+  ],
   theme: {
     extend: {
       colors: {
