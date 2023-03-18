@@ -1,0 +1,11 @@
+@import url('https://fonts.googleapis.com/css2?family=Space+Mono:wght@400;700&display=swap');
+
+.theme-dark:root {
+    --tv-color-platform-background: #18181B;
+    --tv-color-pane-background: #18181B;
+    --tv-color-pane-background-secondary: #18181B;
+}
+
+html.theme-dark .chart-page .chart-container-border {
+    background-color: #18181B !important
+}
