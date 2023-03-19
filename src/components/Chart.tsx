@@ -1,14 +1,17 @@
 import { datafeed } from '@/helpers/datafeed';
+import { Token } from '@/types';
 import React, { useEffect, useRef } from 'react';
 import { setTimeout } from 'timers';
 
-export const Chart = (props: any) => {    
+export const Chart = (props: { token: Token }) => {    
     useEffect(() => {
         // @ts-ignore
         const tv = new TradingView.widget({
-            symbol: 'DGNX/USDC', // default symbol
+            // debug: true,
+
+            symbol: props.token.symbol, // default symbol
             // @ts-ignore
-            interval: '1H', // default interval
+            interval: '1D', // default interval
             autosize: true, // displays the chart in the fullscreen mode
             theme: 'Dark',
             disabled_features: ["header_symbol_search", "symbol_search_hot_key", "header_compare"],
@@ -20,7 +23,7 @@ export const Chart = (props: any) => {
                 'paneProperties.backgroundType': "solid",
                 "paneProperties.background": "#ffffff"
             },
-            datafeed,
+            datafeed: datafeed(props.token),
             library_path: '/charting_library/charting_library/',
             container: 'tv_chart_container',
         });

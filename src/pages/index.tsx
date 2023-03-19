@@ -5,8 +5,19 @@ import { Chart } from '@/components/Chart'
 import { TokenHeader } from '@/components/TokenHeader';
 import { TokenInfoTable } from '@/components/TokenInfoTable';
 import { Swap } from '@/components/Swap';
+import { useState } from 'react';
+import { Token } from '@/types';
 
 export default function Home() {
+  const [activeToken, setActiveToken] = useState<Token>({
+    network: 'avalanche',
+    address: '0x51e48670098173025c477d9aa3f0eff7bf9f7812',
+    connector: '0xb31f66aa3c1e785363f0875a1b74e27b85fd66c7',
+    coingeckoId: 'degenx',
+    name: 'DegenX',
+    symbol: 'DGNX'
+  })
+
   return (
     <>
       <Head>
@@ -22,14 +33,14 @@ export default function Home() {
 
           <div className="flex flex-row max-h-[calc(100vh-82px)] w-full">
             <div className="flex flex-col w-3/4">
-              <div className="h-[10%] w-full">
-                <TokenHeader />
+              <div className="h-[80px] w-full overflow-auto scrollbar-thin pr-3 border-b border-zinc-800 scrollbar-thumb-orange-500 scrollbar-track-slate-700">
+                <TokenHeader token={activeToken} />
               </div>
-              <div className="h-[50%] w-full">
-                <Chart />
+              <div className="h-[calc(50%-40px)] w-full">
+                <Chart token={activeToken} />
               </div>
-              <div className="h-[40%] w-full">
-                <TokenInfoTable />
+              <div className="h-[calc(50%-40px)] w-full">
+                <TokenInfoTable token={activeToken} />
               </div>
             </div>
             <div className="w-1/4">
@@ -42,14 +53,14 @@ export default function Home() {
         <main className="grid lg:hidden">
 
           <div className="flex flex-col max-h-[calc(100vh-82px)] h-full w-full">
-            <div className="h-[10%] w-full">
-              <TokenHeader />
+            <div className="h-[150px] w-full">
+              <TokenHeader token={activeToken} />
             </div>
             <div className="h-[30%] w-full">
-              <Chart />
+              <Chart token={activeToken} />
             </div>
             <div className="h-[40%] w-full">
-              <TokenInfoTable />
+              <TokenInfoTable token={activeToken} />
             </div>
             <div className="h-[20%] w-1/4 mt-3">
               <Swap />

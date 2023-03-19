@@ -1,39 +1,55 @@
 import { classNames } from '@/helpers/classNames'
+import { getRecentTransactions } from '@/helpers/transactions';
+import { Token } from '@/types';
 import { Disclosure, Menu, Transition } from '@headlessui/react'
 import { Bars3Icon, BellIcon, XMarkIcon } from '@heroicons/react/24/outline'
+import { useEffect, useState } from 'react'
+
+const explorersPerChain = {
+    avalanche: 'https://snowtrace.io/tx'
+}
+
+type RecentTransaction = {
+    block: {
+        timestamp: {
+            time: string
+        },
+        height: number
+    },
+    tradeIndex: number
+    protocol: string
+    exchange: {
+        fullName: string
+    },
+    smartContract: {
+        address: {
+            address: string
+            annotation: null
+        }
+    },
+    baseAmount: number
+    baseCurrency: {
+        address: string
+        symbol: string
+    },
+    base_amount_usd: number
+    quoteAmount: number
+    quoteCurrency: {
+        address: string
+        symbol: string
+    },
+    quote_amount_usd: number
+    transaction: {
+        hash: string
+    }
+    side: string
+};
 
 const navigation = [
-    { name: 'Transactions', href: '#', current: true },
+    { name: 'Info', href: '#', current: false },
+    { name: 'Trades', href: '#', current: true },
     { name: 'Holders', href: '#', current: false },
     { name: 'Statistics', href: '#', current: false },
-]
-
-const people = [
-    { name: '0x23..dk', title: '$12.45', email: '2023-10-11 08:44:31' },
-    { name: '0x23..dk', title: '$12.45', email: '2023-10-11 08:44:31' },
-    { name: '0x23..dk', title: '$12.45', email: '2023-10-11 08:44:31' },
-    { name: '0x23..dk', title: '$12.45', email: '2023-10-11 08:44:31' },
-    { name: '0x23..dk', title: '$12.45', email: '2023-10-11 08:44:31' },
-    { name: '0x23..dk', title: '$12.45', email: '2023-10-11 08:44:31' },
-    { name: '0x23..dk', title: '$12.45', email: '2023-10-11 08:44:31' },
-    { name: '0x23..dk', title: '$12.45', email: '2023-10-11 08:44:31' },
-    { name: '0x23..dk', title: '$12.45', email: '2023-10-11 08:44:31' },
-    { name: '0x23..dk', title: '$12.45', email: '2023-10-11 08:44:31' },
-    { name: '0x23..dk', title: '$12.45', email: '2023-10-11 08:44:31' },
-    { name: '0x23..dk', title: '$12.45', email: '2023-10-11 08:44:31' },
-    { name: '0x23..dk', title: '$12.45', email: '2023-10-11 08:44:31' },
-    { name: '0x23..dk', title: '$12.45', email: '2023-10-11 08:44:31' },
-    { name: '0x23..dk', title: '$12.45', email: '2023-10-11 08:44:31' },
-    { name: '0x23..dk', title: '$12.45', email: '2023-10-11 08:44:31' },
-    { name: '0x23..dk', title: '$12.45', email: '2023-10-11 08:44:31' },
-    { name: '0x23..dk', title: '$12.45', email: '2023-10-11 08:44:31' },
-    { name: '0x23..dk', title: '$12.45', email: '2023-10-11 08:44:31' },
-    { name: '0x23..dk', title: '$12.45', email: '2023-10-11 08:44:31' },
-    { name: '0x23..dk', title: '$12.45', email: '2023-10-11 08:44:31' },
-    { name: '0x23..dk', title: '$12.45', email: '2023-10-11 08:44:31' },
-    { name: '0x23..dk', title: '$12.45', email: '2023-10-11 08:44:31' },
-    { name: '0x23..dk', title: '$12.45', email: '2023-10-11 08:44:31' },
-    // More people...
 ]
 
 export const Tokenbar = () => {
@@ -81,24 +97,36 @@ export const Tokenbar = () => {
     )
 }
 
-export const TokenInfoTable = () => {
+export const TokenInfoTable = (props: { token: Token }) => {
+    const [transactions, setTransactions] = useState<RecentTransaction[]>([])
+
+    useEffect(() => {
+        getRecentTransactions(props.token.network, props.token.address).then(setTransactions)
+    }, [props.token.network, props.token.address])
+
     return (
         <div className="flex flex-1 flex-col h-full">
             <Tokenbar />
-            <h2 className="text-slate-200 text-xl p-2">Recent transactions</h2>
+            <h2 className="text-slate-200 text-xl p-2">Recent DEX trades</h2>
 
             <div className="min-w-full flex flex-1 overflow-auto scrollbar-thin scrollbar-thumb-orange-500 scrollbar-track-slate-700">
-                <table className="min-w-full divide-y divide-gray-700">
+                <table className="min-w-full divide-y divide-gray-700 text-xs">
                     <thead>
                         <tr>
-                            <th scope="col" className="py-1 pl-4 px-3 text-left text-sm font-semibold text-slate-200">
-                                Hash
-                            </th>
-                            <th scope="col" className="py-1 px-3 text-left text-sm font-semibold text-slate-200">
-                                Amount
-                            </th>
                             <th scope="col" className="py-1 px-3 text-left text-sm font-semibold text-slate-200">
                                 Date
+                            </th>
+                            <th scope="col" className="py-1 px-3 text-left text-sm font-semibold text-slate-200">
+                                Type
+                            </th>
+                            <th scope="col" className="py-1 px-3 text-left text-sm font-semibold text-slate-200">
+                                Amount (quote)
+                            </th>
+                            <th scope="col" className="py-1 px-3 text-left text-sm font-semibold text-slate-200">
+                                Amount (base)
+                            </th>
+                            <th scope="col" className="py-1 px-3 text-left text-sm font-semibold text-slate-200">
+                                Trade size ($)
                             </th>
                             <th scope="col" className="relative py-1 pl-3 pr-4 sm:pr-0">
                                 <span className="sr-only">View</span>
@@ -106,15 +134,17 @@ export const TokenInfoTable = () => {
                         </tr>
                     </thead>
                     <tbody className="divide-y divide-gray-800">
-                        {people.map((person) => (
-                            <tr key={person.email}>
-                                <td className="whitespace-nowrap py-1 pl-4 pr-3 text-sm font-medium text-slate-200">
-                                    {person.name}
+                        {transactions.map((transaction) => (
+                            <tr key={transaction.transaction.hash}>
+                                <td className="whitespace-nowrap py-1 px-3  text-gray-300">{transaction.block.timestamp.time}</td>
+                                <td className={classNames('whitespace-nowrap py-1 px-3  text-gray-300', transaction.side === 'BUY' ? 'text-green-600' : 'text-red-600' )}>
+                                    {transaction.side}
                                 </td>
-                                <td className="whitespace-nowrap py-1 px-3 text-sm text-gray-300">{person.title}</td>
-                                <td className="whitespace-nowrap py-1 px-3 text-sm text-gray-300">{person.email}</td>
-                                <td className="relative whitespace-nowrap py-1 pl-3 pr-4 text-right text-sm font-medium">
-                                    <a href="#" className="text-orange-500 hover:text-orange-900">
+                                <td className="whitespace-nowrap py-1 px-3  text-gray-300">{`${transaction.quoteAmount.toFixed(2)} ${transaction.quoteCurrency.symbol}`}</td>
+                                <td className="whitespace-nowrap py-1 px-3  text-gray-300">{`${transaction.baseAmount.toFixed(2)} ${transaction.baseCurrency.symbol}`}</td>
+                                <td className="whitespace-nowrap py-1 px-3  text-gray-300">{transaction.quote_amount_usd.toFixed(2)}</td>
+                                <td className="relative whitespace-nowrap py-1 pl-3 pr-4 text-right  font-medium">
+                                    <a href={`${(explorersPerChain as any)[props.token.network]}/${transaction.transaction.hash}`} target="_blank" rel="noreferrer" className="text-orange-500 hover:text-orange-900">
                                         View
                                     </a>
                                 </td>
