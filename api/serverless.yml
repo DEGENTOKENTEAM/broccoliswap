@@ -1,0 +1,101 @@
+service: broccoliswap
+frameworkVersion: '2 || 3'
+
+package:
+  individually: true
+
+plugins:
+  - serverless-webpack
+  - serverless-api-cloudfront
+
+custom:
+  ddb:
+    ohlc-table-name: ohlc
+  secrets: ${ssm:/aws/reference/secretsmanager/broccoliswap}
+  corsAllowedOrigin:
+    dev: http://localhost:3000
+    production: https://www.broccoliswap.com
+  ohlcCacheAge:
+    dev: 60
+    production: 86400
+  transactionsCacheAge:
+    dev: 10
+    production: 60
+
+provider:
+  name: aws
+  region: eu-west-1
+  profile: broccoliswap
+  stage: dev
+  runtime: nodejs18.x
+
+  environment:
+    BITQUERY_API_KEY: ${self:custom.secrets.${opt:stage, 'dev'}-BITQUERY_API_KEY}
+    OHLC_TABLE_NAME: ${self:custom.ddb.ohlc-table-name}-${opt:stage, 'dev'}
+    CORS_ALLOWED_ORIGIN: ${self:custom.corsAllowedOrigin.${opt:stage, self:provider.stage}}
+    OHLC_CACHE_AGE: ${self:custom.ohlcCacheAge.${opt:stage, self:provider.stage}}
+    TRANSACTIONS_CACHE_AGE: ${self:custom.transactionsCacheAge.${opt:stage, self:provider.stage}}
+
+  iamRoleStatements:
+    - Effect: Allow
+      Action:
+        - dynamodb:Query
+        - dynamodb:GetItem
+        - dynamodb:PutItem
+        - dynamodb:UpdateItem
+        - dynamodb:DeleteItem
+      Resource: 
+        - "arn:aws:dynamodb:${self:provider.region}:${aws:accountId}:table/${self:custom.ddb.ohlc-table-name}-${opt:stage, 'dev'}*"
+
+functions:
+  ohlcGet:
+    handler: ohlc/get.handler
+    memorySize: 1024
+    timeout: 29
+    events:
+      - http:
+          cors: true
+          path: /ohlc/{chain}/{tokenAddress}/{connectorAddress}/{from}/{to}/{resolution}
+          method: get
+          request:
+            parameters:
+              paths:
+                chain: true
+                tokenAddress: true
+                connectorAddress: true
+                from: true
+                to: true
+                resolution: true
+
+  recentTransactionsGet:
+    handler: transactions/get.handler
+    memorySize: 1024
+    timeout: 29
+    events:
+      - http:
+          cors: true
+          path: /transactions/{chain}/{tokenAddress}
+          method: get
+          request:
+            parameters:
+              paths:
+                chain: true
+                tokenAddress: true
+
+resources:
+  Resources:
+    TranslationsTable:
+      Type: AWS::DynamoDB::Table
+      Properties:
+        TableName: ${self:custom.ddb.ohlc-table-name}-${opt:stage, 'dev'}
+        AttributeDefinitions:
+          - AttributeName: chainTokenResolution
+            AttributeType: S
+          - AttributeName: time
+            AttributeType: N
+        KeySchema:
+          - AttributeName: chainTokenResolution
+            KeyType: HASH
+          - AttributeName: time
+            KeyType: RANGE
+        BillingMode: PAY_PER_REQUEST
