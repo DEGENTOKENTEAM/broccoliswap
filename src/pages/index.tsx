@@ -11,23 +11,20 @@ import { Token } from '@/types';
 
 import "allotment/dist/style.css";
 import NonSSR from '@/components/NonSSR';
-import useWindowDimensions from '@/hooks/useWindowDimensions';
 
 const Main = () => {
   const [activeToken, setActiveToken] = useState<Token>({
-    network: 'avalanche',
-    address: '0x51e48670098173025c477d9aa3f0eff7bf9f7812',
-    connector: '0xb31f66aa3c1e785363f0875a1b74e27b85fd66c7',
-    coingeckoId: 'degenx',
-    name: 'DegenX',
-    symbol: 'DGNX'
-
     // network: 'avalanche',
-    // address: '0xb31f66aa3c1e785363f0875a1b74e27b85fd66c7',
-    // connector: '0xb97ef9ef8734c71904d8002f8b6bc66dd9c48a6e',
-    // coingeckoId: 'avalanche-2',
-    // name: 'Avalanche',
-    // symbol: 'AVAX'
+    // address: '0x51e48670098173025c477d9aa3f0eff7bf9f7812',
+    // coingeckoId: 'degenx',
+    // name: 'DegenX',
+    // symbol: 'DGNX'
+
+    network: 'avalanche',
+    address: '0xb31f66aa3c1e785363f0875a1b74e27b85fd66c7',
+    coingeckoId: 'avalanche-2',
+    name: 'Avalanche',
+    symbol: 'AVAX'
   })
 
   return (
