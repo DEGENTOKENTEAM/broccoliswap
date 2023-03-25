@@ -11,7 +11,7 @@ export default function Document() {
         <script
           async
           type="text/javascript"
-          src="charting_library/charting_library.js">
+          src="/charting_library/charting_library.js">
         </script>
       </Head>
       <body className="bg-zinc-900">

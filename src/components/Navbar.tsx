@@ -5,12 +5,17 @@ import { Bars3Icon, BellIcon, XMarkIcon } from '@heroicons/react/24/outline'
 import { classNames } from '@/helpers/classNames'
 import { SearchToken } from './SearchToken'
 import { Token } from '@/types'
+import Link from 'next/link'
+import { useRouter } from 'next/router'
 
 const navigation = [
-    { name: 'Trade', href: '#', current: true },
+    { name: 'Trade', href: '/trade/trade' },
+    { name: 'Portfolio', href: '/portfolio' },
 ]
 
 export const Navbar = (props: { setActiveToken: (token: Token) => void }) => {
+    const router = useRouter()
+    
     return (
         <Disclosure as="nav" className="border-b border-zinc-800">
             {({ open }) => (
@@ -35,17 +40,17 @@ export const Navbar = (props: { setActiveToken: (token: Token) => void }) => {
                                 <div className="hidden sm:ml-3 sm:block">
                                     <div className="flex">
                                         {navigation.map((item) => (
-                                            <a
+                                            <Link
                                                 key={item.name}
                                                 href={item.href}
                                                 className={classNames(
-                                                    item.current ? 'bg-zinc-800 text-white' : 'text-gray-300 hover:bg-zinc-700 hover:text-white',
+                                                    router.asPath.startsWith(item.href) ? 'bg-zinc-800 text-white' : 'text-gray-300 hover:bg-zinc-700 hover:text-white',
                                                     'px-3 py-2 text-sm'
                                                 )}
-                                                aria-current={item.current ? 'page' : undefined}
+                                                aria-current={router.asPath.startsWith(item.href) ? 'page' : undefined}
                                             >
                                                 {item.name}
-                                            </a>
+                                            </Link>
                                         ))}
                                     </div>
                                 </div>
@@ -71,13 +76,13 @@ export const Navbar = (props: { setActiveToken: (token: Token) => void }) => {
                             {navigation.map((item) => (
                                 <Disclosure.Button
                                     key={item.name}
-                                    as="a"
+                                    as={Link}
                                     href={item.href}
                                     className={classNames(
-                                        item.current ? 'bg-zinc-800 text-white' : 'text-gray-300 hover:bg-zinc-700 hover:text-white',
+                                        router.asPath.startsWith(item.href) ? 'bg-zinc-800 text-white' : 'text-gray-300 hover:bg-zinc-700 hover:text-white',
                                         'block px-3 py-2 text-base font-medium'
                                     )}
-                                    aria-current={item.current ? 'page' : undefined}
+                                    aria-current={router.asPath.startsWith(item.href) ? 'page' : undefined}
                                 >
                                     {item.name}
                                 </Disclosure.Button>

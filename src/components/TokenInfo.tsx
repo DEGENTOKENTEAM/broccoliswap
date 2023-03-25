@@ -4,6 +4,8 @@ import { explorersPerChain } from '@/helpers/variables';
 import { Token } from '@/types';
 import { Disclosure, Menu, Transition } from '@headlessui/react'
 import { Bars3Icon, BellIcon, XMarkIcon } from '@heroicons/react/24/outline'
+import Link from 'next/link';
+import { useRouter } from 'next/router';
 import { useEffect, useState } from 'react'
 import { Spinner } from './Spinner';
 
@@ -44,11 +46,13 @@ type RecentTransaction = {
 };
 
 const navigation = [
-    { name: 'Info', href: '#', current: false },
-    { name: 'Trades', href: '#', current: true },
+    { name: 'Info', href: '/trade/info/' },
+    { name: 'Trades', href: '/trade/trade/' },
 ]
 
 export const Tokenbar = () => {
+    const router = useRouter();
+
     return (
         <Disclosure as="nav" className="border-b border-t border-zinc-800">
             {({ open }) => (
@@ -70,17 +74,17 @@ export const Tokenbar = () => {
                                 <div className="hidden sm:block">
                                     <div className="flex">
                                         {navigation.map((item) => (
-                                            <a
+                                            <Link
                                                 key={item.name}
                                                 href={item.href}
                                                 className={classNames(
-                                                    item.current ? 'bg-zinc-800 text-slate-200' : 'text-gray-300 hover:bg-zinc-700 hover:text-slate-200',
+                                                    router.asPath === item.href ? 'bg-zinc-800 text-slate-200' : 'text-gray-300 hover:bg-zinc-700 hover:text-slate-200',
                                                     'px-3 py-2 text-sm'
                                                 )}
-                                                aria-current={item.current ? 'page' : undefined}
+                                                aria-current={router.asPath === item.href ? 'page' : undefined}
                                             >
                                                 {item.name}
-                                            </a>
+                                            </Link>
                                         ))}
                                     </div>
                                 </div>
@@ -93,7 +97,15 @@ export const Tokenbar = () => {
     )
 }
 
-export const TokenInfoTable = (props: { token: Token }) => {
+const TokenInfoTab = (props: { token: Token }) => {
+    return (
+        <>
+            <h2 className="text-slate-200 text-xl p-2">Token info</h2>
+        </>
+    )
+}
+
+export const TokenTable = (props: { token: Token }) => {
     const [transactions, setTransactions] = useState<RecentTransaction[] | null>(null)
 
     useEffect(() => {
@@ -101,8 +113,7 @@ export const TokenInfoTable = (props: { token: Token }) => {
     }, [props.token.network, props.token.address])
 
     return (
-        <div className="flex flex-1 flex-col h-full">
-            <Tokenbar />
+        <>
             <h2 className="text-slate-200 text-xl p-2">Recent DEX trades</h2>
 
             <div className="min-w-full flex flex-1 overflow-auto scrollbar-thin scrollbar-thumb-orange-500 scrollbar-track-slate-700">
@@ -136,7 +147,7 @@ export const TokenInfoTable = (props: { token: Token }) => {
                         {transactions && transactions.length > 0 && transactions?.map((transaction, i) => (
                             <tr key={i}>
                                 <td className="whitespace-nowrap py-1 px-3  text-gray-300">{transaction.block.timestamp.time}</td>
-                                <td className={classNames('whitespace-nowrap py-1 px-3  text-gray-300', transaction.side === 'BUY' ? 'text-green-600' : 'text-red-600' )}>
+                                <td className={classNames('whitespace-nowrap py-1 px-3  text-gray-300', transaction.side === 'BUY' ? 'text-green-600' : 'text-red-600')}>
                                     {transaction.side}
                                 </td>
                                 <td className="whitespace-nowrap py-1 px-3  text-gray-300">{`${transaction.quoteAmount.toFixed(2)} ${transaction.quoteCurrency.symbol}`}</td>
@@ -155,6 +166,20 @@ export const TokenInfoTable = (props: { token: Token }) => {
                     </tbody>
                 </table>
             </div>
+        </>
+    )
+}
+
+export const TokenInfo = (props: { token: Token }) => {
+    const router = useRouter();
+
+    console.log(router.asPath)
+
+    return (
+        <div className="flex flex-1 flex-col h-full">
+            <Tokenbar />
+            {router.asPath === '/trade/trade/' && <TokenTable token={props.token} />}
+            {router.asPath === '/trade/info/' && <TokenInfoTab token={props.token} />}
         </div>
     )
 }
