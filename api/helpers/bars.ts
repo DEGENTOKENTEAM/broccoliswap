@@ -56,18 +56,20 @@ const saveBar = async (ddb: DynamoDB, index: string, bar: BarData) => {
         }).promise()
 }
 
-export const getBars = async (chainTokenResolution: string, from: number, to: number): Promise<BarData[]> => {
+export const getBars = async (chainTokenResolution: string, to: number, countBack: number): Promise<BarData[]> => {
     const ddb = new DynamoDB()
 
     const document = await ddb
         .query({
             TableName: process.env.OHLC_TABLE_NAME!,
-            KeyConditionExpression: "#chainTokenResolution = :chainTokenResolution and #time BETWEEN :t1 AND :t2",
+            KeyConditionExpression: "#chainTokenResolution = :chainTokenResolution and #time <= :t1",
             ExpressionAttributeNames: { '#chainTokenResolution': 'chainTokenResolution', '#time': 'time' },
+            Limit: countBack,
+            ScanIndexForward: false,
             ExpressionAttributeValues: {
                 ":chainTokenResolution": { S: chainTokenResolution },
-                ":t1": { N: from.toString() },
-                ":t2": { N: to.toString() }, // make inclusive
+                ":t1": { N: to.toString() },
+                // ":t2": { N: to.toString() }, // make inclusive
             },
         })
         .promise()
@@ -99,7 +101,8 @@ export const getNewBars = async (
     to: number,
     resolution: string,
     tokenAddress: string,
-    connectorAddress: string
+    connectorAddress: string,
+    countBack: number,
 ) => {
     const index = `${chain}#${tokenAddress}#${resolution}`;
 
@@ -108,37 +111,44 @@ export const getNewBars = async (
         chain,
         from,
         to,
+        countBack,
         convertResolutionToMinutes(resolution),
         tokenAddress,
         connectorAddress
     )
+
+    if (!priceData.data) {
+        console.log(JSON.stringify(priceData, null, 2))
+    }
 
     // Parse data into OHLC array with volume and time
     const bars: BarData[] = priceData.data.ethereum.dexTrades
         .filter((interval: any) => interval.buyCurrency.address === tokenAddress)
         .map((interval: any) => {
             // Find the connector interval
-            const connectorInterval = priceData.data.ethereum.dexTrades
-                .find((_interval: any) => _interval.buyCurrency.address === connectorAddress && _interval.timeInterval.minute === interval.timeInterval.minute)
+            // const connectorInterval = priceData.data.ethereum.dexTrades
+            //     .find((_interval: any) => _interval.buyCurrency.address === connectorAddress && _interval.timeInterval.minute === interval.timeInterval.minute)
 
-            if (!connectorInterval) {
-                return {
-                    high: parseFloat(interval.high),
-                    low: parseFloat(interval.low),
-                    open: parseFloat(interval.open),
-                    close: parseFloat(interval.close),
-                    volume: parseFloat(interval.tradeAmount),
-                    trades: parseFloat(interval.trades),
-                    time: new Date(interval.timeInterval.minute).getTime(),
-                }
-            }
+            // if (!connectorInterval) {
+            //     return {
+            //         high: parseFloat(interval.high),
+            //         low: parseFloat(interval.low),
+            //         open: parseFloat(interval.open),
+            //         close: parseFloat(interval.close),
+            //         volume: parseFloat(interval.tradeAmount),
+            //         trades: parseFloat(interval.trades),
+            //         time: new Date(interval.timeInterval.minute).getTime(),
+            //     }
+            // }
+
+            const connectorPrice = interval.tradeAmount / interval.volume
 
             return {
-                high: parseFloat(interval.high) * parseFloat(connectorInterval.high),
-                low: parseFloat(interval.low) * parseFloat(connectorInterval.low),
-                open: parseFloat(interval.open) * parseFloat(connectorInterval.open),
-                close: parseFloat(interval.close) * parseFloat(connectorInterval.close),
-                volume: parseFloat(interval.tradeAmount),
+                high: parseFloat(interval.high) * connectorPrice,
+                low: parseFloat(interval.low) * connectorPrice,
+                open: parseFloat(interval.open) * connectorPrice,
+                close: parseFloat(interval.close) * connectorPrice,
+                volume: parseFloat(interval.tradeAmount) * connectorPrice,
                 trades: parseFloat(interval.trades),
                 time: new Date(interval.timeInterval.minute).getTime(),
             }

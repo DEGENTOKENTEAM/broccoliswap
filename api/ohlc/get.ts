@@ -10,6 +10,7 @@ type RequestBody = {
     from: string;
     to: string;
     resolution: string;
+    countBack: string;
 }
 
 export const handler = async (
@@ -24,7 +25,9 @@ export const handler = async (
     const index = `${body.chain}#${body.tokenAddress}#${body.resolution}`;
 
     // Get data from ddb
-    let bars = await getBars(index, parseInt(body.from), parseInt(body.to))
+    let bars = await getBars(index, parseInt(body.to), parseInt(body.countBack))
+
+    console.log(`Got ${bars.length} from cache`)
 
     // If we have no bars, do the full range
     if (bars.length === 0) {
@@ -34,10 +37,11 @@ export const handler = async (
             parseInt(body.to),
             body.resolution,
             body.tokenAddress,
-            body.connectorAddress
+            body.connectorAddress,
+            parseInt(body.countBack)
         )
         bars = [...bars, ...newBars];
-        console.log(`Fetched ${newBars.length} bars`);
+        console.log(`Fetched ${newBars.length} new bars`);
     }
 
     // Check if we need new bars
@@ -45,23 +49,26 @@ export const handler = async (
     const newestBar = bars.sort((a, b) => a.time > b.time ? -1 : 1)?.[0]?.time;
     const oldestBar = bars.sort((a, b) => a.time > b.time ? 1 : -1)?.[0]?.time;
 
-    console.log(newestBar,oldestBar,body.to,body.from)
-
     if (newestBar < parseInt(body.to)) {
+        // The multiply 1000 * 60 is because resolution is in minutes and timestamp in milliseconds
+        const amountBarsToFetch = Math.ceil((parseInt(body.to) - newestBar) / (1000 * 60 * parseInt(body.resolution)))
         console.log(`fetching from ${newestBar} to ${body.to}`)
         const newBars = await getNewBars(
             body.chain,
-            newestBar + 1,
+            newestBar,
             parseInt(body.to),
             body.resolution,
             body.tokenAddress,
-            body.connectorAddress
+            body.connectorAddress,
+            amountBarsToFetch
         )
         bars = [...bars, ...newBars];
         console.log(`Fetched ${newBars.length} newer bars`);
     }
 
     if (oldestBar > parseInt(body.from)) {
+        // The multiply 1000 * 60 is because resolution is in minutes and timestamp in milliseconds
+        const amountBarsToFetch = Math.ceil((oldestBar - parseInt(body.to)) / (1000 * 60 * parseInt(body.resolution)))
         console.log(`fetching from ${oldestBar} to ${body.from}`)
         const newBars = await getNewBars(
             body.chain,
@@ -69,7 +76,8 @@ export const handler = async (
             oldestBar,
             body.resolution,
             body.tokenAddress,
-            body.connectorAddress
+            body.connectorAddress,
+            amountBarsToFetch
         )
         bars = [...bars, ...newBars];
         console.log(`Fetched ${newBars.length} older bars`);
@@ -82,7 +90,7 @@ export const handler = async (
     }, {} as Record<number, BarData>)
     const sortedBars = Object.values(barsObj)
         .sort((a: any, b: any) => a.time > b.time ? 1 : -1)
-        .filter(bar => bar.time >= parseInt(body.from))
+        // .filter(bar => bar.time >= parseInt(body.from))
         .filter(bar => bar.time <= parseInt(body.to))
 
     return createReturn(200, JSON.stringify({ status: "success", bars: sortedBars }), parseInt(process.env.OHLC_CACHE_AGE!))

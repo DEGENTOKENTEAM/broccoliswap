@@ -27,6 +27,7 @@ export const getPriceData = async (
     network: string,
     from: number,
     to: number,
+    countBack: number,
     intervalInMinutes: number,
     baseAddress: string,
     connectorAddress: string,
@@ -36,30 +37,32 @@ export const getPriceData = async (
         query (
             $network: EthereumNetwork!,
             $baseAddress: String!,
-            $quoteAddress: String!,
+            # $quoteAddress: String!,
             $connectorAddress: String!,
-            $from: ISO8601DateTime!,
+            # $from: ISO8601DateTime!,
+            $countBack: Int!,
             $till: ISO8601DateTime!,
             $interval: Int
         ) {
           ethereum(network: $network) {
             dexTrades(
-              any: [
-                {
-                  baseCurrency: {is: $baseAddress}
-                  quoteCurrency: {is: $quoteAddress}
-                },
-                {
+              # any: [
+                # {
+                #   baseCurrency: {is: $baseAddress}
+                #   quoteCurrency: {is: $quoteAddress}
+                # },
+                # {
                   baseCurrency: {is: $baseAddress}
                   quoteCurrency: {is: $connectorAddress}
-                },
-                {
-                  baseCurrency: {is: $connectorAddress}
-                  quoteCurrency: {is: $quoteAddress}
-                }
-              ]
-              date: {since: $from, till: $till}
+                # },
+                # {
+                #   baseCurrency: {is: $connectorAddress}
+                #   quoteCurrency: {is: $quoteAddress}
+                # }
+              # ]
+              date: {till: $till}
               tradeAmountUsd: {gt: 10}
+              options: {limit: $countBack, desc: "timeInterval.minute"}
             ) {
               timeInterval {
                 minute(format: "%FT%TZ", count: $interval)
@@ -90,6 +93,7 @@ export const getPriceData = async (
             "network": network,
             "from": new Date(from).toISOString(),
             "till": new Date(to).toISOString(),
+            "countBack": countBack,
             "interval": intervalInMinutes,
             "baseAddress": baseAddress,
             "quoteAddress": (usdcAddressPerChain as any)[network],
