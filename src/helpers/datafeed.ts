@@ -35,9 +35,9 @@ export const datafeed = (token: Token) => ({
             data_status: 'streaming',
         }))
     },
-    getBars: (symbolInfo: any, resolution: string, periodParams: { from: number, to: number }, onHistoryCallback: Function, onErrorCallback: Function) => {
+    getBars: (symbolInfo: any, resolution: string, periodParams: { from: number, to: number, countBack: number }, onHistoryCallback: Function, onErrorCallback: Function) => {
         console.log('[getBars]: Method call', symbolInfo, resolution, periodParams);
-        fetch(`${process.env.NEXT_PUBLIC_BACKEND_ENDPOINT!}/ohlc/${token.network}/${token.address}/${token.connector}/${periodParams.from * 1000}/${periodParams.to * 1000}/${resolution}`)
+        fetch(`${process.env.NEXT_PUBLIC_BACKEND_ENDPOINT!}/ohlc/${token.network}/${token.address}/${token.connector}/${periodParams.from * 1000}/${periodParams.to * 1000}/${resolution}/${periodParams.countBack}`)
             .then(x => x.json())
             .then((data) => {
                 setTimeout(() => onHistoryCallback(data.bars, { noData: data.bars.length === 0 }));
