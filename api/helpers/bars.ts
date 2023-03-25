@@ -1,5 +1,6 @@
 import { DynamoDB  } from 'aws-sdk'
 import { getPriceData } from './bitquery';
+import { getConnectorAddress } from './connectorAddress';
 
 export type BarData = {
     chainTokenResolution?: undefined,
@@ -101,10 +102,12 @@ export const getNewBars = async (
     to: number,
     resolution: string,
     tokenAddress: string,
-    connectorAddress: string,
     countBack: number,
 ) => {
     const index = `${chain}#${tokenAddress}#${resolution}`;
+
+    const connectorAddress = await getConnectorAddress(chain, tokenAddress)
+    console.log(`Connector: ${connectorAddress}`)
 
     // Get price data from bitquery
     const priceData: any = await getPriceData(

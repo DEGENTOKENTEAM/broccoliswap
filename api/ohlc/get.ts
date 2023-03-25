@@ -6,7 +6,6 @@ import { BarData, getBars, getNewBars, saveBars } from "../helpers/bars";
 type RequestBody = {
     chain: string;
     tokenAddress: string;
-    connectorAddress: string;
     from: string;
     to: string;
     resolution: string;
@@ -37,7 +36,6 @@ export const handler = async (
             parseInt(body.to),
             body.resolution,
             body.tokenAddress,
-            body.connectorAddress,
             parseInt(body.countBack)
         )
         bars = [...bars, ...newBars];
@@ -59,7 +57,6 @@ export const handler = async (
             parseInt(body.to),
             body.resolution,
             body.tokenAddress,
-            body.connectorAddress,
             amountBarsToFetch
         )
         bars = [...bars, ...newBars];
@@ -68,7 +65,7 @@ export const handler = async (
 
     if (oldestBar > parseInt(body.from)) {
         // The multiply 1000 * 60 is because resolution is in minutes and timestamp in milliseconds
-        const amountBarsToFetch = Math.ceil((oldestBar - parseInt(body.to)) / (1000 * 60 * parseInt(body.resolution)))
+        const amountBarsToFetch = Math.ceil((oldestBar - parseInt(body.from)) / (1000 * 60 * parseInt(body.resolution)))
         console.log(`fetching from ${oldestBar} to ${body.from}`)
         const newBars = await getNewBars(
             body.chain,
@@ -76,7 +73,6 @@ export const handler = async (
             oldestBar,
             body.resolution,
             body.tokenAddress,
-            body.connectorAddress,
             amountBarsToFetch
         )
         bars = [...bars, ...newBars];

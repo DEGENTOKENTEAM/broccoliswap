@@ -1,11 +1,6 @@
 import moment from 'moment';
-import fetch from 'node-fetch'; 
-
-const usdcAddressPerChain = {
-    avalanche: '0xb97ef9ef8734c71904d8002f8b6bc66dd9c48a6e',
-    bsc: '0xe9e7cea3dedca5984780bafc599bd69add087d56',
-    ethereum: '0xa0b86991c6218b36c1d19d4a2e9eb0ce3606eb48',
-}
+import fetch from 'node-fetch';
+import { usdcAddressPerChain } from './usdcTokenAddresses';
 
 const bitqueryFetch = async (query: string, variables: Record<string, any>) => {
     const data = await fetch('https://graphql.bitquery.io/', {
@@ -103,7 +98,7 @@ export const getPriceData = async (
 }
 
 export const getRecentTransactions = async (network: string, tokenAddress: string, excludeAddresses: string[]) => {
-    return bitqueryFetch(`#graphql
+  return bitqueryFetch(`#graphql
         query ($network: EthereumNetwork!, $token: String!, $limit: Int!, $offset: Int!, $from: ISO8601DateTime, $till: ISO8601DateTime, $excludeAddresses: [String!]!) {
           ethereum(network: $network) {
             dexTrades(
@@ -154,13 +149,42 @@ export const getRecentTransactions = async (network: string, tokenAddress: strin
           }
         }
     `, {
-        "limit": 50,
-        "offset": 0,
-        "network": network,
-        "token": tokenAddress,
-        "excludeAddresses": excludeAddresses,
-        "from": moment().subtract(3, 'days').format('YYYY-MM-DD'),
-        "till": moment().format('YYYY-MM-DD'),
-        "dateFormat": "%Y-%m-%d"
-    })
+    "limit": 50,
+    "offset": 0,
+    "network": network,
+    "token": tokenAddress,
+    "excludeAddresses": excludeAddresses,
+    "from": moment().subtract(3, 'days').format('YYYY-MM-DD'),
+    "till": moment().format('YYYY-MM-DD'),
+    "dateFormat": "%Y-%m-%d"
+  })
+}
+
+export const getTxForConnectorAddress = async (network: string, tokenAddress: string, testUsdc: boolean): Promise<any> => {
+  return bitqueryFetch(`#graphql
+      query ($network: EthereumNetwork!, $token: String!) {
+        ethereum(network: $network) {
+          dexTrades(
+            baseCurrency: {is: $token}
+            ${testUsdc ? `quoteCurrency: {is: "${(usdcAddressPerChain as any)[network]}"}` : ''}
+            options: {limit: 1, desc: "timeInterval.day", limitBy: {each: "sellCurrency.address", limit: 1}}
+          ) {
+            timeInterval {
+              day(format: "%FT%TZ", count: 60)
+            }
+            buyCurrency: baseCurrency {
+              symbol
+              address
+            }
+            sellCurrency: quoteCurrency {
+              symbol
+              address
+            }
+          }
+        }
+      }
+    `, {
+      "network": network,
+      "token": tokenAddress
+  })
 }

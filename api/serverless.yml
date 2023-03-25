@@ -11,6 +11,7 @@ plugins:
 custom:
   ddb:
     ohlc-table-name: ohlc
+    connector-address-table-name: connectorAddress
   secrets: ${ssm:/aws/reference/secretsmanager/broccoliswap}
   corsAllowedOrigin:
     dev: http://localhost:3000
@@ -32,6 +33,7 @@ provider:
   environment:
     BITQUERY_API_KEY: ${self:custom.secrets.${opt:stage, 'dev'}-BITQUERY_API_KEY}
     OHLC_TABLE_NAME: ${self:custom.ddb.ohlc-table-name}-${opt:stage, 'dev'}
+    CONNECTOR_ADDRESS_TABLE_NAME: ${self:custom.ddb.connector-address-table-name}-${opt:stage, 'dev'}
     CORS_ALLOWED_ORIGIN: ${self:custom.corsAllowedOrigin.${opt:stage, self:provider.stage}}
     OHLC_CACHE_AGE: ${self:custom.ohlcCacheAge.${opt:stage, self:provider.stage}}
     TRANSACTIONS_CACHE_AGE: ${self:custom.transactionsCacheAge.${opt:stage, self:provider.stage}}
@@ -46,6 +48,7 @@ provider:
         - dynamodb:DeleteItem
       Resource: 
         - "arn:aws:dynamodb:${self:provider.region}:${aws:accountId}:table/${self:custom.ddb.ohlc-table-name}-${opt:stage, 'dev'}*"
+        - "arn:aws:dynamodb:${self:provider.region}:${aws:accountId}:table/${self:custom.ddb.connector-address-table-name}-${opt:stage, 'dev'}*"
 
 functions:
   ohlcGet:
@@ -55,14 +58,13 @@ functions:
     events:
       - http:
           cors: true
-          path: /ohlc/{chain}/{tokenAddress}/{connectorAddress}/{from}/{to}/{resolution}/{countBack}
+          path: /ohlc/{chain}/{tokenAddress}/{from}/{to}/{resolution}/{countBack}
           method: get
           request:
             parameters:
               paths:
                 chain: true
                 tokenAddress: true
-                connectorAddress: true
                 from: true
                 to: true
                 resolution: true
@@ -98,5 +100,21 @@ resources:
           - AttributeName: chainTokenResolution
             KeyType: HASH
           - AttributeName: time
+            KeyType: RANGE
+        BillingMode: PAY_PER_REQUEST
+
+    ConnectorAddressTable:
+      Type: AWS::DynamoDB::Table
+      Properties:
+        TableName: ${self:custom.ddb.connector-address-table-name}-${opt:stage, 'dev'}
+        AttributeDefinitions:
+          - AttributeName: chain
+            AttributeType: S
+          - AttributeName: token
+            AttributeType: S
+        KeySchema:
+          - AttributeName: chain
+            KeyType: HASH
+          - AttributeName: token
             KeyType: RANGE
         BillingMode: PAY_PER_REQUEST
