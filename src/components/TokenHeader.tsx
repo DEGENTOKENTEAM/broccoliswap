@@ -6,17 +6,18 @@ import { useEffect, useRef, useState } from "react"
 import { RiFileCopyFill, RiShareForward2Fill } from "react-icons/ri"
 import { FaTelegramPlane, FaTwitter, FaGlobe, FaDiscord } from "react-icons/fa"
 import Image from "next/image";
+import { Spinner } from "./Spinner";
 
 type TokenInfo = {
     name: string;
     contract_address?: string;
-    description: { en: string };
+    description?: { en: string };
     image: {
-        small: string;
-        medium: string;
-        large: string;
+        small?: string;
+        medium?: string;
+        large?: string;
     }
-    market_data: {
+    market_data?: {
         fully_diluted_valuation: {
             usd: number
         }
@@ -27,7 +28,7 @@ type TokenInfo = {
             usd?: number
         }
     }
-    links: {
+    links?: {
         homepage: string[]
         blockchain_site: string[]
         official_forum_url: string[]
@@ -68,7 +69,15 @@ const MarketcapDisplay = (props: { marketCap: number }) => {
     }).format(
         props.marketCap,
     );
-    return <span>Market cap: {marketCap}</span>
+    if (!props.marketCap) {
+        return null;
+    }
+    return (
+        <>
+            <span>Market cap: {marketCap}</span>
+            <span className="mx-2">|</span>
+        </>
+    );
 }
 
 const Volume24H = (props: { volume: number }) => {
@@ -84,14 +93,31 @@ const Volume24H = (props: { volume: number }) => {
 }
 
 export const TokenHeader = (props: { token: Token }) => {
-    const [info, setInfo] = useState<TokenInfo>()
+    const [info, setInfo] = useState<TokenInfo | null>()
 
     useEffect(() => {
-        getTokenInfo(props.token.coingeckoId).then(setInfo)
+        setInfo(null)
+        if (props.token.coingeckoId) {
+            getTokenInfo(props.token.coingeckoId).then(setInfo)
+        } else {
+            setInfo({
+                name: props.token.name,
+                image: {
+                    small: props.token.image,
+                    medium: props.token.image,
+                    large: props.token.image,
+                },
+
+            })
+        }
     }, [props.token.coingeckoId])
-console.log(info)
+
     if (!info) {
-        return null;
+        return (
+            <div className="flex m-3 items-center justify-start">
+                <Spinner />
+            </div>
+        );
     }
 
     return (
@@ -99,32 +125,32 @@ console.log(info)
             <div className="flex w-full items-start">
                 <div className="flex-grow">
                     <div className="flex items-center">
-                        <Image width="20" height="20" unoptimized alt="Project logo" className="inline mr-2" src={info.image.small} />
+                        {info.image.small && <Image width="20" height="20" unoptimized alt="Project logo" className="inline mr-2" src={info.image.small} />}
                         <h1 className="text-xl inline">{info.name}</h1>
                     </div>
-                    <span className="text-xs">
-                        <MarketcapDisplay marketCap={info.market_data.market_cap?.usd || info.market_data.fully_diluted_valuation.usd} />
-                        <span className="mx-2">|</span>
-                        <Volume24H volume={info.market_data.total_volume.usd} />
+                    {info.market_data && <span className="text-xs">
+                        <MarketcapDisplay marketCap={info.market_data?.market_cap?.usd || info.market_data?.fully_diluted_valuation.usd} />
+                        
+                        <Volume24H volume={info.market_data?.total_volume.usd} />
                         <span className="mx-2">|</span>
                         Chain: {props.token.network}
                         {info.contract_address  && (<>
                             <span className="mx-2">|</span>
                             <CopyableContractAddress address={info.contract_address} network={props.token.network} />
                         </>)}
-                    </span>
+                    </span>}
                 </div>
                 <div className="flex mt-1 text-xl">
-                    {info.links.homepage.find(page => !!page) && <a className="px-1.5" href={`${info.links.homepage.find(page => !!page)}`} target="_blank" rel="noreferrer">
+                    {info.links?.homepage.find(page => !!page) && <a className="px-1.5" href={`${info.links?.homepage.find(page => !!page)}`} target="_blank" rel="noreferrer">
                         <FaGlobe className="text-orange-500 hover:text-orange-600" />
                     </a>}
-                    {info.links.twitter_screen_name && <a className="px-1.5" href={`https://twitter.com/${info.links.twitter_screen_name}`} target="_blank" rel="noreferrer">
+                    {info.links?.twitter_screen_name && <a className="px-1.5" href={`https://twitter.com/${info.links?.twitter_screen_name}`} target="_blank" rel="noreferrer">
                         <FaTwitter className="text-orange-500 hover:text-orange-600" />
                     </a>}
-                    {info.links.telegram_channel_identifier && <a className="px-1.5" href={`https://t.me/${info.links.telegram_channel_identifier}`} target="_blank" rel="noreferrer">
+                    {info.links?.telegram_channel_identifier && <a className="px-1.5" href={`https://t.me/${info.links?.telegram_channel_identifier}`} target="_blank" rel="noreferrer">
                         <FaTelegramPlane className="text-orange-500 hover:text-orange-600" />
                     </a>}
-                    {info.links.chat_url.find((url) => url.includes('//discord.com')) && <a className="px-1.5" href={info.links.chat_url.find((url) => url.includes('//discord.com'))} target="_blank" rel="noreferrer">
+                    {info.links?.chat_url.find((url) => url.includes('//discord.com')) && <a className="px-1.5" href={info.links?.chat_url.find((url) => url.includes('//discord.com'))} target="_blank" rel="noreferrer">
                         <FaDiscord className="text-orange-500 hover:text-orange-600" />
                     </a>}
                 </div>

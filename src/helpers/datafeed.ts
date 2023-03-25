@@ -2,7 +2,7 @@ import { Token } from '@/types';
 import moment from 'moment';
 
 const configurationData = {
-    supported_resolutions: ['1', '60', '1D', '1W', '1M', '1Y'],
+    supported_resolutions: ['60', '1D', '1W', '1M', '1Y'],
     exchanges: [],
     symbols_types: [],
 };

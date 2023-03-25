@@ -5,6 +5,7 @@ import { Token } from '@/types';
 import { Disclosure, Menu, Transition } from '@headlessui/react'
 import { Bars3Icon, BellIcon, XMarkIcon } from '@heroicons/react/24/outline'
 import { useEffect, useState } from 'react'
+import { Spinner } from './Spinner';
 
 type RecentTransaction = {
     block: {
@@ -93,7 +94,7 @@ export const Tokenbar = () => {
 }
 
 export const TokenInfoTable = (props: { token: Token }) => {
-    const [transactions, setTransactions] = useState<RecentTransaction[]>([])
+    const [transactions, setTransactions] = useState<RecentTransaction[] | null>(null)
 
     useEffect(() => {
         getRecentTransactions(props.token.network, props.token.address).then(setTransactions)
@@ -129,8 +130,11 @@ export const TokenInfoTable = (props: { token: Token }) => {
                         </tr>
                     </thead>
                     <tbody className="divide-y divide-gray-800">
-                        {transactions.map((transaction) => (
-                            <tr key={transaction.transaction.hash}>
+                        {!transactions && (
+                            <tr><td className="text-white justify-center" colSpan={6}><Spinner /></td></tr>
+                        )}
+                        {transactions && transactions.length > 0 && transactions?.map((transaction, i) => (
+                            <tr key={i}>
                                 <td className="whitespace-nowrap py-1 px-3  text-gray-300">{transaction.block.timestamp.time}</td>
                                 <td className={classNames('whitespace-nowrap py-1 px-3  text-gray-300', transaction.side === 'BUY' ? 'text-green-600' : 'text-red-600' )}>
                                     {transaction.side}
@@ -145,6 +149,9 @@ export const TokenInfoTable = (props: { token: Token }) => {
                                 </td>
                             </tr>
                         ))}
+                        {transactions && transactions.length === 0 && (
+                            <tr><td className="text-white text-center" colSpan={6}>No recent transactions</td></tr>
+                        )}
                     </tbody>
                 </table>
             </div>

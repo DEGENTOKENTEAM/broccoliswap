@@ -1,5 +1,6 @@
 import { debounce } from "@/helpers/debounce";
 import { useOutsideClick } from "@/hooks/useOutsideClick";
+import { rubicNetworkToBitqueryNetwork, Token } from "@/types";
 import Image from "next/image";
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 
@@ -30,12 +31,14 @@ const fetchTokens = async (filter: string, setSearchResults: Function) => {
         return;
     }
 
-    const result = await fetch(`https://tokens.rubic.exchange/api/v1/tokens?symbol=${filter}&pageSize=10`)
+    const networks = Object.keys(rubicNetworkToBitqueryNetwork).join(',')
+
+    const result = await fetch(`https://tokens.rubic.exchange/api/v1/tokens?symbol=${filter}&networks=${networks}&pageSize=10`)
     const data = await result.json()
-    setSearchResults(data.results)
+    setSearchResults(data.results.filter((result: SearchResult) => result.address !== '0x0000000000000000000000000000000000000000'))
 }
 
-export const SearchToken = () => {
+export const SearchToken = (props: { setActiveToken: (token: Token) => void }) => {
     const [searchQuery, setSearchQuery] = useState('')
     const [searchResults, setSearchResults] = useState<SearchResult[]>([])
     const componentRef = useRef<HTMLDivElement>(null)
@@ -57,6 +60,16 @@ export const SearchToken = () => {
         []
     )
 
+    const setToken = (searchResult: SearchResult) => {
+        props.setActiveToken({
+            network: (rubicNetworkToBitqueryNetwork as any)[searchResult.blockchainNetwork],
+            address: searchResult.address,
+            coingeckoId: searchResult.coingeckoId,
+            name: searchResult.name,
+            symbol: searchResult.symbol,
+        })
+    }
+
     return (
         <div className="relative w-32 md:w-64 lg:w-96" ref={componentRef}>
             <input
@@ -68,7 +81,11 @@ export const SearchToken = () => {
             <div className="absolute bg-gray-800 w-full text-xs z-50 max-h-64 overflow-auto scrollbar-thin scrollbar-thumb-orange-500 scrollbar-track-slate-700">
                 <ul>
                     {searchResults.map(searchResult => (
-                        <li key={`${searchResult.name}${searchResult.blockchainNetwork}${searchResult.coingeckoId}`} className="pb-1 px-1 border-b border-gray-900 cursor-pointer hover:bg-orange-900">
+                        <li
+                            key={`${searchResult.name}${searchResult.blockchainNetwork}${searchResult.coingeckoId}`}
+                            className="pb-1 px-1 border-b border-gray-900 cursor-pointer hover:bg-orange-900"
+                            onClick={() => setToken(searchResult)}
+                        >
                             <div className="flex items-center">
                                 <div className="pt-1 font-bold flex items-center pb-1 flex-grow">
                                     <Image width="20" height="20" unoptimized alt="Project logo" className="inline mr-2" src={searchResult.image} />

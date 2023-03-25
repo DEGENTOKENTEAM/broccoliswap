@@ -4,12 +4,13 @@ import { Disclosure, Menu, Transition } from '@headlessui/react'
 import { Bars3Icon, BellIcon, XMarkIcon } from '@heroicons/react/24/outline'
 import { classNames } from '@/helpers/classNames'
 import { SearchToken } from './SearchToken'
+import { Token } from '@/types'
 
 const navigation = [
     { name: 'Trade', href: '#', current: true },
 ]
 
-export const Navbar = () => {
+export const Navbar = (props: { setActiveToken: (token: Token) => void }) => {
     return (
         <Disclosure as="nav" className="border-b border-zinc-800">
             {({ open }) => (
@@ -51,7 +52,7 @@ export const Navbar = () => {
                             </div>
 
                             <div className="text-slate-200 flex flex-grow justify-center">
-                                <SearchToken />
+                                <SearchToken setActiveToken={props.setActiveToken} />
                             </div>
 
                             <div className="absolute inset-y-0 right-0 flex items-center sm:static sm:inset-auto sm:ml-6 sm:pr-0">

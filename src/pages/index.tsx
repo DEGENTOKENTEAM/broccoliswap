@@ -27,9 +27,11 @@ const Main = () => {
     symbol: 'AVAX'
   })
 
+  console.log('active', activeToken)
+
   return (
     <main className="min-h-screen grid grid-rows-[min-content_1fr_min-content]">
-      <Navbar />
+      <Navbar setActiveToken={setActiveToken} />
 
       <Allotment>
         <Allotment.Pane preferredSize="75%">

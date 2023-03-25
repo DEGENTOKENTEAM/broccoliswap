@@ -3,6 +3,16 @@ import { Token } from '@/types';
 import React, { useEffect, useRef } from 'react';
 import { setTimeout } from 'timers';
 
+const applyOverrides = (tv: any) => {
+    try {
+        tv?.applyOverrides?.({
+            // @ts-ignore
+            'paneProperties.backgroundType': "solid",
+            "paneProperties.background": "#18181B"
+        })
+    } catch (e) { }
+}
+
 export const Chart = (props: { token: Token }) => {    
     useEffect(() => {
         // @ts-ignore
@@ -30,47 +40,25 @@ export const Chart = (props: { token: Token }) => {
 
         // Set the bg color in a couple of steps so it always works regarding of the user internet speed
         setTimeout(() => {
-            tv.applyOverrides({
-                // @ts-ignore
-                'paneProperties.backgroundType': "solid",
-                "paneProperties.background": "#18181B"
-            })
+            applyOverrides(tv)
         }, 200)
 
         setTimeout(() => {
-            tv.applyOverrides({
-                // @ts-ignore
-                'paneProperties.backgroundType': "solid",
-                "paneProperties.background": "#18181B"
-            })
+            applyOverrides(tv)
         }, 800)
 
         setTimeout(() => {
-            tv.applyOverrides({
-                // @ts-ignore
-                'paneProperties.backgroundType': "solid",
-                "paneProperties.background": "#18181B"
-            })
+            applyOverrides(tv)
         }, 1500)
 
         setTimeout(() => {
-            tv.applyOverrides({
-                // @ts-ignore
-                'paneProperties.backgroundType': "solid",
-                "paneProperties.background": "#18181B"
-            })
+            applyOverrides(tv)
         }, 3000)
 
         setTimeout(() => {
-            tv.applyOverrides({
-                // @ts-ignore
-                'paneProperties.backgroundType': "solid",
-                "paneProperties.background": "#18181B"
-            })
+            applyOverrides(tv)
         }, 7000)
-    }, [])
-
-    const chartContainerRef = useRef<any>();
+    }, [props.token])
 
     return (
         <div
