@@ -1,14 +1,19 @@
 import Head from 'next/head'
+import { Allotment, LayoutPriority } from "allotment";
 import { Navbar } from '@/components/Navbar'
 import { BottomBar } from '@/components/BottomBar'
 import { Chart } from '@/components/Chart'
 import { TokenHeader } from '@/components/TokenHeader';
 import { TokenInfoTable } from '@/components/TokenInfoTable';
 import { Swap } from '@/components/Swap';
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { Token } from '@/types';
 
-export default function Home() {
+import "allotment/dist/style.css";
+import NonSSR from '@/components/NonSSR';
+import useWindowDimensions from '@/hooks/useWindowDimensions';
+
+const Main = () => {
   const [activeToken, setActiveToken] = useState<Token>({
     network: 'avalanche',
     address: '0x51e48670098173025c477d9aa3f0eff7bf9f7812',
@@ -16,7 +21,53 @@ export default function Home() {
     coingeckoId: 'degenx',
     name: 'DegenX',
     symbol: 'DGNX'
+
+    // network: 'avalanche',
+    // address: '0xb31f66aa3c1e785363f0875a1b74e27b85fd66c7',
+    // connector: '0xb97ef9ef8734c71904d8002f8b6bc66dd9c48a6e',
+    // coingeckoId: 'avalanche-2',
+    // name: 'Avalanche',
+    // symbol: 'AVAX'
   })
+
+  return (
+    <main className="min-h-screen grid grid-rows-[min-content_1fr_min-content]">
+      <Navbar />
+
+      <Allotment>
+        <Allotment.Pane preferredSize="75%">
+          <Allotment vertical>
+            <Allotment.Pane preferredSize={80} minSize={80}>
+              <TokenHeader token={activeToken} />
+            </Allotment.Pane>
+            <Allotment.Pane preferredSize="50%">
+              <Chart token={activeToken} />
+            </Allotment.Pane>
+            <Allotment.Pane preferredSize="50%">
+              <TokenInfoTable token={activeToken} />
+            </Allotment.Pane>
+          </Allotment>
+        </Allotment.Pane>
+        <Allotment.Pane>
+          <Swap />
+        </Allotment.Pane>
+      </Allotment>
+
+      <BottomBar />
+    </main>
+  )
+}
+
+export default function Home() {
+  
+
+  const [ready, setReady] = useState(false)
+
+  useEffect(() => setReady(true), [])
+
+  if (!ready) {
+    return null;
+  }
 
   return (
     <>
@@ -26,51 +77,9 @@ export default function Home() {
         <meta name="viewport" content="width=device-width, initial-scale=1" />
         <link rel="icon" href="/logo.png" />
       </Head>
-      <main className="min-h-screen grid grid-rows-[min-content_1fr_min-content]">
-        <Navbar />
-
-        <main className="hidden lg:grid">
-
-          <div className="flex flex-row max-h-[calc(100vh-82px)] w-full">
-            <div className="flex flex-col w-3/4">
-              <div className="h-[80px] w-full overflow-auto scrollbar-thin pr-3 border-b border-zinc-800 scrollbar-thumb-orange-500 scrollbar-track-slate-700">
-                <TokenHeader token={activeToken} />
-              </div>
-              <div className="h-[calc(50%-40px)] w-full">
-                <Chart token={activeToken} />
-              </div>
-              <div className="h-[calc(50%-40px)] w-full">
-                <TokenInfoTable token={activeToken} />
-              </div>
-            </div>
-            <div className="w-1/4">
-              <Swap />
-            </div>
-          </div>
-
-        </main>
-
-        <main className="grid lg:hidden">
-
-          <div className="flex flex-col max-h-[calc(100vh-82px)] h-full w-full">
-            <div className="h-[150px] w-full">
-              <TokenHeader token={activeToken} />
-            </div>
-            <div className="h-[30%] w-full">
-              <Chart token={activeToken} />
-            </div>
-            <div className="h-[40%] w-full">
-              <TokenInfoTable token={activeToken} />
-            </div>
-            <div className="h-[20%] w-1/4 mt-3">
-              <Swap />
-            </div>
-          </div>
-
-        </main>
-
-        <BottomBar />
-      </main>
+      <NonSSR>
+        <Main />
+      </NonSSR>
     </>
   )
 }

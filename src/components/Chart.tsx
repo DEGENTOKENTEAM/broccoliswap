@@ -24,7 +24,7 @@ export const Chart = (props: { token: Token }) => {
                 "paneProperties.background": "#ffffff"
             },
             datafeed: datafeed(props.token),
-            library_path: '/charting_library/charting_library/',
+            library_path: '/charting_library/',
             container: 'tv_chart_container',
         });
 

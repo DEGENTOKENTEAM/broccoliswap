@@ -3,11 +3,10 @@ import Image from 'next/image'
 import { Disclosure, Menu, Transition } from '@headlessui/react'
 import { Bars3Icon, BellIcon, XMarkIcon } from '@heroicons/react/24/outline'
 import { classNames } from '@/helpers/classNames'
+import { SearchToken } from './SearchToken'
 
 const navigation = [
     { name: 'Trade', href: '#', current: true },
-    { name: 'Portfolio', href: '#', current: false },
-    { name: 'Staking', href: '#', current: false },
 ]
 
 export const Navbar = () => {
@@ -28,7 +27,7 @@ export const Navbar = () => {
                                     )}
                                 </Disclosure.Button>
                             </div>
-                            <div className="flex flex-1 items-center justify-center sm:items-stretch sm:justify-start">
+                            <div className="flex items-center justify-center sm:items-stretch sm:justify-start">
                                 <div className="flex flex-shrink-0 items-center">
                                     <Image src="/swap.png" alt="Swap image" unoptimized width="25" height="25" />
                                 </div>
@@ -50,6 +49,11 @@ export const Navbar = () => {
                                     </div>
                                 </div>
                             </div>
+
+                            <div className="text-slate-200 flex flex-grow justify-center">
+                                <SearchToken />
+                            </div>
+
                             <div className="absolute inset-y-0 right-0 flex items-center sm:static sm:inset-auto sm:ml-6 sm:pr-0">
                                 <button
                                     type="button"

@@ -3,6 +3,8 @@ import Image from 'next/image'
 import { Disclosure, Menu, Transition } from '@headlessui/react'
 import { Bars3Icon, BellIcon, XMarkIcon } from '@heroicons/react/24/outline'
 import { classNames } from '@/helpers/classNames'
+import { RiFileCopyFill, RiShareForward2Fill } from "react-icons/ri"
+import { FaTelegramPlane, FaTwitter, FaDiscord, FaGlobe } from "react-icons/fa"
 
 const navigation = [
     { name: 'Trade', href: '#', current: true },
@@ -35,11 +37,20 @@ export const BottomBar = () => {
                                 <div className="flex text-slate-200 items-center border-r border-zinc-800 pr-2 h-full">
                                     $0.21
                                 </div>
-                                <div className="flex text-slate-200 items-center border-r border-zinc-800 px-2 h-full">
-                                    Social icons
-                                </div>
-                                <div className="flex text-slate-200 items-center border-r border-zinc-800 px-2 h-full">
-                                    Status of stuff?
+                                <div className="flex flex-grow"></div>
+                                <div className="flex text-slate-200 items-center border-x border-zinc-800 px-2 h-full">
+                                    <a className="px-1.5" href="https://dgnx.finance/" target="_blank" rel="noreferrer">
+                                        <FaGlobe className="text-orange-500 hover:text-orange-600" />
+                                    </a>
+                                    <a className="px-1.5" href="https://twitter.com/DegenEcosystem" target="_blank" rel="noreferrer">
+                                        <FaTwitter className="text-orange-500 hover:text-orange-600" />
+                                    </a>
+                                    <a className="px-1.5" href="https://t.me/DegenXportal" target="_blank" rel="noreferrer">
+                                        <FaTelegramPlane className="text-orange-500 hover:text-orange-600" />
+                                    </a>
+                                    <a className="px-1.5" href="https://discord.com/invite/pyaZqZrS" target="_blank" rel="noreferrer">
+                                        <FaDiscord className="text-orange-500 hover:text-orange-600" />
+                                    </a>
                                 </div>
                             </div>
                         </div>

@@ -1,13 +1,10 @@
 import { classNames } from '@/helpers/classNames'
 import { getRecentTransactions } from '@/helpers/transactions';
+import { explorersPerChain } from '@/helpers/variables';
 import { Token } from '@/types';
 import { Disclosure, Menu, Transition } from '@headlessui/react'
 import { Bars3Icon, BellIcon, XMarkIcon } from '@heroicons/react/24/outline'
 import { useEffect, useState } from 'react'
-
-const explorersPerChain = {
-    avalanche: 'https://snowtrace.io/tx'
-}
 
 type RecentTransaction = {
     block: {
@@ -48,8 +45,6 @@ type RecentTransaction = {
 const navigation = [
     { name: 'Info', href: '#', current: false },
     { name: 'Trades', href: '#', current: true },
-    { name: 'Holders', href: '#', current: false },
-    { name: 'Statistics', href: '#', current: false },
 ]
 
 export const Tokenbar = () => {
@@ -144,7 +139,7 @@ export const TokenInfoTable = (props: { token: Token }) => {
                                 <td className="whitespace-nowrap py-1 px-3  text-gray-300">{`${transaction.baseAmount.toFixed(2)} ${transaction.baseCurrency.symbol}`}</td>
                                 <td className="whitespace-nowrap py-1 px-3  text-gray-300">{transaction.quote_amount_usd.toFixed(2)}</td>
                                 <td className="relative whitespace-nowrap py-1 pl-3 pr-4 text-right  font-medium">
-                                    <a href={`${(explorersPerChain as any)[props.token.network]}/${transaction.transaction.hash}`} target="_blank" rel="noreferrer" className="text-orange-500 hover:text-orange-900">
+                                    <a href={`${(explorersPerChain as any)[props.token.network]}/tx/${transaction.transaction.hash}`} target="_blank" rel="noreferrer" className="text-orange-500 hover:text-orange-900">
                                         View
                                     </a>
                                 </td>

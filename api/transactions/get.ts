@@ -16,7 +16,7 @@ export const handler = async (
         return createReturn(400, JSON.stringify({ status: "error", message: "Not all parameters given" }))
     }
 
-    const recentTransactionsResult: any = await getRecentTransactions(body.chain, body.tokenAddress, (excludeAddresses as any)[body.tokenAddress]);
+    const recentTransactionsResult: any = await getRecentTransactions(body.chain, body.tokenAddress, (excludeAddresses as any)[body.tokenAddress] || []);
 
     const transactions = recentTransactionsResult.data.ethereum.dexTrades
 
