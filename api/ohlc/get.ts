@@ -1,7 +1,7 @@
 import { APIGatewayProxyEvent, APIGatewayProxyResult } from "aws-lambda";
 import { createReturn } from "../helpers/return";
 import { getPriceData} from '../helpers/bitquery';
-import { BarData, getBars, getNewBars, saveBars } from "../helpers/bars";
+import { BarData, convertResolutionToMinutes, getBars, getNewBars, saveBars } from "../helpers/bars";
 
 type RequestBody = {
     chain: string;
@@ -49,8 +49,8 @@ export const handler = async (
 
     if (newestBar < parseInt(body.to)) {
         // The multiply 1000 * 60 is because resolution is in minutes and timestamp in milliseconds
-        const amountBarsToFetch = Math.ceil((parseInt(body.to) - newestBar) / (1000 * 60 * parseInt(body.resolution)))
-        console.log(`fetching from ${newestBar} to ${body.to}`)
+        const amountBarsToFetch = Math.ceil((parseInt(body.to) - newestBar) / (1000 * 60 * convertResolutionToMinutes(body.resolution)))
+        console.log(`fetching ${amountBarsToFetch} new bars from ${newestBar} to ${body.to}`)
         const newBars = await getNewBars(
             body.chain,
             newestBar,
@@ -66,7 +66,7 @@ export const handler = async (
     if (oldestBar > parseInt(body.from)) {
         // The multiply 1000 * 60 is because resolution is in minutes and timestamp in milliseconds
         const amountBarsToFetch = Math.ceil((oldestBar - parseInt(body.from)) / (1000 * 60 * parseInt(body.resolution)))
-        console.log(`fetching from ${oldestBar} to ${body.from}`)
+        console.log(`fetching ${amountBarsToFetch} new bars from ${oldestBar} to ${body.from}`)
         const newBars = await getNewBars(
             body.chain,
             parseInt(body.from),

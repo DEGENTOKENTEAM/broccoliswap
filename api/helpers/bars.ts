@@ -13,7 +13,7 @@ export type BarData = {
     trades: number;
 }
 
-const convertResolutionToMinutes = (resolution: string) => {
+export const convertResolutionToMinutes = (resolution: string) => {
     if (resolution === '1') return 1;
     if (resolution === '60') return 60;
     if (resolution === '1D') return 60 * 24;
@@ -82,7 +82,7 @@ export const getBars = async (chainTokenResolution: string, to: number, countBac
             low: parseFloat(data.low),
             open: parseFloat(data.open),
             close: parseFloat(data.close),
-            volume: parseFloat(data.tradeAmount),
+            volume: parseFloat(data.volume),
             trades: parseFloat(data.trades),
             time: data.time,
             chainTokenResolution: undefined,
