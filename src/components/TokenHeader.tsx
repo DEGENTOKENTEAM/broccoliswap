@@ -110,7 +110,7 @@ export const TokenHeader = (props: { token: Token }) => {
 
             })
         }
-    }, [props.token.coingeckoId])
+    }, [props.token])
 
     if (!info) {
         return (

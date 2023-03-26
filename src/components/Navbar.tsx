@@ -10,7 +10,7 @@ import { useRouter } from 'next/router'
 
 const navigation = [
     { name: 'Trade', href: '/trade/trade' },
-    { name: 'Portfolio', href: '/portfolio' },
+    // { name: 'Portfolio', href: '/portfolio' },
 ]
 
 export const Navbar = (props: { setActiveToken: (token: Token) => void }) => {
@@ -57,7 +57,7 @@ export const Navbar = (props: { setActiveToken: (token: Token) => void }) => {
                             </div>
 
                             <div className="text-slate-200 flex flex-grow justify-center">
-                                <SearchToken setActiveToken={props.setActiveToken} />
+                                <SearchToken setActiveToken={props.setActiveToken} className="w-32 md:w-64 lg:w-96" />
                             </div>
 
                             <div className="absolute inset-y-0 right-0 flex items-center sm:static sm:inset-auto sm:ml-6 sm:pr-0">

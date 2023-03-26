@@ -1,6 +1,7 @@
 import { classNames } from '@/helpers/classNames'
 import { getRecentTransactions } from '@/helpers/transactions';
 import { explorersPerChain } from '@/helpers/variables';
+import { useProgress } from '@/hooks/useProgress';
 import { Token } from '@/types';
 import { Disclosure, Menu, Transition } from '@headlessui/react'
 import { Bars3Icon, BellIcon, XMarkIcon } from '@heroicons/react/24/outline'
@@ -46,7 +47,7 @@ type RecentTransaction = {
 };
 
 const navigation = [
-    { name: 'Info', href: '/trade/info/' },
+    // { name: 'Info', href: '/trade/info/' },
     { name: 'Trades', href: '/trade/trade/' },
 ]
 
@@ -105,6 +106,19 @@ const TokenInfoTab = (props: { token: Token }) => {
     )
 }
 
+const ProgressCircle = (props: { cb: () => Promise<void> }) => {
+    const progress = useProgress(props.cb, 60)
+
+    return (
+        <div
+            onClick={() => { progress.click() }}
+            className="radial-progress text-orange-600 mr-3 cursor-pointer"
+            // @ts-ignore
+            style={{ "--value": progress.progress * 100, "--size": "1.5rem" }}
+        />
+    )
+}
+
 export const TokenTable = (props: { token: Token }) => {
     const [transactions, setTransactions] = useState<RecentTransaction[] | null>(null)
 
@@ -114,7 +128,10 @@ export const TokenTable = (props: { token: Token }) => {
 
     return (
         <>
-            <h2 className="text-slate-200 text-xl p-2">Recent DEX trades</h2>
+            <div className="flex items-center">
+                <h2 className="text-slate-200 flex-grow text-xl p-2">Recent DEX trades</h2>
+                <ProgressCircle cb={() => getRecentTransactions(props.token.network, props.token.address).then(setTransactions)} />
+            </div>
 
             <div className="min-w-full flex flex-1 overflow-auto scrollbar-thin scrollbar-thumb-orange-500 scrollbar-track-slate-700">
                 <table className="min-w-full divide-y divide-gray-700 text-xs">

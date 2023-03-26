@@ -1,22 +1,9 @@
+import { classNames } from "@/helpers/classNames";
 import { debounce } from "@/helpers/debounce";
 import { useOutsideClick } from "@/hooks/useOutsideClick";
-import { rubicNetworkToBitqueryNetwork, Token } from "@/types";
+import { rubicNetworkToBitqueryNetwork, SearchResult, Token } from "@/types";
 import Image from "next/image";
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
-
-type SearchResult = {
-    address: string;
-    name: string;
-    symbol: string;
-    blockchainNetwork: string;
-    decimals: number
-    image: string;
-    rank: number;
-    usedInIframe: boolean;
-    coingeckoId?: string;
-    usdPrice?: string,
-    token_security: null
-};
 
 const formatUsd = new Intl.NumberFormat("en-US", {
     minimumFractionDigits: 0,
@@ -38,7 +25,7 @@ const fetchTokens = async (filter: string, setSearchResults: Function) => {
     setSearchResults(data.results.filter((result: SearchResult) => result.address !== '0x0000000000000000000000000000000000000000'))
 }
 
-export const SearchToken = (props: { setActiveToken: (token: Token) => void }) => {
+export const SearchToken = (props: { inputClassName?: string, className?: string, setActiveToken: (token: Token) => void }) => {
     const [searchQuery, setSearchQuery] = useState('')
     const [searchResults, setSearchResults] = useState<SearchResult[]>([])
     const componentRef = useRef<HTMLDivElement>(null)
@@ -67,16 +54,20 @@ export const SearchToken = (props: { setActiveToken: (token: Token) => void }) =
             coingeckoId: searchResult.coingeckoId,
             name: searchResult.name,
             symbol: searchResult.symbol,
+            price: searchResult.usdPrice,
+            image: searchResult.image,
         })
+        setSearchResults([])
+        setSearchQuery('')
     }
 
     return (
-        <div className="relative w-32 md:w-64 lg:w-96" ref={componentRef}>
+        <div className={classNames("relative", props.className)} ref={componentRef}>
             <input
                 type="text"
                 onChange={(e) => setSearchQuery(e.target.value.toLowerCase())}
                 placeholder="Search token..."
-                className="w-full border border-gray-800 focus:border-orange-900 p-1 text-xs bg-[#181818] text-gray-400 focus:outline-none"
+                className={classNames("w-full border border-gray-800 focus:border-orange-900 p-1 text-xs bg-[#181818] text-gray-400 focus:outline-none", props.inputClassName)}
             />
             <div className="absolute bg-gray-800 w-full text-xs z-50 max-h-64 overflow-auto scrollbar-thin scrollbar-thumb-orange-500 scrollbar-track-slate-700">
                 <ul>
@@ -97,7 +88,7 @@ export const SearchToken = (props: { setActiveToken: (token: Token) => void }) =
                             </div>
                             <div className="flex items-center">
                                 <div className="flex-grow">
-                                    {searchResult.blockchainNetwork}
+                                    {(rubicNetworkToBitqueryNetwork as any)[searchResult.blockchainNetwork]}
                                 </div>
                                 <div className="pr-3">
                                     {searchResult.usdPrice && `${formatUsd.format(parseFloat(searchResult.usdPrice))}`}

@@ -22,7 +22,7 @@ export const TradeView = (props: { activeToken: Token }) => {
                 </Allotment>
             </Allotment.Pane>
             <Allotment.Pane>
-                <Swap />
+                <Swap activeToken={props.activeToken} />
             </Allotment.Pane>
         </Allotment>
     )

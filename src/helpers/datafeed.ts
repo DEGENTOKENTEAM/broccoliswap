@@ -28,7 +28,7 @@ export const datafeed = (token: Token) => ({
             minmov: 1,
             pricescale: 100,
             has_intraday: true,
-            has_empty_bars: true,
+            has_empty_bars: false,
             has_weekly_and_monthly: false,
             supported_resolutions: configurationData.supported_resolutions,
             volume_precision: 2,

@@ -29,10 +29,6 @@ export const Chart = (props: { token: Token }) => {
             custom_font_family: '\'Space Mono\'',
             toolbar_bg: '#18181B',
             loading_screen: { backgroundColor: "#18181B" },
-            overrides: {
-                'paneProperties.backgroundType': "solid",
-                "paneProperties.background": "#ffffff"
-            },
             datafeed: datafeed(props.token),
             library_path: '/charting_library/',
             container: 'tv_chart_container',
@@ -58,7 +54,7 @@ export const Chart = (props: { token: Token }) => {
         setTimeout(() => {
             applyOverrides(tv)
         }, 7000)
-    }, [props.token])
+    }, [props.token.address])
 
     return (
         <div
