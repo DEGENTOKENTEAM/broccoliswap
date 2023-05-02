@@ -1,4 +1,5 @@
-import { Fragment } from 'react'
+import { useAccount, useConnect, useDisconnect, useNetwork } from 'wagmi'
+import { InjectedConnector } from 'wagmi/connectors/injected'
 import Image from 'next/image'
 import { Disclosure, Menu, Transition } from '@headlessui/react'
 import { Bars3Icon, BellIcon, XMarkIcon } from '@heroicons/react/24/outline'
@@ -15,6 +16,13 @@ const navigation = [
 
 export const Navbar = (props: { setActiveToken: (token: Token) => void }) => {
     const router = useRouter()
+
+    const { address, isConnected } = useAccount()
+    const { chain } = useNetwork()
+    const { connect } = useConnect({
+        connector: new InjectedConnector(),
+    })
+    const { disconnect } = useDisconnect()
     
     return (
         <Disclosure as="nav" className="border-b border-zinc-800">
@@ -57,16 +65,26 @@ export const Navbar = (props: { setActiveToken: (token: Token) => void }) => {
                             </div>
 
                             <div className="text-slate-200 flex flex-grow justify-center">
-                                <SearchToken setActiveToken={props.setActiveToken} className="w-32 md:w-64 lg:w-96" />
+                                <SearchToken includeNative={false} setActiveToken={props.setActiveToken} className="w-32 md:w-64 lg:w-96" />
                             </div>
 
                             <div className="absolute inset-y-0 right-0 flex items-center sm:static sm:inset-auto sm:ml-6 sm:pr-0">
-                                <button
-                                    type="button"
-                                    className="bg-zinc-800 p-2 text-orange-500 hover:text-orange-600 hover:bg-orange-900 focus:outline-none focus:ring-2 focus:ring-white focus:ring-offset-2 focus:ring-offset-gray-800"
-                                >
-                                    <span>Connect wallet</span>
-                                </button>
+                                {(isConnected && address && chain)
+                                    ? <div className="flex items-center gap-2">
+                                        <div className="text-xs">Connected as {address.substring(0, 5)}...{address!.substring(address.length - 3)} on {chain.name}</div>
+                                        <button
+                                            className="bg-zinc-800 p-2 text-orange-500 hover:text-orange-600 hover:bg-orange-900 focus:outline-none focus:ring-2 focus:ring-white focus:ring-offset-2 focus:ring-offset-gray-800"
+                                            onClick={() => disconnect()}
+                                        >Disconnect</button>
+                                    </div>
+                                    : <button
+                                        type="button"
+                                        onClick={() => connect()}
+                                        className="bg-zinc-800 p-2 text-orange-500 hover:text-orange-600 hover:bg-orange-900 focus:outline-none focus:ring-2 focus:ring-white focus:ring-offset-2 focus:ring-offset-gray-800"
+                                    >
+                                        <span>Connect wallet</span>
+                                    </button>
+                                }
                             </div>
                         </div>
                     </div>

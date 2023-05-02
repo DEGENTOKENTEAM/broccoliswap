@@ -9,6 +9,7 @@ import Link from 'next/link';
 import { useRouter } from 'next/router';
 import { useEffect, useState } from 'react'
 import { Spinner } from './Spinner';
+import { toPrecision } from '@/helpers/number';
 
 type RecentTransaction = {
     block: {
@@ -150,7 +151,7 @@ export const TokenTable = (props: { token: Token }) => {
                                 Amount (base)
                             </th>
                             <th scope="col" className="py-1 px-3 text-left text-sm font-semibold text-slate-200">
-                                Trade size ($)
+                                Trade size
                             </th>
                             <th scope="col" className="relative py-1 pl-3 pr-4 sm:pr-0">
                                 <span className="sr-only">View</span>
@@ -167,9 +168,9 @@ export const TokenTable = (props: { token: Token }) => {
                                 <td className={classNames('whitespace-nowrap py-1 px-3  text-gray-300', transaction.side === 'BUY' ? 'text-green-600' : 'text-red-600')}>
                                     {transaction.side}
                                 </td>
-                                <td className="whitespace-nowrap py-1 px-3  text-gray-300">{`${transaction.quoteAmount.toFixed(2)} ${transaction.quoteCurrency.symbol}`}</td>
-                                <td className="whitespace-nowrap py-1 px-3  text-gray-300">{`${transaction.baseAmount.toFixed(2)} ${transaction.baseCurrency.symbol}`}</td>
-                                <td className="whitespace-nowrap py-1 px-3  text-gray-300">{transaction.quote_amount_usd.toFixed(2)}</td>
+                                <td className="whitespace-nowrap py-1 px-3  text-gray-300">{`${toPrecision(transaction.quoteAmount, 2)} ${transaction.quoteCurrency.symbol}`}</td>
+                                <td className="whitespace-nowrap py-1 px-3  text-gray-300">{`${toPrecision(transaction.baseAmount, 2)} ${transaction.baseCurrency.symbol}`}</td>
+                                <td className="whitespace-nowrap py-1 px-3  text-gray-300">${toPrecision(transaction.quote_amount_usd, 2)}</td>
                                 <td className="relative whitespace-nowrap py-1 pl-3 pr-4 text-right  font-medium">
                                     <a href={`${(explorersPerChain as any)[props.token.network]}/tx/${transaction.transaction.hash}`} target="_blank" rel="noreferrer" className="text-orange-500 hover:text-orange-900">
                                         View
