@@ -98,7 +98,19 @@ export const TokenHeader = (props: { token: Token }) => {
     useEffect(() => {
         setInfo(null)
         if (props.token.coingeckoId) {
-            getTokenInfo(props.token.coingeckoId).then(setInfo)
+            getTokenInfo(props.token.coingeckoId).then((info) => {
+                if (!info.error) {
+                    return setInfo(info)
+                }
+                setInfo({
+                    name: props.token.name,
+                    image: {
+                        small: props.token.image,
+                        medium: props.token.image,
+                        large: props.token.image,
+                    },
+                })
+            })
         } else {
             setInfo({
                 name: props.token.name,
@@ -107,7 +119,6 @@ export const TokenHeader = (props: { token: Token }) => {
                     medium: props.token.image,
                     large: props.token.image,
                 },
-
             })
         }
     }, [props.token])
@@ -119,6 +130,8 @@ export const TokenHeader = (props: { token: Token }) => {
             </div>
         );
     }
+
+    console.log(info,props.token)
 
     return (
         <div className="flex flex-col items-start h-full py-1 pl-3 text-slate-200">

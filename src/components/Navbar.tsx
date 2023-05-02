@@ -32,7 +32,7 @@ export const Navbar = (props: { setActiveToken: (token: Token) => void }) => {
                         <div className="relative flex h-10 items-center justify-between">
                             <div className="absolute inset-y-0 left-0 flex items-center sm:hidden">
                                 {/* Mobile menu button*/}
-                                <Disclosure.Button className="inline-flex items-center justify-center p-2 text-gray-400 hover:bg-zinc-700 hover:text-white focus:outline-none focus:ring-2 focus:ring-inset focus:ring-white">
+                                <Disclosure.Button className="inline-flex items-center justify-center p-2 ml-6 text-gray-400 hover:bg-zinc-700 hover:text-white focus:outline-none focus:ring-2 focus:ring-inset focus:ring-white">
                                     <span className="sr-only">Open main menu</span>
                                     {open ? (
                                         <XMarkIcon className="block h-6 w-6" aria-hidden="true" />
@@ -41,7 +41,7 @@ export const Navbar = (props: { setActiveToken: (token: Token) => void }) => {
                                     )}
                                 </Disclosure.Button>
                             </div>
-                            <div className="flex items-center justify-center sm:items-stretch sm:justify-start">
+                            <div className="flex items-center justify-center">
                                 <div className="flex flex-shrink-0 items-center">
                                     <Image src="/swap.png" alt="Swap image" unoptimized width="25" height="25" />
                                 </div>
@@ -68,7 +68,7 @@ export const Navbar = (props: { setActiveToken: (token: Token) => void }) => {
                                 <SearchToken includeNative={false} setActiveToken={props.setActiveToken} className="w-32 md:w-64 lg:w-96" />
                             </div>
 
-                            <div className="absolute inset-y-0 right-0 flex items-center sm:static sm:inset-auto sm:ml-6 sm:pr-0">
+                            <div className="hidden lg:absolute inset-y-0 right-0 lg:flex items-center">
                                 {(isConnected && address && chain)
                                     ? <div className="flex items-center gap-2">
                                         <div className="text-xs">Connected as {address.substring(0, 5)}...{address!.substring(address.length - 3)} on {chain.name}</div>
@@ -87,6 +87,25 @@ export const Navbar = (props: { setActiveToken: (token: Token) => void }) => {
                                 }
                             </div>
                         </div>
+                    </div>
+
+                    <div className="flex lg:absolute inset-y-0 right-0 lg:hidden items-center">
+                        {(isConnected && address && chain)
+                            ? <div className="flex w-full items-center gap-2 ml-3">
+                                <div className="text-xs flex-grow">Connected as {address.substring(0, 5)}...{address!.substring(address.length - 3)} on {chain.name}</div>
+                                <button
+                                    className="bg-zinc-800 p-2 text-orange-500 hover:text-orange-600 hover:bg-orange-900 focus:outline-none focus:ring-2 focus:ring-white focus:ring-offset-2 focus:ring-offset-gray-800"
+                                    onClick={() => disconnect()}
+                                >Disconnect</button>
+                            </div>
+                            : <div className="flex w-full justify-end"><button
+                                type="button"
+                                onClick={() => connect()}
+                                className="bg-zinc-800 p-2  text-orange-500 hover:text-orange-600 hover:bg-orange-900 focus:outline-none focus:ring-2 focus:ring-white focus:ring-offset-2 focus:ring-offset-gray-800"
+                            >
+                                <span>Connect wallet</span>
+                            </button></div>
+                        }
                     </div>
 
                     <Disclosure.Panel className="sm:hidden">

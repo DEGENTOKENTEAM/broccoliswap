@@ -1,4 +1,4 @@
-import { Token } from '@/types';
+import { Token, rubicNetworkToBitqueryNetwork } from '@/types';
 import moment from 'moment';
 
 const configurationData = {
@@ -37,7 +37,7 @@ export const datafeed = (token: Token) => ({
     },
     getBars: (symbolInfo: any, resolution: string, periodParams: { from: number, to: number, countBack: number }, onHistoryCallback: Function, onErrorCallback: Function) => {
         console.log('[getBars]: Method call', symbolInfo, resolution, periodParams);
-        fetch(`${process.env.NEXT_PUBLIC_BACKEND_ENDPOINT!}/ohlc/${token.network}/${token.address}/${periodParams.from * 1000}/${periodParams.to * 1000}/${resolution}/${periodParams.countBack}`)
+        fetch(`${process.env.NEXT_PUBLIC_BACKEND_ENDPOINT!}/ohlc/${rubicNetworkToBitqueryNetwork[token.network as keyof typeof rubicNetworkToBitqueryNetwork]}/${token.address}/${periodParams.from * 1000}/${periodParams.to * 1000}/${resolution}/${periodParams.countBack}`)
             .then(x => x.json())
             .then((data) => {
                 setTimeout(() => onHistoryCallback(data.bars, { noData: data.bars.length === 0 }));

@@ -1,3 +1,4 @@
+import { classNames } from '@/helpers/classNames';
 import { datafeed } from '@/helpers/datafeed';
 import { Token } from '@/types';
 import React, { useEffect, useRef } from 'react';
@@ -13,7 +14,7 @@ const applyOverrides = (tv: any) => {
     } catch (e) { }
 }
 
-export const Chart = (props: { token: Token }) => {    
+export const Chart = (props: { token: Token, className?: string }) => {    
     useEffect(() => {
         // @ts-ignore
         const tv = new TradingView.widget({
@@ -58,7 +59,7 @@ export const Chart = (props: { token: Token }) => {
 
     return (
         <div
-            className="h-full w-full"
+            className={classNames(props.className, "h-full w-full")}
             id="tv_chart_container"
         />
     );

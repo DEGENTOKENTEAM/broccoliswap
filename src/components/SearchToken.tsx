@@ -25,7 +25,7 @@ const fetchTokens = async (filter: string, setSearchResults: Function, includeNa
 
     const result = await fetch(`https://tokens.rubic.exchange/api/v1/tokens?symbol=${filter}&networks=${networks}&pageSize=10`)
     const data = await result.json()
-    setSearchResults(data.results.filter((result: SearchResult) => includeNative ? true : result.address !== '0x0000000000000000000000000000000000000000'))
+    setSearchResults(data.results)
 }
 
 const SearchResultItem = (props: { searchResult: SearchResult, setToken: Function }) => {
