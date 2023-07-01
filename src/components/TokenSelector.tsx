@@ -36,7 +36,7 @@ const TokenSelectModal = (props: {
         >
             <div
                 ref={divRef}
-                className="max-w-2xl w-full m-5 bg-slate-600 p-5 rounded-xl relative z-20"
+                className="max-w-2xl w-full m-5 bg-slate-700 p-5 rounded-xl relative z-20"
             >
                 <h2 className="text-2xl text-white mb-3">Select Chain</h2>
                 <div className="flex gap-3">
