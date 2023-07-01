@@ -1,7 +1,7 @@
 import { BottomBar } from '@/components/BottomBar'
 import { Navbar } from '@/components/Navbar'
 import '@/styles/globals.css'
-import { SearchResult, Token } from '@/types'
+import { SearchResult, Token } from '@/__old__types'
 import type { AppProps } from 'next/app'
 import { useEffect, useState } from 'react'
 import { WagmiConfig, createClient, configureChains } from 'wagmi'
@@ -26,39 +26,13 @@ const fetchDGNXToken = async () => {
 }
 
 export default function App({ Component, pageProps, router }: AppProps) {
-  const [activeToken, setActiveToken] = useState<Token>({
-    network: 'avalanche',
-    address: '0x51e48670098173025c477d9aa3f0eff7bf9f7812',
-    coingeckoId: 'degenx',
-    name: 'DegenX',
-    symbol: 'DGNX',
-    image: 'https://assets.rubic.exchange/assets/avalanche/0x51e48670098173025c477d9aa3f0eff7bf9f7812/logo.png',
-  })
-
-  useEffect(() => {
-    fetchDGNXToken().then((searchResult: SearchResult) => {
-      setActiveToken({
-        network: 'avalanche',
-        address: '0x51e48670098173025c477d9aa3f0eff7bf9f7812',
-        coingeckoId: 'degenx',
-        name: 'DegenX',
-        symbol: 'DGNX',
-        image: 'https://assets.rubic.exchange/assets/avalanche/0x51e48670098173025c477d9aa3f0eff7bf9f7812/logo.png',
-        price: searchResult.usdPrice,
-      })
-    })
-  }, [])
-
-  console.log('pa',pageProps)
-  
-  const mode = router.route.startsWith('/pro') ? 'pro' : 'simple';
 
   return (
     <NonSSR>
       <WagmiConfig client={client}>
         <main className="min-h-screen grid grid-rows-[min-content_1fr_min-content]">
-          <Navbar setActiveToken={setActiveToken} mode={mode} />
-          <Component {...pageProps} activeToken={activeToken  } />
+          <Navbar />
+          <Component {...pageProps} />
           <BottomBar />
         </main>
       </WagmiConfig>

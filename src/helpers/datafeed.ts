@@ -1,4 +1,4 @@
-import { Token, rubicNetworkToBitqueryNetwork } from '@/types';
+import { Token, rubicNetworkToBitqueryNetwork } from '@/__old__types';
 import moment from 'moment';
 
 const configurationData = {

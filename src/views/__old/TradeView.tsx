@@ -1,8 +1,8 @@
-import { Chart } from "@/components/Chart"
-import { Swap } from "@/components/Swap"
+import { Chart } from "@/components/__old/Chart"
+import { Swap } from "@/components/__old/Swap"
 import { TokenHeader } from "@/components/TokenHeader"
 import { TokenInfo } from "@/components/TokenInfo"
-import { Token } from "@/types"
+import { Token } from "@/__old__types"
 import { Allotment } from "allotment"
 
 export const TradeView = (props: { activeToken: Token }) => {

@@ -12,11 +12,6 @@ const nextConfig = {
         destination: '/simple',
         permanent: true,
       },
-      {
-        source: '/pro',
-        destination: '/pro/trade/trade',
-        permanent: true,
-      },
     ];
   },
 }

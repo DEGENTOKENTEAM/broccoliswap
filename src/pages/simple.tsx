@@ -1,13 +1,10 @@
 import Head from 'next/head'
-import { Swap } from '@/components/Swap';
+import { SwapView } from '@/views/Swap';
 import { useEffect, useState } from 'react';
-import { Token } from '@/types';
+import { Token } from '@/__old__types';
 
 import "allotment/dist/style.css";
 import NonSSR from '@/components/NonSSR';
-import { TradeView } from '@/views/TradeView';
-import { PortfolioView } from '@/views/PortfolioView';
-import { useRouter } from 'next/router';
 
 
 export default function Home(props: { activeToken: Token }) {
@@ -28,8 +25,8 @@ export default function Home(props: { activeToken: Token }) {
         <link rel="icon" href="/logo.png" />
       </Head>
       <NonSSR>
-        <div className="w-full max-w-xl mx-auto my-10 flex justify-center items-center">
-          <Swap activeToken={props.activeToken} className='border-none flex-grow' />
+        <div className="w-full max-w-2xl mx-auto my-10 flex justify-center items-center">
+          <SwapView />
         </div>
       </NonSSR>
     </>

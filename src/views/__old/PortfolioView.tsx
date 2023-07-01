@@ -1,4 +1,4 @@
-import { Token } from "@/types"
+import { Token } from "@/__old__types"
 
 export const PortfolioView = () => {
     return (

@@ -1,4 +1,4 @@
-import { rubicNetworkToBitqueryNetwork } from "@/types";
+import { rubicNetworkToBitqueryNetwork } from "@/__old__types";
 
 let recentTransactionsPromise: Promise<any> | undefined;
 export const getRecentTransactions = async (network: string, tokenAddress: string) => {

@@ -11,7 +11,7 @@ module.exports = {
   theme: {
     extend: {
       colors: {
-        orange: {
+        dgnx: {
           50: '#FEF0E9',
           100: '#FDE0CF',
           200: '#FBCFB8',
@@ -45,8 +45,8 @@ module.exports = {
         '4xl': '2rem',
       },
       fontFamily: {
-        sans: ['Space Mono', ...defaultTheme.fontFamily.sans],
-        display: ['Space Mono', ...defaultTheme.fontFamily.sans],
+        sans: ['Ysabeau Infant', ...defaultTheme.fontFamily.sans],
+        display: ['Ysabeau Infant', ...defaultTheme.fontFamily.sans],
       },
       maxWidth: {
         '2xl': '40rem',
