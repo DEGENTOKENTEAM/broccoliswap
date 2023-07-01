@@ -185,8 +185,8 @@ export const TokenInfo = (props: { token: Token }) => {
     return (
         <div className="flex flex-1 flex-col h-full">
             <Tokenbar />
-            {router.asPath === '/trade/trade/' && <TokenTable token={props.token} />}
-            {router.asPath === '/trade/info/' && <TokenInfoTab token={props.token} />}
+            {router.asPath === '/pro/trade/trade/' && <TokenTable token={props.token} />}
+            {router.asPath === '/pro/trade/info/' && <TokenInfoTab token={props.token} />}
         </div>
     )
 }

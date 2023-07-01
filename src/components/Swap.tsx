@@ -12,6 +12,7 @@ import { toPrecision } from "@/helpers/number";
 import { SwapSettings } from "./SwapSettings";
 import { SwapButton } from "./SwapButton";
 import { SwapDetails } from "./SwapDetails";
+import { classNames } from "@/helpers/classNames";
 
 const getMinimumOutputAmount = (trade: OnChainTrade | CrossChainTrade) => {
     if (trade.from.blockchain === trade.to.blockchain) {
@@ -136,7 +137,7 @@ const ActiveToken = (props: { token: Token, amount?: number, setAmount?: (amount
                         ref={setAmountInputRef}
                     />
                 </div>}
-                <div className="text-xs text-right">{props.token.price ? formatter.format((props.amount || 1) * parseFloat(props.token.price)) : '...'}</div>
+                {props.setAmount && <div className="text-xs text-right">≈{props.token.price ? formatter.format((props.amount || 1) * parseFloat(props.token.price)) : '...'}</div>}
             </div>
         </div>
     )
@@ -173,7 +174,7 @@ const OtherToken = (props: { token: Token, removeToken: Function, amount?: numbe
                         defaultValue={props.amount ? props.amount : undefined}
                     />
                 </div>}
-                <div className="text-xs text-right">{props.token.price ? formatter.format((props.amount || 1) * parseFloat(props.token.price)) : '...'}</div>
+                {props.setAmount && <div className="text-xs text-right">≈{props.token.price ? formatter.format((props.amount || 1) * parseFloat(props.token.price)) : '...'}</div>}
             </div>
             <div className="absolute top-0 right-0 group-hover:opacity-100 opacity-0 cursor-pointer text-white bg-orange-600 w-5 h-5 flex items-center justify-center p-0" onClick={() => props.removeToken()}>
                 <XMarkIcon />
@@ -210,7 +211,7 @@ const getTrades = async (sdk: SDK, slippage: number, amount: number, otherToken:
     }
 }
 
-export const Swap = (props: { activeToken: Token }) => {
+export const Swap = (props: { activeToken: Token, className?: string }) => {
     const [otherToken, setOtherToken] = useState<Token | null>()
     const [swapSide, setSwapSide] = useState<SwapSide>(SwapSide.RIGHT)
     const [amount, setAmount] = useState<number>();
@@ -260,7 +261,7 @@ export const Swap = (props: { activeToken: Token }) => {
     console.log('trade',trade)
 
     return (
-        <div className="text-slate-200 border-l border-zinc-800 h-full px-3">
+        <div className={classNames("text-slate-200 border-l border-zinc-800 h-full px-3", props.className)}>
             <div className="flex items-center">
                 <h2 className="text-xl flex-grow">Swap</h2>
                 <div>

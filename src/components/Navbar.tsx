@@ -14,7 +14,7 @@ const navigation = [
     // { name: 'Portfolio', href: '/portfolio' },
 ]
 
-export const Navbar = (props: { setActiveToken: (token: Token) => void }) => {
+export const Navbar = (props: { setActiveToken: (token: Token) => void, mode: 'simple' | 'pro' }) => {
     const router = useRouter()
 
     const { address, isConnected } = useAccount()
@@ -30,7 +30,7 @@ export const Navbar = (props: { setActiveToken: (token: Token) => void }) => {
                 <>
                     <div className="mx-auto pl-2 sm:pl-3 lg:pl-3">
                         <div className="relative flex h-10 items-center justify-between">
-                            <div className="absolute inset-y-0 left-0 flex items-center sm:hidden">
+                            {props.mode === 'pro' && <div className="absolute inset-y-0 left-0 flex items-center sm:hidden">
                                 {/* Mobile menu button*/}
                                 <Disclosure.Button className="inline-flex items-center justify-center p-2 ml-6 text-gray-400 hover:bg-zinc-700 hover:text-white focus:outline-none focus:ring-2 focus:ring-inset focus:ring-white">
                                     <span className="sr-only">Open main menu</span>
@@ -40,12 +40,12 @@ export const Navbar = (props: { setActiveToken: (token: Token) => void }) => {
                                         <Bars3Icon className="block h-6 w-6" aria-hidden="true" />
                                     )}
                                 </Disclosure.Button>
-                            </div>
+                            </div>}
                             <div className="flex items-center justify-center">
                                 <div className="flex flex-shrink-0 items-center">
                                     <Image src="/swap.png" alt="Swap image" unoptimized width="25" height="25" />
                                 </div>
-                                <div className="hidden sm:ml-3 sm:block">
+                                {props.mode === 'pro' && <div className="hidden sm:ml-3 sm:block">
                                     <div className="flex">
                                         {navigation.map((item) => (
                                             <Link
@@ -61,11 +61,11 @@ export const Navbar = (props: { setActiveToken: (token: Token) => void }) => {
                                             </Link>
                                         ))}
                                     </div>
-                                </div>
+                                </div>}
                             </div>
 
                             <div className="text-slate-200 flex flex-grow justify-center">
-                                <SearchToken includeNative={false} setActiveToken={props.setActiveToken} className="w-32 md:w-64 lg:w-96" />
+                                {props.mode === 'pro' && <SearchToken includeNative={false} setActiveToken={props.setActiveToken} className="w-32 md:w-64 lg:w-96" />}
                             </div>
 
                             <div className="hidden lg:absolute inset-y-0 right-0 lg:flex items-center">

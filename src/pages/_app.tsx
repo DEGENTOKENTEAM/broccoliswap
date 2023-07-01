@@ -25,7 +25,7 @@ const fetchDGNXToken = async () => {
   return data.results[0];
 }
 
-export default function App({ Component, pageProps }: AppProps) {
+export default function App({ Component, pageProps, router }: AppProps) {
   const [activeToken, setActiveToken] = useState<Token>({
     network: 'avalanche',
     address: '0x51e48670098173025c477d9aa3f0eff7bf9f7812',
@@ -48,12 +48,16 @@ export default function App({ Component, pageProps }: AppProps) {
       })
     })
   }, [])
+
+  console.log('pa',pageProps)
   
+  const mode = router.route.startsWith('/pro') ? 'pro' : 'simple';
+
   return (
     <NonSSR>
       <WagmiConfig client={client}>
         <main className="min-h-screen grid grid-rows-[min-content_1fr_min-content]">
-          <Navbar setActiveToken={setActiveToken} />
+          <Navbar setActiveToken={setActiveToken} mode={mode} />
           <Component {...pageProps} activeToken={activeToken  } />
           <BottomBar />
         </main>

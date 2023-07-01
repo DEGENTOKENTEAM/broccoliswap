@@ -9,12 +9,12 @@ const nextConfig = {
     return [
       {
         source: '/',
-        destination: '/trade/trade',
+        destination: '/simple',
         permanent: true,
       },
       {
-        source: '/trade',
-        destination: '/trade/trade',
+        source: '/pro',
+        destination: '/pro/trade/trade',
         permanent: true,
       },
     ];
