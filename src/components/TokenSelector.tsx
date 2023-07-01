@@ -5,6 +5,7 @@ import { Chain, chainsInfo } from "@/types";
 import Image from "next/image";
 import { useRef, useState } from "react";
 import { RxCaretDown } from "react-icons/rx";
+import { ImCross } from "react-icons/im";
 
 const TokenSelectModal = (props: {
     show?: boolean;
@@ -30,7 +31,7 @@ const TokenSelectModal = (props: {
     return (
         <div
             className={classNames(
-                "absolute top-0 left-0 right-0 bottom-0 flex items-center justify-center bg-[rgba(0,0,0,0.4)] transition-opacity z-10",
+                "absolute top-0 left-0 right-0 bottom-0 flex items-center justify-center bg-[rgba(0,0,0,0.4)] transition-opacity ease-in z-10",
                 props.show ? "opacity-100" : "opacity-0 pointer-events-none"
             )}
         >
@@ -38,7 +39,13 @@ const TokenSelectModal = (props: {
                 ref={divRef}
                 className="max-w-2xl w-full m-5 bg-slate-700 p-5 rounded-xl relative z-20"
             >
-                <h2 className="text-2xl text-white mb-3">Select Chain</h2>
+                <div className="flex text-2xl text-white mb-3 items-center justify-center">
+                    <h2 className="flex-grow">Select Chain</h2>
+                    <ImCross
+                        className="text-xl cursor-pointer hover:text-orange-600 transition-colors"
+                        onClick={() => props.setShow?.(false)}
+                    />
+                </div>
                 <div className="flex gap-3">
                     {Object.entries(chainsInfo).map(([chain, chainInfo]) => {
                         return (
@@ -50,7 +57,7 @@ const TokenSelectModal = (props: {
                                     )
                                 }
                                 className={classNames(
-                                    "p-3 border-2 rounded-xl cursor-pointer",
+                                    "p-3 border-2 rounded-xl cursor-pointer transition-colors ease-in",
                                     props.selectedChain === chain
                                         ? "border-orange-600"
                                         : "border-slate-800 hover:border-slate-400"
@@ -92,15 +99,22 @@ export const TokenSelector = (props: { isOtherToken?: boolean }) => {
             >
                 <div
                     onClick={() => setShowSelector(true)}
-                    className="bg-slate-600 rounded-xl flex items-center justify-center px-3 py-1 font-bold gap-2 text-white cursor-pointer hover:bg-slate-500 transition-colors"
+                    className="bg-slate-600 relative rounded-xl flex items-center justify-center px-3 py-1 font-bold gap-1 text-white cursor-pointer hover:bg-slate-500 transition-colors"
                 >
                     <Image
+                        className="relative"
                         width={24}
                         height={24}
                         alt="logo"
                         src="https://jup.ag/_next/image?url=https%3A%2F%2Fraw.githubusercontent.com%2Fsolana-labs%2Ftoken-list%2Fmain%2Fassets%2Fmainnet%2FEPjFWdd5AufqSSqeM2qN1xzybapC8G4wEGGkZwyTDt1v%2Flogo.png&w=48&q=75"
                     />
-                    <span>USDC</span>
+                    <span>
+                        USDC
+                        <span className="font-normal text-sm">
+                            {selectedChain &&
+                                chainsInfo[selectedChain].symbol.toLowerCase()}
+                        </span>
+                    </span>
                     <span>
                         <RxCaretDown />
                     </span>
