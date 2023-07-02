@@ -10,7 +10,7 @@ import {
 import Image from "next/image";
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { useAccount, useBalance } from "wagmi";
-import { Spinner } from "./Spinner";
+import { Spinner } from "../Spinner";
 import { toPrecision } from "@/helpers/number";
 
 const formatUsd = new Intl.NumberFormat("en-US", {

@@ -1,18 +1,50 @@
+import Image from "next/image";
 import { classNames } from "@/helpers/classNames";
 import { useAsyncEffect } from "@/hooks/useAsyncEffect";
 import useOutsideClick from "@/hooks/useOutsideClick";
-import { Chain, chainsInfo } from "@/types";
-import Image from "next/image";
+import { Chain, RubicToken, chainsInfo } from "@/types";
 import { useRef, useState } from "react";
-import { RxCaretDown } from "react-icons/rx";
 import { ImCross } from "react-icons/im";
+import { searchToken } from "@/helpers/rubic";
 
-const TokenSelectModal = (props: {
+const TokenListItem = (props: { token: RubicToken }) => {
+    const token = props.token;
+    return (
+        <div className="hover:bg-slate-500 p-3 rounded-xl cursor-pointer flex gap-3 items-center">
+            <Image
+                width={32}
+                height={32}
+                src={token.image}
+                alt={`Logo ${token.name}`}
+            />
+            <div className="flex flex-col">
+                <div className="leading-5">{token.symbol}</div>
+                <div className="text-xs leading-5">{token.name}</div>
+            </div>
+        </div>
+    );
+};
+
+const TokenListSkeletonItem = () => {
+    return (
+        <div className="hover:bg-slate-500 p-3 rounded-xl cursor-pointer flex gap-3 items-center">
+            <div className="w-8 h-8 bg-slate-900 rounded-full" />
+            <div className="flex flex-col gap-1">
+                <div className="from-slate-900 to-slate-800 bg-gradient-to-r w-32 h-5 rounded"></div>
+                <div className="from-slate-900 to-slate-800 bg-gradient-to-r w-32 h-3 rounded"></div>
+            </div>
+        </div>
+    );
+};
+
+export const TokenSelector = (props: {
     show?: boolean;
     setShow?: (show: boolean) => void;
     selectedChain?: Chain;
     setSelectedChain?: (chain: Chain) => void;
 }) => {
+    const [tokens, setTokens] = useState<RubicToken[] | null>();
+
     const divRef = useRef<HTMLDivElement>(null);
     useOutsideClick([divRef], () => props.setShow?.(false));
 
@@ -21,12 +53,9 @@ const TokenSelectModal = (props: {
             return;
         }
 
-        // Fetch tokens from active chain
+        const tokens = await searchToken(props.selectedChain);
+        setTokens(tokens);
     }, [props.show, props.selectedChain]);
-
-    if (!props.show) {
-        // return null;
-    }
 
     return (
         <div
@@ -51,11 +80,15 @@ const TokenSelectModal = (props: {
                         return (
                             <div
                                 key={chainInfo.id}
-                                onClick={() =>
+                                onClick={() => {
+                                    if (props.selectedChain === chain) {
+                                        return;
+                                    }
                                     props.setSelectedChain?.(
                                         Chain[chain as keyof typeof Chain]
-                                    )
-                                }
+                                    );
+                                    setTokens(null);
+                                }}
                                 className={classNames(
                                     "p-3 border-2 rounded-xl cursor-pointer transition-colors ease-in",
                                     props.selectedChain === chain
@@ -75,67 +108,27 @@ const TokenSelectModal = (props: {
                 </div>
 
                 {props.selectedChain && (
-                    <h2 className="text-2xl text-white my-3">Select Token</h2>
+                    <>
+                        <h2 className="text-2xl text-white my-3">
+                            Select Token
+                        </h2>
+                        <div className=" max-h-[calc(80vh-200px)] overflow-auto scrollbar-thin scrollbar-thumb-slate-800">
+                            {tokens
+                                ? tokens.map(token => (
+                                      <TokenListItem
+                                          key={token.address}
+                                          token={token}
+                                      />
+                                  ))
+                                : Array(10)
+                                      .fill(null)
+                                      .map((_, i) => (
+                                          <TokenListSkeletonItem key={i} />
+                                      ))}
+                        </div>
+                    </>
                 )}
             </div>
         </div>
-    );
-};
-
-export const TokenSelector = (props: { isOtherToken?: boolean }) => {
-    const [showSelector, setShowSelector] = useState(!!props.isOtherToken);
-
-    const [selectedChain, setSelectedChain] = useState<Chain>();
-
-    return (
-        <>
-            <div
-                className={classNames(
-                    "w-full px-3 py-3 rounded-xl my-3 text-xl flex",
-                    props.isOtherToken
-                        ? "bg-slate-800 cursor-not-allowed"
-                        : "bg-slate-900"
-                )}
-            >
-                <div
-                    onClick={() => setShowSelector(true)}
-                    className="bg-slate-600 relative rounded-xl flex items-center justify-center px-3 py-1 font-bold gap-1 text-white cursor-pointer hover:bg-slate-500 transition-colors"
-                >
-                    <Image
-                        className="relative"
-                        width={24}
-                        height={24}
-                        alt="logo"
-                        src="https://jup.ag/_next/image?url=https%3A%2F%2Fraw.githubusercontent.com%2Fsolana-labs%2Ftoken-list%2Fmain%2Fassets%2Fmainnet%2FEPjFWdd5AufqSSqeM2qN1xzybapC8G4wEGGkZwyTDt1v%2Flogo.png&w=48&q=75"
-                    />
-                    <span>
-                        USDC
-                        <span className="font-normal text-sm">
-                            {selectedChain &&
-                                chainsInfo[selectedChain].symbol.toLowerCase()}
-                        </span>
-                    </span>
-                    <span>
-                        <RxCaretDown />
-                    </span>
-                </div>
-                <div className="flex-grow" />
-                <div className="flex flex-col justify-end items-end gap-1">
-                    <div className="font-bold text-white leading-5 text-2xl">
-                        5.51488
-                    </div>
-                    <div className="text-sm font-normal text-slate-500 leading-5">
-                        $20.1
-                    </div>
-                </div>
-            </div>
-
-            <TokenSelectModal
-                show={showSelector}
-                setShow={setShowSelector}
-                selectedChain={selectedChain}
-                setSelectedChain={setSelectedChain}
-            />
-        </>
     );
 };

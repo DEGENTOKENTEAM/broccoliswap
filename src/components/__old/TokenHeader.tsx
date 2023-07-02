@@ -6,7 +6,7 @@ import { useEffect, useRef, useState } from "react";
 import { RiFileCopyFill, RiShareForward2Fill } from "react-icons/ri";
 import { FaTelegramPlane, FaTwitter, FaGlobe, FaDiscord } from "react-icons/fa";
 import Image from "next/image";
-import { Spinner } from "./Spinner";
+import { Spinner } from "../Spinner";
 
 type TokenInfo = {
     name: string;

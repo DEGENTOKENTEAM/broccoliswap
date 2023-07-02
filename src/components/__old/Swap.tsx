@@ -26,7 +26,7 @@ import { XMarkIcon } from "@heroicons/react/24/outline";
 import { MdSwapVert } from "react-icons/md";
 import { Chain, useAccount, useBalance, useNetwork, useProvider } from "wagmi";
 import { debounce } from "@/helpers/debounce";
-import { Spinner } from "./Spinner";
+import { Spinner } from "../Spinner";
 import { toPrecision } from "@/helpers/number";
 import { SwapSettings } from "./SwapSettings";
 import { SwapButton } from "./SwapButton";

@@ -8,7 +8,7 @@ import { Bars3Icon, BellIcon, XMarkIcon } from "@heroicons/react/24/outline";
 import Link from "next/link";
 import { useRouter } from "next/router";
 import { useEffect, useState } from "react";
-import { Spinner } from "./Spinner";
+import { Spinner } from "../Spinner";
 import { toPrecision } from "@/helpers/number";
 
 type RecentTransaction = {

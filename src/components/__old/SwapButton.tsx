@@ -3,7 +3,7 @@ import { CrossChainTrade, OnChainTrade } from "rubic-sdk"
 import { useAccount, useBalance, useConnect, useNetwork, useSwitchNetwork } from "wagmi"
 import { IoMdClose } from "react-icons/io"
 import { InjectedConnector } from "wagmi/connectors/injected";
-import { Spinner } from "./Spinner";
+import { Spinner } from "../Spinner";
 import BigNumber from "bignumber.js";
 import { useState } from "react";
 import { waitForTransaction } from "@wagmi/core";
