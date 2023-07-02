@@ -5,9 +5,12 @@ import { useState } from "react";
 import { RxCaretDown } from "react-icons/rx";
 import { TokenSelector } from "./TokenSelector";
 import { TokenImage } from "./TokenImage";
+import { toPrecision } from "@/helpers/number";
 
 export const TokenInput = (props: {
     isOtherToken?: boolean;
+    amount?: number;
+    setInputAmount?: (amount: number) => void;
     token?: Token;
     setToken: (token: Token) => void;
 }) => {
@@ -64,11 +67,39 @@ export const TokenInput = (props: {
                 </div>
                 <div className="flex-grow" />
                 <div className="flex flex-col justify-end items-end gap-1">
-                    <div className="font-bold text-white leading-5 text-2xl">
-                        5.51488
-                    </div>
+                    {props.setInputAmount ? (
+                        <input
+                            className="text-right font-bold text-white leading-5 text-2xl bg-slate-900 ring-0 border-0 focus:outline-none -my-1.5"
+                            type="text"
+                            placeholder="Amount..."
+                            onChange={e =>
+                                props.setInputAmount?.(
+                                    parseFloat(e.target.value)
+                                )
+                            }
+                        />
+                    ) : (
+                        <div className="font-bold text-white leading-5 text-2xl">
+                            {props.amount ? (
+                                toPrecision(props.amount, 4)
+                            ) : (
+                                <span>&nbsp;</span>
+                            )}
+                        </div>
+                    )}
                     <div className="text-sm font-normal text-slate-500 leading-5">
-                        $20.1
+                        {props.amount && props.token?.token?.usdPrice ? (
+                            <>
+                                $
+                                {toPrecision(
+                                    props.amount *
+                                        parseFloat(props.token.token.usdPrice),
+                                    4
+                                )}
+                            </>
+                        ) : (
+                            <span>&nbsp;</span>
+                        )}
                     </div>
                 </div>
             </div>

@@ -82,6 +82,7 @@ export const TokenSelector = (props: {
             return;
         }
 
+        setTokens(null);
         const tokens = await searchToken(props.selectedChain, searchFilter);
         setTokens(tokens);
     }, [props.show, props.selectedChain, searchFilter]);

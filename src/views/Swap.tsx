@@ -8,6 +8,7 @@ import { useState } from "react"
 export const SwapView = () => {
     const [inputToken, setInputToken] = useState<Token | undefined>();
     const [outputToken, setOutputToken] = useState<Token | undefined>();
+    const [inputAmount, setInputAmount] = useState<number>();
 
     const swapTokens = () => {
         const _input = inputToken ? merge({}, inputToken) : undefined
@@ -18,7 +19,7 @@ export const SwapView = () => {
     return (
         <div className="bg-slate-700 p-5 m-5 rounded-xl w-full">
             You&apos;re paying
-            <TokenInput token={inputToken} setToken={setInputToken} />
+            <TokenInput token={inputToken} setToken={setInputToken} setInputAmount={setInputAmount} amount={inputAmount} />
 
             <SwapTokens swapTokens={swapTokens} />
 
