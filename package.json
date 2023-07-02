@@ -20,6 +20,7 @@
     "allotment": "^1.18.1",
     "bignumber.js": "^9.1.1",
     "daisyui": "^2.51.5",
+    "deepmerge": "^4.3.1",
     "eslint": "8.34.0",
     "eslint-config-next": "13.1.6",
     "ethers": "^5.7.2",

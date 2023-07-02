@@ -40,6 +40,7 @@ const TokenListItem = (props: {
                                 chainsInfo[props.selectedChain].explorer
                             }token/${token.address}`}
                             target="_blank"
+                            onClick={e => e.stopPropagation()}
                         >
                             <div className="text-xs bg-slate-800 py-0.5 px-1.5 rounded flex items-center gap-1">
                                 {token.address.slice(0, 5)}...{" "}
