@@ -8,6 +8,8 @@ import { ImCross } from "react-icons/im";
 import { BiLinkExternal } from "react-icons/bi";
 import { searchToken } from "@/helpers/rubic";
 import Link from "next/link";
+import { debounce } from "@/helpers/debounce";
+import { TokenImage } from "./TokenImage";
 
 const TokenListItem = (props: {
     token: RubicToken;
@@ -25,12 +27,7 @@ const TokenListItem = (props: {
                 props.onSelectToken({ chain: props.selectedChain!, token })
             }
         >
-            <Image
-                width={32}
-                height={32}
-                src={token.image}
-                alt={`Logo ${token.name}`}
-            />
+            <TokenImage src={token.image} symbol={token.symbol} />
             <div className="flex flex-col">
                 <div className="flex items-center gap-3">
                     <div className="leading-5 text-white">{token.symbol}</div>
@@ -75,6 +72,7 @@ export const TokenSelector = (props: {
     setToken: (token: Token) => void;
 }) => {
     const [tokens, setTokens] = useState<RubicToken[] | null>();
+    const [searchFilter, setSearchFilter] = useState("");
 
     const divRef = useRef<HTMLDivElement>(null);
     useOutsideClick([divRef], () => props.setShow?.(false));
@@ -84,9 +82,11 @@ export const TokenSelector = (props: {
             return;
         }
 
-        const tokens = await searchToken(props.selectedChain);
+        const tokens = await searchToken(props.selectedChain, searchFilter);
         setTokens(tokens);
-    }, [props.show, props.selectedChain]);
+    }, [props.show, props.selectedChain, searchFilter]);
+
+    const debouncedSearchFilter = debounce(setSearchFilter, 500);
 
     return (
         <div
@@ -143,6 +143,14 @@ export const TokenSelector = (props: {
                         <h2 className="text-2xl text-white my-3">
                             Select Token
                         </h2>
+                        <input
+                            type="text"
+                            placeholder="Search token name, symbol or address..."
+                            className="bg-slate-800 rounded border border-slate-600 focus:border-slate-300 focus:outline-none w-full py-1 px-3 mb-3"
+                            onChange={e =>
+                                debouncedSearchFilter(e.target.value)
+                            }
+                        />
                         <div className=" max-h-[calc(80vh-200px)] overflow-auto scrollbar-thin scrollbar-thumb-slate-800">
                             {tokens
                                 ? tokens.map(token => (

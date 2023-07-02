@@ -4,6 +4,7 @@ import Image from "next/image";
 import { useState } from "react";
 import { RxCaretDown } from "react-icons/rx";
 import { TokenSelector } from "./TokenSelector";
+import { TokenImage } from "./TokenImage";
 
 export const TokenInput = (props: {
     isOtherToken?: boolean;
@@ -30,12 +31,10 @@ export const TokenInput = (props: {
                 >
                     {props.token ? (
                         <div className="flex items-center gap-1">
-                            <Image
-                                className="relative"
-                                width={24}
-                                height={24}
-                                alt="logo"
+                            <TokenImage
                                 src={props.token.token.image}
+                                symbol={props.token.token.symbol}
+                                size={24}
                             />
                             <div className="flex items-end">
                                 {props.token.token.symbol}
@@ -51,7 +50,7 @@ export const TokenInput = (props: {
                         </div>
                     ) : (
                         <div className="flex items-center gap-1">
-                            <div className="w-8 h-8 bg-slate-900 rounded-full" />
+                            <div className="w-7 h-7 bg-slate-900 rounded-full" />
                             <div className="flex items-end">
                                 <div className="bg-gradient-to-r from-slate-900 to-slate-800 w-16 h-6 block rounded">
                                     &nbsp;
