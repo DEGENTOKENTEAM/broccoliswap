@@ -2,15 +2,29 @@ import Image from "next/image";
 import { classNames } from "@/helpers/classNames";
 import { useAsyncEffect } from "@/hooks/useAsyncEffect";
 import useOutsideClick from "@/hooks/useOutsideClick";
-import { Chain, RubicToken, chainsInfo } from "@/types";
+import { Chain, RubicToken, Token, chainsInfo } from "@/types";
 import { useRef, useState } from "react";
 import { ImCross } from "react-icons/im";
+import { BiLinkExternal } from "react-icons/bi";
 import { searchToken } from "@/helpers/rubic";
+import Link from "next/link";
 
-const TokenListItem = (props: { token: RubicToken }) => {
+const TokenListItem = (props: {
+    token: RubicToken;
+    selectedChain?: Chain;
+    onSelectToken: (token: Token) => void;
+}) => {
+    if (!props.selectedChain) {
+        return null;
+    }
     const token = props.token;
     return (
-        <div className="hover:bg-slate-500 p-3 rounded-xl cursor-pointer flex gap-3 items-center">
+        <div
+            className="hover:bg-slate-500 p-3 rounded-xl cursor-pointer flex gap-3 items-center"
+            onClick={() =>
+                props.onSelectToken({ chain: props.selectedChain!, token })
+            }
+        >
             <Image
                 width={32}
                 height={32}
@@ -18,7 +32,22 @@ const TokenListItem = (props: { token: RubicToken }) => {
                 alt={`Logo ${token.name}`}
             />
             <div className="flex flex-col">
-                <div className="leading-5">{token.symbol}</div>
+                <div className="flex items-center gap-3">
+                    <div className="leading-5 text-white">{token.symbol}</div>
+                    {!token.address.startsWith("0x0000") && (
+                        <Link
+                            href={`${
+                                chainsInfo[props.selectedChain].explorer
+                            }token/${token.address}`}
+                            target="_blank"
+                        >
+                            <div className="text-xs bg-slate-800 py-0.5 px-1.5 rounded flex items-center gap-1">
+                                {token.address.slice(0, 5)}...{" "}
+                                <BiLinkExternal />
+                            </div>
+                        </Link>
+                    )}
+                </div>
                 <div className="text-xs leading-5">{token.name}</div>
             </div>
         </div>
@@ -42,6 +71,7 @@ export const TokenSelector = (props: {
     setShow?: (show: boolean) => void;
     selectedChain?: Chain;
     setSelectedChain?: (chain: Chain) => void;
+    setToken: (token: Token) => void;
 }) => {
     const [tokens, setTokens] = useState<RubicToken[] | null>();
 
@@ -118,6 +148,11 @@ export const TokenSelector = (props: {
                                       <TokenListItem
                                           key={token.address}
                                           token={token}
+                                          selectedChain={props.selectedChain}
+                                          onSelectToken={(token: Token) => {
+                                              props.setToken(token);
+                                              props.setShow?.(false);
+                                          }}
                                       />
                                   ))
                                 : Array(10)

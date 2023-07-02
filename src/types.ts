@@ -25,6 +25,11 @@ export type RubicToken = {
     }
 }
 
+export type Token = {
+    chain: Chain;
+    token: RubicToken;
+}
+
 export const chainsInfo = {
     [Chain.ETH]: {
         id: 1,
@@ -32,6 +37,7 @@ export const chainsInfo = {
         symbol: 'eth',
         logo: 'eth.svg',
         rubicName: 'ethereum',
+        explorer: 'https://etherscan.io/',
     },
     [Chain.BSC]: {
         id: 56,
@@ -39,6 +45,7 @@ export const chainsInfo = {
         symbol: 'bsc',
         logo: 'bnb.svg',
         rubicName: 'binance-smart-chain',
+        explorer: 'https://bscscan.com/',
     },
     [Chain.AVAX]: {
         id: 43114,
@@ -46,5 +53,6 @@ export const chainsInfo = {
         symbol: 'avax',
         logo: 'avalanche.svg',
         rubicName: 'avalanche',
+        explorer: 'https://snowtrace.io/',
     },
 }
