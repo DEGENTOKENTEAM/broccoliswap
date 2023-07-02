@@ -1,7 +1,21 @@
+import { BLOCKCHAIN_NAME } from "rubic-sdk";
+
 export enum Chain {
     ETH = 'ETH',
     BSC = 'BSC',
     AVAX = 'AVAX',
+}
+
+export const rubicRPCEndpoints = {
+    [BLOCKCHAIN_NAME.BINANCE_SMART_CHAIN]: {
+        rpcList: ['https://bsc-dataseed.binance.org/']
+    },
+    [BLOCKCHAIN_NAME.ETHEREUM]: {
+        rpcList: ['https://eth.llamarpc.com']
+    },
+    [BLOCKCHAIN_NAME.AVALANCHE]: {
+        rpcList: ['https://avalanche-c-chain.publicnode.com']
+    }
 }
 
 export type RubicToken = {
@@ -38,6 +52,7 @@ export const chainsInfo = {
         logo: 'eth.svg',
         rubicName: 'ethereum',
         explorer: 'https://etherscan.io/',
+        rubicSdkChainName: BLOCKCHAIN_NAME.ETHEREUM,
     },
     [Chain.BSC]: {
         id: 56,
@@ -46,6 +61,7 @@ export const chainsInfo = {
         logo: 'bnb.svg',
         rubicName: 'binance-smart-chain',
         explorer: 'https://bscscan.com/',
+        rubicSdkChainName: BLOCKCHAIN_NAME.BINANCE_SMART_CHAIN,
     },
     [Chain.AVAX]: {
         id: 43114,
@@ -54,5 +70,6 @@ export const chainsInfo = {
         logo: 'avalanche.svg',
         rubicName: 'avalanche',
         explorer: 'https://snowtrace.io/',
+        rubicSdkChainName: BLOCKCHAIN_NAME.AVALANCHE,
     },
 }

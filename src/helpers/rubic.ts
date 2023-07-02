@@ -1,4 +1,10 @@
-import { Chain, chainsInfo } from "@/types";
+import { Chain, chainsInfo, rubicRPCEndpoints } from "@/types";
+import { Configuration, SDK } from "rubic-sdk";
+
+const config: Configuration = {
+    rpcProviders: rubicRPCEndpoints,
+};
+const sdk = SDK.createSDK(config);
 
 export const searchToken = async (network: Chain, filterTxt?: string) => {
     // if filter is an address, search on that instead
@@ -15,4 +21,8 @@ export const searchToken = async (network: Chain, filterTxt?: string) => {
     const data = await result.json();
 
     return data.results;
+}
+
+export const getSDK = () => {
+    return sdk;
 }

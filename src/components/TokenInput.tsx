@@ -9,6 +9,7 @@ import { toPrecision } from "@/helpers/number";
 
 export const TokenInput = (props: {
     isOtherToken?: boolean;
+    tradeLoading?: boolean;
     amount?: number;
     setInputAmount?: (amount: number) => void;
     token?: Token;
@@ -80,8 +81,12 @@ export const TokenInput = (props: {
                         />
                     ) : (
                         <div className="font-bold text-white leading-5 text-2xl">
-                            {props.amount ? (
-                                toPrecision(props.amount, 4)
+                            {!props.tradeLoading && props.amount ? (
+                                toPrecision(props.amount, 6)
+                            ) : props.tradeLoading ? (
+                                <div className="animate-pulse rounded w-24 bg-gradient-to-r from-slate-900 to-slate-950 py-1 -mb-2">
+                                    &nbsp;
+                                </div>
                             ) : (
                                 <span>&nbsp;</span>
                             )}
