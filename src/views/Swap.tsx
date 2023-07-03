@@ -32,6 +32,7 @@ export const SwapView = () => {
         const res = await calculateSwap(inputToken, outputToken, inputAmount);
         setTradeLoading(false);
         setTrade(res);
+        console.log(res)
     }, [inputToken, outputToken, inputAmount]);
 
     return (

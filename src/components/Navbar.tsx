@@ -8,6 +8,7 @@ import { SearchToken } from "./__old/SearchToken";
 import { Token } from "@/__old__types";
 import Link from "next/link";
 import { useRouter } from "next/router";
+import { ConnectKitButton } from "connectkit";
 
 const navigation = [
     { name: "Trade", href: "/trade/trade" }
@@ -28,8 +29,8 @@ export const Navbar = () => {
         <Disclosure as="nav" className="">
             {({ open }) => (
                 <>
-                    <div className="mx-auto pl-2 sm:pl-3 lg:pl-3">
-                        <div className="relative flex h-10 items-center justify-between">
+                    <div className="mx-auto">
+                        <div className="relative m-3 flex h-10 items-center justify-between">
                             <div className="flex items-center justify-center">
                                 <div className="flex flex-shrink-0 items-center">
                                     <Image
@@ -41,65 +42,23 @@ export const Navbar = () => {
                                     />
                                 </div>
                             </div>
-                            {/* 
-                            <div className="hidden lg:absolute inset-y-0 right-0 lg:flex items-center">
-                                {isConnected && address && chain ? (
-                                    <div className="flex items-center gap-2">
-                                        <div className="text-xs">
-                                            Connected as{" "}
-                                            {address.substring(0, 5)}...
-                                            {address!.substring(
-                                                address.length - 3
-                                            )}{" "}
-                                            on {chain.name}
-                                        </div>
-                                        <button
-                                            className="bg-zinc-800 p-2 text-orange-500 hover:text-orange-600 hover:bg-orange-900 focus:outline-none focus:ring-2 focus:ring-white focus:ring-offset-2 focus:ring-offset-gray-800"
-                                            onClick={() => disconnect()}
-                                        >
-                                            Disconnect
-                                        </button>
-                                    </div>
-                                ) : (
-                                    <button
-                                        type="button"
-                                        onClick={() => connect()}
-                                        className="bg-zinc-800 p-2 text-orange-500 hover:text-orange-600 hover:bg-orange-900 focus:outline-none focus:ring-2 focus:ring-white focus:ring-offset-2 focus:ring-offset-gray-800"
-                                    >
-                                        <span>Connect wallet</span>
-                                    </button>
-                                )}
-                            </div> */}
+                            <ConnectKitButton
+                                label="Connect"
+                                options={{ initialChainId: 0 }}
+                                showAvatar={false}
+                                showBalance={true}
+                                customTheme={{
+                                    "--ck-connectbutton-background": "#030616",
+                                    "--ck-connectbutton-active-background":
+                                        "#030616",
+                                    "--ck-connectbutton-hover-background":
+                                        "#111729",
+                                    "--ck-connectbutton-color": "#ffffff",
+                                    "--ck-connectbutton-border-radius": "8px",
+                                    "--ck-font-family": "Ysabeau Infant"
+                                }}
+                            />
                         </div>
-                    </div>
-
-                    <div className="flex lg:absolute inset-y-0 right-0 lg:hidden items-center">
-                        {isConnected && address && chain ? (
-                            <div className="flex w-full items-center gap-2 ml-3">
-                                <div className="text-xs flex-grow">
-                                    Connected as {address.substring(0, 5)}...
-                                    {address!.substring(
-                                        address.length - 3
-                                    )} on {chain.name}
-                                </div>
-                                <button
-                                    className="bg-zinc-800 p-2 text-orange-500 hover:text-orange-600 hover:bg-orange-900 focus:outline-none focus:ring-2 focus:ring-white focus:ring-offset-2 focus:ring-offset-gray-800"
-                                    onClick={() => disconnect()}
-                                >
-                                    Disconnect
-                                </button>
-                            </div>
-                        ) : (
-                            <div className="flex w-full justify-end">
-                                <button
-                                    type="button"
-                                    onClick={() => connect()}
-                                    className="bg-zinc-800 p-2  text-orange-500 hover:text-orange-600 hover:bg-orange-900 focus:outline-none focus:ring-2 focus:ring-white focus:ring-offset-2 focus:ring-offset-gray-800"
-                                >
-                                    <span>Connect wallet</span>
-                                </button>
-                            </div>
-                        )}
                     </div>
 
                     <Disclosure.Panel className="sm:hidden">
