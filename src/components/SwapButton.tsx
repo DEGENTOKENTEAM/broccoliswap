@@ -1,3 +1,4 @@
+import { blockchainNameToChainID, chainIdToBlockchainName } from "@/helpers/chain";
 import { classNames } from "@/helpers/classNames";
 import { calculateSwap } from "@/helpers/swap";
 import { chainsInfo } from "@/types";
@@ -12,28 +13,6 @@ import {
     useNetwork,
     useSwitchNetwork
 } from "wagmi";
-
-const chainIdToBlockchainName = (id?: number) => {
-    const chain = Object.values(chainsInfo).find(info => info.id === id);
-
-    if (!chain) {
-        throw Error("Could not find chain");
-    }
-
-    return chain.rubicSdkChainName;
-};
-
-const blockchainNameToChainID = (blockchain?: string) => {
-    const chain = Object.values(chainsInfo).find(
-        info => info.rubicSdkChainName === blockchain
-    );
-
-    if (!chain) {
-        throw Error("Could not find chain");
-    }
-
-    return chain.id;
-};
 
 const tradeStatusToButtonStatus = (
     isConnected: boolean,

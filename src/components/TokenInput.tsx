@@ -1,7 +1,7 @@
 import { classNames } from "@/helpers/classNames";
 import { Chain, Token, chainsInfo } from "@/types";
 import Image from "next/image";
-import { useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { RxCaretDown } from "react-icons/rx";
 import { TokenSelector } from "./TokenSelector";
 import { TokenImage } from "./TokenImage";
@@ -11,6 +11,7 @@ export const TokenInput = (props: {
     isOtherToken?: boolean;
     tradeLoading?: boolean;
     amount?: number;
+    externalAmount?: number;
     setInputAmount?: (amount: number) => void;
     token?: Token;
     setToken: (token: Token) => void;
@@ -18,6 +19,15 @@ export const TokenInput = (props: {
     const [showSelector, setShowSelector] = useState(false);
 
     const [selectedChain, setSelectedChain] = useState<Chain>();
+
+    const inputRef = useRef<HTMLInputElement>(null);
+
+    useEffect(() => {
+        if (!inputRef.current || !props.externalAmount) {
+            return;
+        }
+        inputRef.current.value = `${props.externalAmount}`;
+    }, [props.externalAmount]);
 
     return (
         <>
@@ -72,6 +82,7 @@ export const TokenInput = (props: {
                         <input
                             className="text-right font-bold text-white leading-5 text-2xl bg-slate-900 ring-0 border-0 focus:outline-none -my-1.5"
                             type="text"
+                            ref={inputRef}
                             placeholder="Amount..."
                             onChange={e =>
                                 props.setInputAmount?.(
