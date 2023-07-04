@@ -44,15 +44,18 @@ export const Navbar = () => {
                             </div>
                             <ConnectKitButton
                                 label="Connect"
-                                options={{ initialChainId: 0 }}
                                 showAvatar={false}
                                 showBalance={true}
                                 customTheme={{
+                                    "--ck-connectbutton-balance-background":
+                                        "#4A5567",
+                                    "--ck-connectbutton-balance-hover-background":
+                                        "#4A5567",
                                     "--ck-connectbutton-background": "#030616",
                                     "--ck-connectbutton-active-background":
-                                        "#030616",
+                                        "#4A5567",
                                     "--ck-connectbutton-hover-background":
-                                        "#111729",
+                                        "#4A5567",
                                     "--ck-connectbutton-color": "#ffffff",
                                     "--ck-connectbutton-border-radius": "8px",
                                     "--ck-font-family": "Ysabeau Infant"

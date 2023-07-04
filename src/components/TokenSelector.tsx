@@ -2,7 +2,7 @@ import Image from "next/image";
 import { classNames } from "@/helpers/classNames";
 import { useAsyncEffect } from "@/hooks/useAsyncEffect";
 import useOutsideClick from "@/hooks/useOutsideClick";
-import { Chain, RubicToken, Token, chainsInfo } from "@/types";
+import { Chain, NULL_ADDRESS, RubicToken, Token, chainsInfo } from "@/types";
 import { useRef, useState } from "react";
 import { ImCross } from "react-icons/im";
 import { BiLinkExternal } from "react-icons/bi";
@@ -10,15 +10,28 @@ import { searchToken } from "@/helpers/rubic";
 import Link from "next/link";
 import { debounce } from "@/helpers/debounce";
 import { TokenImage } from "./TokenImage";
+import { useAccount, useBalance } from "wagmi";
+import { toPrecision } from "@/helpers/number";
 
 const TokenListItem = (props: {
     token: RubicToken;
     selectedChain?: Chain;
     onSelectToken: (token: Token) => void;
 }) => {
+    const { address } = useAccount();
+    const { data: balanceData } = useBalance({
+        address,
+        token:
+            props.token.address !== NULL_ADDRESS
+                ? props.token.address as `0x${string}`
+                : undefined,
+        chainId: props.selectedChain && chainsInfo[props.selectedChain].id
+    });
+
     if (!props.selectedChain) {
         return null;
     }
+
     const token = props.token;
     return (
         <div
@@ -28,7 +41,7 @@ const TokenListItem = (props: {
             }
         >
             <TokenImage src={token.image} symbol={token.symbol} />
-            <div className="flex flex-col">
+            <div className="flex flex-col flex-grow">
                 <div className="flex items-center gap-3">
                     <div className="leading-5 text-white">{token.symbol}</div>
                     {!token.address.startsWith("0x0000") && (
@@ -48,6 +61,10 @@ const TokenListItem = (props: {
                 </div>
                 <div className="text-xs leading-5">{token.name}</div>
             </div>
+            {balanceData?.value.gt(0) && <div className="flex flex-col gap-0 text-right">
+                <div className="text-white text-lg leading-5">{toPrecision(parseFloat(balanceData?.formatted), 4)}</div>
+                <div className="text-sm">{props.token.usdPrice && `$${toPrecision(parseFloat(balanceData?.formatted) * parseFloat(props.token.usdPrice), 4)}`}</div>
+            </div>}
         </div>
     );
 };

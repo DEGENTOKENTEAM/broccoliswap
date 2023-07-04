@@ -49,9 +49,9 @@ const calculateBestTrade = async (
     return bestTrade.trade || "Something went wrong";
 };
 
-const calculate = async (inputToken: Token, outputToken: Token, inputAmount: number, callback: Function) => {
+const calculate = async (inputToken: Token, outputToken: Token, inputAmount: number, slippage: number, callback: Function) => {
     const trade = await calculateBestTrade(
-        200,
+        slippage,
         { blockchain: chainsInfo[inputToken.chain].rubicSdkChainName, address: inputToken.token.address },
         inputAmount,
         { blockchain: chainsInfo[outputToken.chain].rubicSdkChainName, address: outputToken.token.address }
@@ -61,8 +61,8 @@ const calculate = async (inputToken: Token, outputToken: Token, inputAmount: num
 
 const debouncedCalculate = debounce(calculate, 500);
 
-export const calculateSwap = (inputToken: Token, outputToken: Token, inputAmount: number): Promise<ReturnType<typeof calculateBestTrade>> => {
+export const calculateSwap = (inputToken: Token, outputToken: Token, inputAmount: number, slippage: number): Promise<ReturnType<typeof calculateBestTrade>> => {
     return new Promise(resolve => {
-        debouncedCalculate(inputToken, outputToken, inputAmount, resolve)
+        debouncedCalculate(inputToken, outputToken, inputAmount, slippage, resolve)
     });
 }

@@ -1,5 +1,5 @@
 import { classNames } from "@/helpers/classNames";
-import { Chain, Token, chainsInfo } from "@/types";
+import { Chain, NULL_ADDRESS, Token, chainsInfo } from "@/types";
 import Image from "next/image";
 import { useEffect, useRef, useState } from "react";
 import { RxCaretDown } from "react-icons/rx";
@@ -15,10 +15,10 @@ export const TokenInput = (props: {
     setInputAmount?: (amount: number) => void;
     token?: Token;
     setToken: (token: Token) => void;
+    selectedChain?: Chain;
+    setSelectedChain?: (chain: Chain) => void;
 }) => {
     const [showSelector, setShowSelector] = useState(false);
-
-    const [selectedChain, setSelectedChain] = useState<Chain>();
 
     const inputRef = useRef<HTMLInputElement>(null);
 
@@ -45,18 +45,28 @@ export const TokenInput = (props: {
                 >
                     {props.token ? (
                         <div className="flex items-center gap-1">
-                            <TokenImage
-                                src={props.token.token.image}
-                                symbol={props.token.token.symbol}
-                                size={24}
-                            />
+                            <div className="relative">
+                                <TokenImage
+                                    src={props.token.token.image}
+                                    symbol={props.token.token.symbol}
+                                    size={24}
+                                />
+
+                                {props.token.token.address !== NULL_ADDRESS && (
+                                    <div className="absolute left-2 top-2">
+                                        <TokenImage
+                                            src={`/chains/${
+                                                chainsInfo[props.token.chain]
+                                                    .logo
+                                            }`}
+                                            symbol={props.token.token.symbol}
+                                            size={14}
+                                        />
+                                    </div>
+                                )}
+                            </div>
                             <div className="flex items-end">
                                 {props.token.token.symbol}
-                                <div className="font-normal text-sm">
-                                    {chainsInfo[
-                                        props.token.chain
-                                    ].symbol.toLowerCase()}
-                                </div>
                             </div>
                             <div>
                                 <RxCaretDown />
@@ -123,8 +133,8 @@ export const TokenInput = (props: {
             <TokenSelector
                 show={showSelector}
                 setShow={setShowSelector}
-                selectedChain={selectedChain}
-                setSelectedChain={setSelectedChain}
+                selectedChain={props.selectedChain}
+                setSelectedChain={props.setSelectedChain}
                 setToken={props.setToken}
             />
         </>

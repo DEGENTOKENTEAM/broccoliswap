@@ -6,6 +6,8 @@ export enum Chain {
     AVAX = 'AVAX',
 }
 
+export const NULL_ADDRESS = '0x0000000000000000000000000000000000000000'
+
 export const rubicRPCEndpoints = {
     [BLOCKCHAIN_NAME.BINANCE_SMART_CHAIN]: {
         rpcList: ['https://bsc-dataseed.binance.org/']

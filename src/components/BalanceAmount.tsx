@@ -1,4 +1,5 @@
 import { toPrecision } from "@/helpers/number";
+import { NULL_ADDRESS } from "@/types";
 import { useAccount, useBalance } from "wagmi";
 
 export const BalanceAmount = (props: { tokenAddress?: string; chainId?: number; precision?: number; setInputBalance?: (balance: number) => void }) => {
@@ -6,7 +7,7 @@ export const BalanceAmount = (props: { tokenAddress?: string; chainId?: number; 
     const { isLoading: balanceIsLoading, data: balanceData } = useBalance({
         address,
         token:
-            props.tokenAddress !== "0x0000000000000000000000000000000000000000"
+            props.tokenAddress !== NULL_ADDRESS
                 ? props.tokenAddress as `0x${string}`
                 : undefined,
         chainId: props.chainId
