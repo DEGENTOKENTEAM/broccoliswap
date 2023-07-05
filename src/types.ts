@@ -48,6 +48,7 @@ export type Token = {
 
 export const chainsInfo = {
     [Chain.ETH]: {
+        chain: Chain.ETH,
         id: 1,
         name: 'Ethereum',
         symbol: 'eth',
@@ -57,6 +58,7 @@ export const chainsInfo = {
         rubicSdkChainName: BLOCKCHAIN_NAME.ETHEREUM,
     },
     [Chain.BSC]: {
+        chain: Chain.BSC,
         id: 56,
         name: 'Binance Smart Chain',
         symbol: 'bsc',
@@ -66,6 +68,7 @@ export const chainsInfo = {
         rubicSdkChainName: BLOCKCHAIN_NAME.BINANCE_SMART_CHAIN,
     },
     [Chain.AVAX]: {
+        chain: Chain.AVAX,
         id: 43114,
         name: 'Avalanche',
         symbol: 'avax',

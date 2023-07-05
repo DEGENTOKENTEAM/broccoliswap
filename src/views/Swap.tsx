@@ -13,8 +13,9 @@ import { BalanceAmount } from '@/components/BalanceAmount'
 import { useAccount } from 'wagmi'
 import { SlippageSelector } from '@/components/SlippageSelector'
 import { getSDK, searchToken } from '@/helpers/rubic'
+import { SwapHistory } from '@/components/SwapHistory'
 
-export const SwapView = () => {
+export const SwapView = (props: { showRecentTrades?: boolean, setShowRecentTrades?: (show: boolean) => void }) => {
     const [inputToken, setInputToken] = useState<Token | undefined>();
     const [inputChain, setInputChain] = useState<Chain>()
     const [outputToken, setOutputToken] = useState<Token | undefined>();
@@ -158,7 +159,7 @@ export const SwapView = () => {
                         amount={(trade as (OnChainTrade | CrossChainTrade))?.to?.tokenAmount?.toNumber()}
                     />
 
-                    <SwapButton tradeLoading={tradeLoading} trade={trade} />
+                    <SwapButton tradeLoading={tradeLoading} trade={trade} setShowSwapHistory={props.setShowRecentTrades} inputToken={inputToken} outputToken={outputToken} />
                 </div>
             </div>
 
@@ -167,6 +168,11 @@ export const SwapView = () => {
                 setShow={setShowSlippageSelector}
                 slippage={slippage}
                 setSlippage={setSlippage}
+            />
+
+            <SwapHistory
+                show={props.showRecentTrades}
+                setShow={props.setShowRecentTrades}
             />
         </>
     )

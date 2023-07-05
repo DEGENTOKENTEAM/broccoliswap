@@ -1,8 +1,9 @@
-import { blockchainNameToChainID, chainIdToBlockchainName } from "@/helpers/chain";
+import { blockchainNameToChain, blockchainNameToChainID, chainIdToBlockchainName } from "@/helpers/chain";
 import { classNames } from "@/helpers/classNames";
 import { calculateSwap } from "@/helpers/swap";
+import { SwapType, putHistory } from "@/helpers/txHistory";
 import { useAsyncEffect } from "@/hooks/useAsyncEffect";
-import { NULL_ADDRESS, chainsInfo } from "@/types";
+import { NULL_ADDRESS, Token, chainsInfo } from "@/types";
 import { waitForTransaction } from "@wagmi/core";
 import { ConnectKitButton } from "connectkit";
 import Image from "next/image";
@@ -76,11 +77,16 @@ const SwitchNetworkButton = (props: { targetChainId?: number }) => {
     );
 };
 
-const MaybeSwapButton = (props: {trade: OnChainTrade | CrossChainTrade}) => {
+const MaybeSwapButton = (props:{
+    trade: OnChainTrade | CrossChainTrade,
+    setShowSwapHistory?: (show: boolean) => void ,
+    inputToken?: Token,
+    outputToken?: Token
+}) => {
     const { address } = useAccount();
     
-    const [needApprove, setNeedApprove] = useState<boolean | null>(null)
     const [approveTxHash, setApproveTxHash] = useState('')
+    const [isSwapping, setIsSwapping] = useState(false)
     const [buttonAction, setButtonAction] = useState<{ text: string, action: Function } | undefined>()
 
     const { isLoading: balanceIsLoading, data: balanceData } = useBalance({
@@ -91,7 +97,7 @@ const MaybeSwapButton = (props: {trade: OnChainTrade | CrossChainTrade}) => {
                 ? (props.trade as OnChainTrade | CrossChainTrade | undefined)
                       ?.from?.address as `0x${string}`
                 : undefined,
-        chainId: blockchainNameToChainID((props.trade as OnChainTrade | CrossChainTrade | undefined)?.from.blockchain)
+        chainId: blockchainNameToChainID(props.trade?.from.blockchain)
     });
 
     const { data: approveTxLoaded, isLoading: approveTxLoading } = useWaitForTransaction({
@@ -99,20 +105,32 @@ const MaybeSwapButton = (props: {trade: OnChainTrade | CrossChainTrade}) => {
     })
 
     const doSwap = async () => {
-        // set swapping
+        setIsSwapping(true);
         const tx = await props.trade.swap();
-        // set swapped
+        setIsSwapping(false);
 
-        // set TX done modal thing
-        console.log(tx)
+        putHistory({
+            type: SwapType.ON_CHAIN,
+            swapTx: tx,
+            fromChain: blockchainNameToChain(props.trade.from.blockchain).chain,
+            toChain: blockchainNameToChain(props.trade.to.blockchain).chain,
+            fromSymbol: props.trade.from.symbol,
+            fromAddress: props.trade.from.address,
+            fromLogo: props.inputToken?.token.image || '',
+            toSymbol: props.trade.to.symbol,
+            toAddress: props.trade.to.address,
+            fromAmount: props.trade.from.tokenAmount.toNumber(),
+            toAmount: props.trade.to.tokenAmount.toNumber(),
+            toLogo: props.outputToken?.token.image || '',
+        });
+
+        props.setShowSwapHistory?.(true);
     }
 
     useAsyncEffect(async () => {
         setButtonAction(undefined)
 
         const _needApprove = await props.trade.needApprove();
-        console.log(_needApprove)
-        setNeedApprove(_needApprove);
 
         if (_needApprove) {
             return setButtonAction({
@@ -151,6 +169,18 @@ const MaybeSwapButton = (props: {trade: OnChainTrade | CrossChainTrade}) => {
         )
     }
 
+    if (isSwapping) {
+        return (<div
+                className={classNames(
+                    "w-full mt-10 px-3 py-3 rounded-xl my-3 text-xl flex items-center justify-center text-orange-600 font-bold bg-slate-950 border-slate-950 border-2  transition-colors",
+                    "cursor-not-allowed animate-pulse"
+                )}
+            >
+                Executing swap...
+            </div>
+        )
+    }
+
     if (balanceData && props.trade.from.tokenAmount.toNumber() > parseFloat(balanceData.formatted)) {
         return (
             <div
@@ -184,6 +214,9 @@ const MaybeSwapButton = (props: {trade: OnChainTrade | CrossChainTrade}) => {
 export const SwapButton = (props: {
     tradeLoading: boolean;
     trade?: Awaited<ReturnType<typeof calculateSwap>>;
+    setShowSwapHistory?: (show: boolean) => void;
+    inputToken?: Token,
+    outputToken?: Token
 }) => {
     const { isConnected } = useAccount();
     const { chain } = useNetwork();
@@ -237,7 +270,7 @@ export const SwapButton = (props: {
 
     if (buttonStatus.trade) {
         return (
-            <MaybeSwapButton trade={buttonStatus.trade} />
+            <MaybeSwapButton inputToken={props.inputToken} outputToken={props.outputToken} trade={buttonStatus.trade} setShowSwapHistory={props.setShowSwapHistory} />
         );
     }
 

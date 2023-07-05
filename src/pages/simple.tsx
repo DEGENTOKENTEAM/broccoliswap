@@ -7,7 +7,7 @@ import "allotment/dist/style.css";
 import NonSSR from '@/components/NonSSR';
 
 
-export default function Home(props: { activeToken: Token }) {
+export default function Home(props: { activeToken: Token, showRecentTrades?: boolean, setShowRecentTrades?: (show: boolean) => void }) {
   const [ready, setReady] = useState(false)
 
   useEffect(() => setReady(true), [])
@@ -26,7 +26,7 @@ export default function Home(props: { activeToken: Token }) {
       </Head>
       <NonSSR>
         <div className="w-full max-w-2xl mx-auto my-10 flex justify-center items-center">
-          <SwapView />
+          <SwapView  showRecentTrades={props.showRecentTrades} setShowRecentTrades={props.setShowRecentTrades}  />
         </div>
       </NonSSR>
     </>

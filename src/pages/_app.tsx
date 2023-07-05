@@ -35,14 +35,15 @@ const fetchDGNXToken = async () => {
 }
 
 export default function App({ Component, pageProps, router }: AppProps) {
+  const [showRecentTrades, setShowRecentTrades] = useState(false);
 
   return (
     <NonSSR>
       <WagmiConfig client={client}>
         <ConnectKitProvider options={{initialChainId:0}}>
         <main className="min-h-screen grid grid-rows-[min-content_1fr_min-content]">
-          <Navbar />
-          <Component {...pageProps} />
+          <Navbar onClickRecentTrades={() => setShowRecentTrades(true)} />
+          <Component {...pageProps} showRecentTrades={showRecentTrades} setShowRecentTrades={setShowRecentTrades} />
           <BottomBar />
         </main>
         </ConnectKitProvider>

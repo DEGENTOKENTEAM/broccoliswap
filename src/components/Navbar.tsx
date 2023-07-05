@@ -15,7 +15,7 @@ const navigation = [
     // { name: 'Portfolio', href: '/portfolio' },
 ];
 
-export const Navbar = () => {
+export const Navbar = (props: { onClickRecentTrades?: () => void }) => {
     const router = useRouter();
 
     const { address, isConnected } = useAccount();
@@ -30,9 +30,9 @@ export const Navbar = () => {
             {({ open }) => (
                 <>
                     <div className="mx-auto">
-                        <div className="relative m-3 flex h-10 items-center justify-between">
-                            <div className="flex items-center justify-center">
-                                <div className="flex flex-shrink-0 items-center">
+                        <div className="relative m-3 flex h-10 items-center justify-between gap-3">
+                            <div className="flex flex-grow items-start justify-start">
+                                <div className="flex flex-shrink-0 items-start">
                                     <Image
                                         src="/swap.png"
                                         alt="Swap image"
@@ -42,16 +42,26 @@ export const Navbar = () => {
                                     />
                                 </div>
                             </div>
+                            <div className="flex-shrink-0 items-center">
+                                <button
+                                    onClick={() =>
+                                        props.onClickRecentTrades?.()
+                                    }
+                                    className="bg-slate-600 px-3 py-2 rounded-xl text-white hover:bg-slate-400 transition-colors"
+                                >
+                                    Recent Trades
+                                </button>
+                            </div>
                             <ConnectKitButton
                                 label="Connect"
                                 showAvatar={false}
                                 showBalance={true}
                                 customTheme={{
                                     "--ck-connectbutton-balance-background":
-                                        "#4A5567",
+                                        "#030616",
                                     "--ck-connectbutton-balance-hover-background":
                                         "#4A5567",
-                                    "--ck-connectbutton-background": "#030616",
+                                    "--ck-connectbutton-background": "#4A5567",
                                     "--ck-connectbutton-active-background":
                                         "#4A5567",
                                     "--ck-connectbutton-hover-background":
