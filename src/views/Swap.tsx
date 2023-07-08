@@ -221,7 +221,7 @@ export const SwapView = (props: { showRecentTrades?: boolean, setShowRecentTrade
                         </div>
                         <Link
                             target="_blank"
-                            href={`${chainsInfo[outputChain].explorer}tx/${swapSuccessTx}`}
+                            href={`${chainsInfo[inputToken?.chain !== outputToken?.chain ? inputChain! : outputChain!].explorer}tx/${swapSuccessTx}`}
                             className="hover:underline bg-green-600 p-3 rounded-xl text-white mt-2 cursor-pointer hover:bg-green-800 font-bold transition-colors block text-center"
                         >View on explorer <GoLinkExternal className="inline" /></Link>
                         {inputToken?.chain !== outputToken?.chain && <div onClick={() => props.setShowRecentTrades?.(true)} className="bg-green-600 p-3 rounded-xl text-white mt-2 cursor-pointer hover:bg-green-800 transition-colors font-bold text-center">View Bridge Status</div>}
