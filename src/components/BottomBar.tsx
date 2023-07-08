@@ -48,8 +48,8 @@ const DGNXPrice = () => {
                     progress.click();
                 }}
                 className="radial-progress text-orange-600 mr-3 cursor-pointer"
-                // @ts-ignore
                 style={{
+                    // @ts-ignore
                     "--value": progress.progress * 100,
                     "--size": "1.5rem"
                 }}
@@ -71,7 +71,10 @@ const DGNXPrice = () => {
 
 export const BottomBar = () => {
     return (
-        <Disclosure as="nav" className="">
+        <Disclosure
+            as="nav"
+            className="fixed bottom-0 w-full mt-10 bg-slate-950"
+        >
             {({ open }) => (
                 <>
                     <div className="mx-auto pl-2 sm:pl-3 lg:pl-3">
@@ -81,7 +84,7 @@ export const BottomBar = () => {
                                     <DGNXPrice />
                                 </div>
                                 <div className="flex flex-grow"></div>
-                                <div className="flex text-slate-200 items-center px-2 h-full text-xs">
+                                <div className="hidden sm:flex text-slate-200 items-center px-2 h-full text-xs">
                                     Powered by
                                     <a
                                         href="https://coingecko.com/"

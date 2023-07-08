@@ -90,7 +90,7 @@ export const TokenInput = (props: {
                 <div className="flex flex-col justify-end items-end gap-1">
                     {props.setInputAmount ? (
                         <input
-                            className="text-right font-bold text-white leading-5 text-2xl bg-slate-900 ring-0 border-0 focus:outline-none -my-1.5"
+                            className="w-32 sm:w-full text-right font-bold text-white leading-5 text-2xl bg-slate-900 ring-0 border-0 focus:outline-none -my-1.5"
                             type="text"
                             ref={inputRef}
                             placeholder="Amount..."

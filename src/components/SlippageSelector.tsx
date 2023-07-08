@@ -8,10 +8,13 @@ export const SlippageSelector = (props: {
     setShow?: (show: boolean) => void;
     slippage?: number;
     setSlippage?: (slippage: number) => void;
+    tokenTax?: number;
 }) => {
     const divRef = useRef<HTMLDivElement>(null);
     const inputRef = useRef<HTMLInputElement>(null);
     useOutsideClick([divRef], () => props.setShow?.(false));
+
+    const tokenTax = props.tokenTax || 0;
 
     const onSetSlippage = (slippage?: number) => {
         if (!slippage) {
@@ -39,24 +42,40 @@ export const SlippageSelector = (props: {
                         onClick={() => props.setShow?.(false)}
                     />
                 </div>
+                {props.slippage && props.slippage < tokenTax && (
+                    <div className="bg-yellow-400 border-2 border-yellow-500 p-3 rounded-xl text-black my-3">
+                        The slippage you have selected is less than what you
+                        will need for token taxes. This means the transaction
+                        will most likely fail. Please make sure the slippage
+                        includes all token taxes (which is {tokenTax}
+                        %). Suggested taxes are below.
+                    </div>
+                )}
+                {props.slippage && props.slippage - tokenTax > 10 && (
+                    <div className="bg-yellow-400 border-2 border-yellow-500 p-3 rounded-xl text-black my-3">
+                        You have selected a very high slippage, even when
+                        accounting for the token taxes. Please make sure you
+                        know what you are doing!
+                    </div>
+                )}
                 <div className="flex gap-2">
                     <div
                         className="bg-slate-800 hover:bg-slate-600 transition-colors px-3 py-1 rounded-full cursor-pointer"
-                        onClick={() => onSetSlippage(1)}
+                        onClick={() => onSetSlippage(1 + tokenTax)}
                     >
-                        1%
+                        {1 + tokenTax}%
                     </div>
                     <div
                         className="bg-slate-800 hover:bg-slate-600 transition-colors px-3 py-1 rounded-full cursor-pointer"
-                        onClick={() => onSetSlippage(2)}
+                        onClick={() => onSetSlippage(2 + tokenTax)}
                     >
-                        2%
+                        {2 + tokenTax}%
                     </div>
                     <div
                         className="bg-slate-800 hover:bg-slate-600 transition-colors px-3 py-1 rounded-full cursor-pointer"
-                        onClick={() => onSetSlippage(4)}
+                        onClick={() => onSetSlippage(4 + tokenTax)}
                     >
-                        4%
+                        {4 + tokenTax}%
                     </div>
                     <div className="flex">
                         <input

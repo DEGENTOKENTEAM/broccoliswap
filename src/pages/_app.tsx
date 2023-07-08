@@ -27,13 +27,6 @@ const client = createClient({
     provider
   })
 
-
-const fetchDGNXToken = async () => {
-  const result = await fetch(`https://tokens.rubic.exchange/api/v1/tokens?symbol=dgnx&networks=avalanche&pageSize=1`)
-  const data = await result.json()
-  return data.results[0];
-}
-
 export default function App({ Component, pageProps, router }: AppProps) {
   const [showRecentTrades, setShowRecentTrades] = useState(false);
 
@@ -41,7 +34,7 @@ export default function App({ Component, pageProps, router }: AppProps) {
     <NonSSR>
       <WagmiConfig client={client}>
         <ConnectKitProvider options={{initialChainId:0}}>
-        <main className="min-h-screen grid grid-rows-[min-content_1fr_min-content]">
+        <main className=" ">
           <Navbar onClickRecentTrades={() => setShowRecentTrades(true)} />
           <Component {...pageProps} showRecentTrades={showRecentTrades} setShowRecentTrades={setShowRecentTrades} />
           <BottomBar />

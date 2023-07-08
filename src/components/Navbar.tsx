@@ -16,22 +16,24 @@ const navigation = [
 ];
 
 export const Navbar = (props: { onClickRecentTrades?: () => void }) => {
-    const router = useRouter();
-
-    const { address, isConnected } = useAccount();
-    const { chain } = useNetwork();
-    const { connect } = useConnect({
-        connector: new InjectedConnector()
-    });
-    const { disconnect } = useDisconnect();
-
     return (
-        <Disclosure as="nav" className="">
+        <Disclosure as="nav" className="absolute top-0 w-full">
             {({ open }) => (
                 <>
                     <div className="mx-auto">
+                        <div className="flex sm:hidden mt-3 flex-grow items-center justify-center">
+                            <div className="flex flex-shrink-0 items-center">
+                                <Image
+                                    src="/swap.png"
+                                    alt="Swap image"
+                                    unoptimized
+                                    width="25"
+                                    height="25"
+                                />
+                            </div>
+                        </div>
                         <div className="relative m-3 flex h-10 items-center justify-between gap-3">
-                            <div className="flex flex-grow items-start justify-start">
+                            <div className="hidden sm:flex flex-grow items-start justify-start">
                                 <div className="flex flex-shrink-0 items-start">
                                     <Image
                                         src="/swap.png"
@@ -73,31 +75,6 @@ export const Navbar = (props: { onClickRecentTrades?: () => void }) => {
                             />
                         </div>
                     </div>
-
-                    <Disclosure.Panel className="sm:hidden">
-                        <div className="space-y-1 px-2 pt-2 pb-3">
-                            {navigation.map(item => (
-                                <Disclosure.Button
-                                    key={item.name}
-                                    as={Link}
-                                    href={item.href}
-                                    className={classNames(
-                                        router.asPath.startsWith(item.href)
-                                            ? "bg-zinc-800 text-white"
-                                            : "text-gray-300 hover:bg-zinc-700 hover:text-white",
-                                        "block px-3 py-2 text-base font-medium"
-                                    )}
-                                    aria-current={
-                                        router.asPath.startsWith(item.href)
-                                            ? "page"
-                                            : undefined
-                                    }
-                                >
-                                    {item.name}
-                                </Disclosure.Button>
-                            ))}
-                        </div>
-                    </Disclosure.Panel>
                 </>
             )}
         </Disclosure>

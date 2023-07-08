@@ -1,5 +1,6 @@
 import { blockchainNameToChain, blockchainNameToChainID, chainIdToBlockchainName } from "@/helpers/chain";
 import { classNames } from "@/helpers/classNames";
+import { toPrecision } from "@/helpers/number";
 import { calculateSwap } from "@/helpers/swap";
 import { SwapType, putHistory } from "@/helpers/txHistory";
 import { useAsyncEffect } from "@/hooks/useAsyncEffect";
@@ -9,7 +10,7 @@ import { ConnectKitButton } from "connectkit";
 import Image from "next/image";
 import { useState } from "react";
 import { RxCaretDown } from "react-icons/rx";
-import { CrossChainTrade, OnChainTrade } from "rubic-sdk";
+import { CrossChainTrade, OnChainTrade, UserRejectError } from "rubic-sdk";
 import {
     useAccount,
     useBalance,
@@ -79,7 +80,7 @@ const SwitchNetworkButton = (props: { targetChainId?: number }) => {
 
 const MaybeSwapButton = (props:{
     trade: OnChainTrade | CrossChainTrade,
-    setShowSwapHistory?: (show: boolean) => void ,
+    onSwapDone?: (show: boolean) => void ,
     inputToken?: Token,
     outputToken?: Token
 }) => {
@@ -87,6 +88,7 @@ const MaybeSwapButton = (props:{
     
     const [approveTxHash, setApproveTxHash] = useState('')
     const [isSwapping, setIsSwapping] = useState(false)
+    const [swapError, setSwapError] = useState(false)
     const [buttonAction, setButtonAction] = useState<{ text: string, action: Function } | undefined>()
 
     const { isLoading: balanceIsLoading, data: balanceData } = useBalance({
@@ -106,25 +108,46 @@ const MaybeSwapButton = (props:{
 
     const doSwap = async () => {
         setIsSwapping(true);
-        const tx = await props.trade.swap();
-        setIsSwapping(false);
+        try {
+            const tx = await props.trade.swap();
+            setIsSwapping(false);
 
-        putHistory({
-            type: SwapType.ON_CHAIN,
-            swapTx: tx,
-            fromChain: blockchainNameToChain(props.trade.from.blockchain).chain,
-            toChain: blockchainNameToChain(props.trade.to.blockchain).chain,
-            fromSymbol: props.trade.from.symbol,
-            fromAddress: props.trade.from.address,
-            fromLogo: props.inputToken?.token.image || '',
-            toSymbol: props.trade.to.symbol,
-            toAddress: props.trade.to.address,
-            fromAmount: props.trade.from.tokenAmount.toNumber(),
-            toAmount: props.trade.to.tokenAmount.toNumber(),
-            toLogo: props.outputToken?.token.image || '',
-        });
+            const data = {
+                swapTx: tx,
+                fromChain: blockchainNameToChain(props.trade.from.blockchain).chain,
+                toChain: blockchainNameToChain(props.trade.to.blockchain).chain,
+                fromSymbol: props.trade.from.symbol,
+                fromAddress: props.trade.from.address,
+                fromLogo: props.inputToken?.token.image || '',
+                toSymbol: props.trade.to.symbol,
+                toAddress: props.trade.to.address,
+                fromAmount: props.trade.from.tokenAmount.toNumber(),
+                toAmount: props.trade.to.tokenAmount.toNumber(),
+                toLogo: props.outputToken?.token.image || '',
+            }
+            
+            // @ts-expect-error typeguard for cross chain trades
+            if (props.trade?.bridgeType) {
+                // @ts-expect-error typeguard for cross chain trades
+                data.bridge = props.trade.type
+                // @ts-expect-error typeguard for cross chain trades
+                data.bridgeId = props.trade.id
+                // @ts-expect-error typeguard for cross chain trades
+                data.bridgeType = props.trade.bridgeType
+            }
 
-        props.setShowSwapHistory?.(true);
+            putHistory(data);
+
+            props.onSwapDone?.(true);
+        } catch (e) {
+            if (e instanceof UserRejectError) {
+                setIsSwapping(false);
+                return;
+            }
+
+            setSwapError(true)
+            setIsSwapping(false);
+        }
     }
 
     useAsyncEffect(async () => {
@@ -144,6 +167,26 @@ const MaybeSwapButton = (props:{
             action: doSwap
         })
     }, [props.trade, approveTxLoaded])
+
+    if (swapError) {
+        const tradeAmount = props.trade?.from?.tokenAmount?.toNumber() * parseFloat(props.inputToken?.token.usdPrice || '0');
+        return (
+            <>
+                <div
+                    className={classNames(
+                        "w-full mt-10 px-3 py-3 rounded-xl my-3 text-xl flex items-center justify-center text-orange-600 font-bold bg-slate-950 border-slate-950 border-2  transition-colors",
+                        "cursor-not-allowed"
+                    )}
+                >
+                    Something went wrong
+                </div>
+                <div className="bg-red-400 border-2 border-red-500 p-3 rounded-xl text-black">
+                    We could not execute your swap because of an error.
+                    {tradeAmount < 5 && props.trade.from.blockchain !== props.trade.to.blockchain && ` Most probably it failed because you try to bridge a very low amount ($${toPrecision(tradeAmount, 4)}). If you are bridging funds, please make sure the token value is at least $5.`}
+                </div>
+            </>
+        )
+    }
 
     if (balanceIsLoading) {
         return (<div
@@ -214,7 +257,7 @@ const MaybeSwapButton = (props:{
 export const SwapButton = (props: {
     tradeLoading: boolean;
     trade?: Awaited<ReturnType<typeof calculateSwap>>;
-    setShowSwapHistory?: (show: boolean) => void;
+    onSwapDone?: (show: boolean) => void;
     inputToken?: Token,
     outputToken?: Token
 }) => {
@@ -227,8 +270,6 @@ export const SwapButton = (props: {
         props.tradeLoading,
         props.trade,
     );
-
-    console.log(buttonStatus);
 
     if (buttonStatus.buttonType === "connectButton") {
         return (
@@ -270,7 +311,7 @@ export const SwapButton = (props: {
 
     if (buttonStatus.trade) {
         return (
-            <MaybeSwapButton inputToken={props.inputToken} outputToken={props.outputToken} trade={buttonStatus.trade} setShowSwapHistory={props.setShowSwapHistory} />
+            <MaybeSwapButton inputToken={props.inputToken} outputToken={props.outputToken} trade={buttonStatus.trade} onSwapDone={props.onSwapDone} />
         );
     }
 

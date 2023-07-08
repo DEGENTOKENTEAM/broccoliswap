@@ -1,4 +1,5 @@
 import { Chain } from "@/types";
+import { TxStatus } from "rubic-sdk";
 
 export enum SwapType {
     ON_CHAIN = 'ON_CHAIN',
@@ -6,19 +7,24 @@ export enum SwapType {
 }
 
 export type TxHistoryItem ={
-    fromChain: Chain,
-    toChain: Chain,
-    swapTx: string,
-    type: SwapType,
-    fromAddress: string,
-    fromSymbol: string,
+    fromChain: Chain;
+    toChain: Chain;
+    swapTx: string;
+    fromAddress: string;
+    fromSymbol: string;
     fromLogo: string;
-    toSymbol: string,
-    toAddress: string,
-    fromAmount: number,
-    toAmount: number,
+    toSymbol: string;
+    toAddress: string;
+    fromAmount: number;
+    toAmount: number;
     toLogo: string;
-    date: number,
+    date: number;
+    bridge?: string;
+    bridgeId?: string;
+    bridgeType?: string;
+
+    finalStatus?: TxStatus;
+    finalDstHash?: string;
 }
 
 export const getTxHistory = () => {
@@ -34,4 +40,21 @@ export const putHistory = (data: Omit<TxHistoryItem, 'date'>) => {
 
     localStorage.setItem('txHistory', JSON.stringify(history));
     return history
+}
+
+export const updateHistory = (tx: string, status: TxStatus, hash?: string) => {
+    const history = getTxHistory();
+
+    const updatedHistory = history.map(item => {
+        if (item.swapTx !== tx) {
+            return item;
+        }
+
+        item.finalStatus = status;
+        item.finalDstHash = hash;
+        return item;
+    })
+
+    localStorage.setItem('txHistory', JSON.stringify(updatedHistory));
+    return updatedHistory;
 }

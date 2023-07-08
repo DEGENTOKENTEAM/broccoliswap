@@ -1,8 +1,9 @@
 import { useEffect, useState } from "react";
+import { useAsyncEffect } from "./useAsyncEffect";
 
 const timesPerSec = 10
 
-export const useProgress = (cb: () => Promise<void>, maxTimeInSeconds = 300) => {
+export const useProgress = (cb: () => Promise<void> | void, maxTimeInSeconds = 300) => {
     const [elapsedTime, setElapsedTime] = useState(0);
     const [progress, setProgress] = useState(0);
 
@@ -22,14 +23,13 @@ export const useProgress = (cb: () => Promise<void>, maxTimeInSeconds = 300) => 
         return () => clearInterval(intervalId);
     }, []);
 
-    useEffect(() => {
+    useAsyncEffect(async () => {
         let curProgress = elapsedTime / maxTimeInSeconds
         if (elapsedTime / maxTimeInSeconds > 1) {
-            cb().then(() => {
-                curProgress = 0
-                setElapsedTime(0)
-                setProgress(curProgress);
-            });
+            await cb()
+            curProgress = 0
+            setElapsedTime(0)
+            setProgress(curProgress);
         } else {
             setProgress(curProgress);
         }
