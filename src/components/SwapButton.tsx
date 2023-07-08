@@ -80,7 +80,7 @@ const SwitchNetworkButton = (props: { targetChainId?: number }) => {
 
 const MaybeSwapButton = (props:{
     trade: OnChainTrade | CrossChainTrade,
-    onSwapDone?: (show: boolean) => void ,
+    onSwapDone?: (show: string) => void ,
     inputToken?: Token,
     outputToken?: Token
 }) => {

@@ -1,6 +1,6 @@
 import { classNames } from "@/helpers/classNames";
 import { getTokenInfo } from "@/helpers/coingecko";
-import { explorersPerChain } from "@/helpers/variables";
+// import { explorersPerChain } from "@/helpers/variables";
 import { Token } from "@/__old__types";
 import { useEffect, useRef, useState } from "react";
 import { RiFileCopyFill, RiShareForward2Fill } from "react-icons/ri";
@@ -64,9 +64,9 @@ const CopyableContractAddress = (props: {
                 onClick={copyAddress}
             />
             <a
-                href={`${(explorersPerChain as any)[props.network]}/token/${
-                    props.address
-                }`}
+                // href={`${(explorersPerChain as any)[props.network]}/token/${
+                //     props.address
+                // }`}
                 target="_blank"
                 rel="noreferrer"
             >

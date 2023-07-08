@@ -1,6 +1,6 @@
 import { classNames } from "@/helpers/classNames";
 import { getRecentTransactions } from "@/helpers/transactions";
-import { explorersPerChain } from "@/helpers/variables";
+// import { explorersPerChain } from "@/helpers/variables";
 import { useProgress } from "@/hooks/useProgress";
 import { Token } from "@/__old__types";
 import { Disclosure, Menu, Transition } from "@headlessui/react";
@@ -233,13 +233,13 @@ export const TokenTable = (props: { token: Token }) => {
                                     </td>
                                     <td className="relative whitespace-nowrap py-1 pl-3 pr-4 text-right  font-medium">
                                         <a
-                                            href={`${
-                                                (explorersPerChain as any)[
-                                                    props.token.network
-                                                ]
-                                            }/tx/${
-                                                transaction.transaction.hash
-                                            }`}
+                                            // href={`${
+                                            //     (explorersPerChain as any)[
+                                            //         props.token.network
+                                            //     ]
+                                            // }/tx/${
+                                            //     transaction.transaction.hash
+                                            // }`}
                                             target="_blank"
                                             rel="noreferrer"
                                             className="text-orange-500 hover:text-orange-900"

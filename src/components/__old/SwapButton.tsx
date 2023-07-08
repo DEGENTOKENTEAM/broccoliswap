@@ -8,7 +8,6 @@ import BigNumber from "bignumber.js";
 import { useState } from "react";
 import { waitForTransaction } from "@wagmi/core";
 import { classNames } from "@/helpers/classNames";
-import { explorersPerChain } from "@/helpers/variables";
 
 const SwitchNetworkButton = (props: { targetChainId: number }) => {
     const { isLoading, pendingChainId, switchNetwork } = useSwitchNetwork()
@@ -152,13 +151,13 @@ export const SwapButton = (
                         </div>
                         <IoMdClose className="cursor-pointer hover:text-green-600" onClick={() => setSwapTx('')} />
                     </div>
-                    <a
+                    {/* <a
                         target="_blank"
                         rel="noreferrer"
                         className="underline text-xs"
                         href={`${explorersPerChain[blockchainToRubicTokenNetwork[props.trade.from.blockchain as keyof typeof blockchainToRubicTokenNetwork] as keyof typeof explorersPerChain]}tx/${swapTx}`}>
                             View
-                    </a>
+                    </a> */}
                 </div>
             </div>}
         </>

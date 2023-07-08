@@ -83,6 +83,7 @@ const calculateBestTrade = async (
 
         // @ts-ignore error type
         const availableTrades = trades.filter(
+            // @ts-ignore
             (trade): trade is OnChainTrade => !trade?.error
         );
         if (availableTrades.length === 0) return "No trades available";

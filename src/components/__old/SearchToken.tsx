@@ -1,6 +1,6 @@
 import { classNames } from "@/helpers/classNames";
 import { debounce } from "@/helpers/debounce";
-import { useOutsideClick } from "@/hooks/useOutsideClick";
+// import { useOutsideClick } from "@/hooks/useOutsideClick";
 import {
     rubicNetworkToBitqueryNetwork,
     rubicTokenNetworkToChainId,
@@ -131,10 +131,10 @@ export const SearchToken = (props: {
     const [searchResults, setSearchResults] = useState<SearchResult[]>([]);
     const componentRef = useRef<HTMLDivElement>(null);
 
-    useOutsideClick(componentRef.current, () => {
-        setSearchResults([]);
-        setSearchQuery("");
-    });
+    // useOutsideClick(componentRef.current, () => {
+    //     setSearchResults([]);
+    //     setSearchQuery("");
+    // });
 
     useEffect(() => {
         debouncedFetchTokens(
