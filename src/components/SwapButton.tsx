@@ -138,7 +138,7 @@ const MaybeSwapButton = (props:{
 
             putHistory(data);
 
-            props.onSwapDone?.(true);
+            props.onSwapDone?.(tx);
         } catch (e) {
             if (e instanceof UserRejectError) {
                 setIsSwapping(false);
@@ -257,7 +257,7 @@ const MaybeSwapButton = (props:{
 export const SwapButton = (props: {
     tradeLoading: boolean;
     trade?: Awaited<ReturnType<typeof calculateSwap>>;
-    onSwapDone?: (show: boolean) => void;
+    onSwapDone?: (tx: string) => void;
     inputToken?: Token,
     outputToken?: Token
 }) => {

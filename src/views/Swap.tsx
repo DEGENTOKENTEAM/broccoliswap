@@ -20,6 +20,9 @@ import { classNames } from '@/helpers/classNames'
 import { useProgress } from '@/hooks/useProgress'
 import { RefreshButton } from '@/components/RefreshButton'
 import { GoPlusTokenReponse, getTokenSecurity } from '@/helpers/goPlus'
+import { GoLinkExternal } from 'react-icons/go'
+import Link from 'next/link'
+import { ImCross } from 'react-icons/im'
 
 export const SwapView = (props: { showRecentTrades?: boolean, setShowRecentTrades?: (show: boolean) => void }) => {
     const [inputToken, setInputToken] = useState<Token | undefined>();
@@ -32,6 +35,8 @@ export const SwapView = (props: { showRecentTrades?: boolean, setShowRecentTrade
     const [outputGPSec, setOutputGPSec] = useState<GoPlusTokenReponse>();
 
     const [slippage, setSlippage] = useState(4);
+
+    const [swapSuccessTx, setSwapSuccessTx] = useState('');
 
     const [forceRefreshVar, forceRefresh] = useState(0);
 
@@ -135,7 +140,7 @@ export const SwapView = (props: { showRecentTrades?: boolean, setShowRecentTrade
 
     return (
         <>
-            <div className="flex flex-col mt-20 sm:mt-5 mx-5 mb-5 gap-3">
+            <div className="flex flex-col mt-20 mx-5 mb-5 gap-3">
                 <div className="flex">
                     <RefreshButton tradeLoading={tradeLoading} interval={60} refreshFn={() => forceRefresh(Math.random())} />
                     <div className="flex-grow"></div>
@@ -155,8 +160,8 @@ export const SwapView = (props: { showRecentTrades?: boolean, setShowRecentTrade
                                 </>
                             )}
                         </div>}
-                        {inputToken && address && <div onClick={() => setInputFromBalance(0.5, chainsInfo[inputToken.chain].id, inputToken.token.address)} className="text-xs px-2 bg-slate-800 rounded-full border border-slate-900 cursor-pointer hover:border-orange-600 transition-colors hidden sm:block">HALF</div>}
-                        {inputToken && address && <div onClick={() => setInputFromBalance(1, chainsInfo[inputToken.chain].id, inputToken.token.address)} className="text-xs px-2 bg-slate-800 rounded-full border border-slate-900 cursor-pointer hover:border-orange-600 transition-colors">MAX</div>}
+                        {inputToken && address && inputBalance && inputBalance > 0.1 ? <div onClick={() => setInputFromBalance(0.5, chainsInfo[inputToken.chain].id, inputToken.token.address)} className="text-xs px-2 bg-slate-800 rounded-full border border-slate-900 cursor-pointer hover:border-orange-600 transition-colors hidden sm:block">HALF</div> : null}
+                        {inputToken && address && inputBalance && inputBalance > 0.05 ? <div onClick={() => setInputFromBalance(1, chainsInfo[inputToken.chain].id, inputToken.token.address)} className="text-xs px-2 bg-slate-800 rounded-full border border-slate-900 cursor-pointer hover:border-orange-600 transition-colors">MAX</div> : null}
                     </div>
                     <TokenInput selectedChain={inputChain} setSelectedChain={setInputChain} token={inputToken} setToken={setInputToken} setInputAmount={setInputAmount} amount={inputAmount} externalAmount={externallySetAmount} />
 
@@ -186,8 +191,8 @@ export const SwapView = (props: { showRecentTrades?: boolean, setShowRecentTrade
                     <SwapButton
                         tradeLoading={tradeLoading}
                         trade={trade}
-                        onSwapDone={(d: boolean) => {
-                            props.setShowRecentTrades?.(d);
+                        onSwapDone={(tx: string) => {
+                            setSwapSuccessTx(tx);
                             forceRefresh(Math.random());
                         }}
                         inputToken={inputToken}
@@ -205,6 +210,22 @@ export const SwapView = (props: { showRecentTrades?: boolean, setShowRecentTrade
                             {tokenTax}%).
                         </div>
                     )}
+
+                    {swapSuccessTx && outputChain && <div className="bg-green-400 border-2 border-green-500 p-3 rounded-xl text-black my-3">
+                        <div className="flex mb-3 items-center justify-center">
+                            <div className="flex-grow">Swap successful!</div>
+                            <ImCross
+                                className="cursor-pointer hover:text-orange-600 transition-colors"
+                                onClick={() => setSwapSuccessTx('')}
+                            />
+                        </div>
+                        <Link
+                            target="_blank"
+                            href={`${chainsInfo[outputChain].explorer}tx/${swapSuccessTx}`}
+                            className="hover:underline bg-green-600 p-3 rounded-xl text-white mt-2 cursor-pointer hover:bg-green-800 font-bold transition-colors block text-center"
+                        >View on explorer <GoLinkExternal className="inline" /></Link>
+                        {inputToken?.chain !== outputToken?.chain && <div onClick={() => props.setShowRecentTrades?.(true)} className="bg-green-600 p-3 rounded-xl text-white mt-2 cursor-pointer hover:bg-green-800 transition-colors font-bold text-center">View Bridge Status</div>}
+                    </div>}
                 </div>
             </div>
 
