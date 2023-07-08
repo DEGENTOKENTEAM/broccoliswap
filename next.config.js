@@ -3,7 +3,17 @@ const nextConfig = {
   images: {
     unoptimized: true,
   },
+  trailingSlash: true,
   reactStrictMode: true,
+  async redirects() {
+    return [
+      {
+        source: '/',
+        destination: '/simple',
+        permanent: true,
+      },
+    ];
+  },
 }
 
 module.exports = nextConfig
