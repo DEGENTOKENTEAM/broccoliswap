@@ -14,7 +14,7 @@ export default function Document() {
           src="/charting_library/charting_library.js">
         </script>
       </Head>
-      <body className="">
+      <body className="text-slate-400">
         <Main />
         <NextScript />
       </body>
