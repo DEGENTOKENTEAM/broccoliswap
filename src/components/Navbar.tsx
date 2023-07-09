@@ -58,6 +58,7 @@ export const Navbar = (props: { onClickRecentTrades?: () => void }) => {
                                 label="Connect"
                                 showAvatar={false}
                                 showBalance={true}
+                                mode="dark"
                                 customTheme={{
                                     "--ck-primary-button-color": "#97A3B6",
                                     "--ck-connectbutton-balance-background":
