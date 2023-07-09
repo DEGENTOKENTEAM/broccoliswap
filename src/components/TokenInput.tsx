@@ -16,7 +16,7 @@ export const TokenInput = (props: {
     token?: Token;
     setToken: (token: Token) => void;
     selectedChain?: Chain;
-    setSelectedChain?: (chain: Chain) => void;
+    setSelectedChain?: (chain?: Chain) => void;
 }) => {
     const [showSelector, setShowSelector] = useState(false);
 
@@ -90,10 +90,11 @@ export const TokenInput = (props: {
                 <div className="flex flex-col justify-end items-end gap-1">
                     {props.setInputAmount ? (
                         <input
-                            className="w-32 sm:w-full text-right font-bold text-white leading-5 text-2xl bg-slate-900 ring-0 border-0 focus:outline-none -my-1.5"
-                            type="text"
+                            className="inputNumber w-32 sm:w-full text-right font-bold text-white leading-5 text-2xl bg-slate-900 ring-0 border-0 focus:outline-none -my-1.5"
+                            type="number"
                             ref={inputRef}
-                            placeholder="Amount..."
+                            inputMode="decimal"
+                            placeholder="0.000"
                             onChange={e =>
                                 props.setInputAmount?.(
                                     Math.max(0, parseFloat(e.target.value))

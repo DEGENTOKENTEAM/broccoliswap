@@ -3,7 +3,7 @@ import { classNames } from "@/helpers/classNames";
 import { useAsyncEffect } from "@/hooks/useAsyncEffect";
 import useOutsideClick from "@/hooks/useOutsideClick";
 import { Chain, NULL_ADDRESS, RubicToken, Token, chainsInfo } from "@/types";
-import { useRef, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { ImCross } from "react-icons/im";
 import { BiLinkExternal } from "react-icons/bi";
 import { searchToken } from "@/helpers/rubic";
@@ -85,7 +85,7 @@ export const TokenSelector = (props: {
     show?: boolean;
     setShow?: (show: boolean) => void;
     selectedChain?: Chain;
-    setSelectedChain?: (chain: Chain) => void;
+    setSelectedChain?: (chain?: Chain) => void;
     setToken: (token: Token) => void;
 }) => {
     const [tokens, setTokens] = useState<RubicToken[] | null>();
@@ -93,6 +93,14 @@ export const TokenSelector = (props: {
 
     const divRef = useRef<HTMLDivElement>(null);
     useOutsideClick([divRef], () => props.setShow?.(false));
+
+    useEffect(() => {
+        if (props.show) {
+            setTokens(null)
+            setSearchFilter('')
+            props.setSelectedChain?.()
+        }
+    }, [props.show])
 
     useAsyncEffect(async () => {
         if (!props.show || !props.selectedChain) {

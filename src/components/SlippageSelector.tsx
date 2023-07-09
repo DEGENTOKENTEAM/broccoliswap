@@ -60,19 +60,19 @@ export const SlippageSelector = (props: {
                 )}
                 <div className="flex gap-2">
                     <div
-                        className="bg-slate-800 hover:bg-slate-600 transition-colors px-3 py-1 rounded-full cursor-pointer"
+                        className="bg-slate-800 hover:bg-slate-600 transition-colors px-3 py-1 rounded-full cursor-pointer text-slate-400"
                         onClick={() => onSetSlippage(1 + tokenTax)}
                     >
                         {1 + tokenTax}%
                     </div>
                     <div
-                        className="bg-slate-800 hover:bg-slate-600 transition-colors px-3 py-1 rounded-full cursor-pointer"
+                        className="bg-slate-800 hover:bg-slate-600 transition-colors px-3 py-1 rounded-full cursor-pointer text-slate-400"
                         onClick={() => onSetSlippage(2 + tokenTax)}
                     >
                         {2 + tokenTax}%
                     </div>
                     <div
-                        className="bg-slate-800 hover:bg-slate-600 transition-colors px-3 py-1 rounded-full cursor-pointer"
+                        className="bg-slate-800 hover:bg-slate-600 transition-colors px-3 py-1 rounded-full cursor-pointer text-slate-400"
                         onClick={() => onSetSlippage(4 + tokenTax)}
                     >
                         {4 + tokenTax}%
@@ -86,7 +86,7 @@ export const SlippageSelector = (props: {
                         />
                         <div
                             onClick={() => onSetSlippage()}
-                            className="bg-slate-800 hover:bg-slate-600 transition-colors px-3 py-1 rounded-r-full border-l border-slate-700 cursor-pointer"
+                            className="bg-slate-800 hover:bg-slate-600 transition-colors px-3 py-1 rounded-r-full border-l border-slate-700 cursor-pointer text-slate-400"
                         >
                             Set
                         </div>
