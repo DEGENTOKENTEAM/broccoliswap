@@ -88,7 +88,7 @@ const MaybeSwapButton = (props:{
     
     const [approveTxHash, setApproveTxHash] = useState('')
     const [isSwapping, setIsSwapping] = useState(false)
-    const [swapError, setSwapError] = useState(false)
+    const [swapError, setSwapError] = useState('')
     const [buttonAction, setButtonAction] = useState<{ text: string, action: Function } | undefined>()
 
     const { isLoading: balanceIsLoading, data: balanceData } = useBalance({
@@ -145,7 +145,7 @@ const MaybeSwapButton = (props:{
                 return;
             }
 
-            setSwapError(true)
+            setSwapError(JSON.stringify(e))
             setIsSwapping(false);
         }
     }
@@ -178,7 +178,7 @@ const MaybeSwapButton = (props:{
                         "cursor-not-allowed"
                     )}
                 >
-                    Something went wrong
+                    Something went wrong. Send this to Rock: {swapError}
                 </div>
                 <div className="bg-red-400 border-2 border-red-500 p-3 rounded-xl text-black">
                     We could not execute your swap because of an error.
