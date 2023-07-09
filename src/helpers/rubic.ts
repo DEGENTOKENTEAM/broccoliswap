@@ -18,6 +18,18 @@ export const searchToken = async (network: Chain, filterTxt?: string) => {
         filter = `&symbol=${filterTxt}`
     }
 
+    // Add DGNX first if avax
+    if (network === Chain.AVAX && !filterTxt) {
+        const results = await Promise.all([
+            fetch(`https://tokens.rubic.exchange/api/v1/tokens?networks=${chainsInfo[network].rubicName}&pageSize=1&symbol=dgnx`),
+            fetch(`https://tokens.rubic.exchange/api/v1/tokens?networks=${chainsInfo[network].rubicName}&pageSize=9${filter}`),
+        ])
+        const dgnx = await results[0].json();
+        const rest = await results[1].json();
+        const data = [...dgnx.results, ...rest.results]
+        return data;
+    }
+
     const result = await fetch(
         `https://tokens.rubic.exchange/api/v1/tokens?networks=${chainsInfo[network].rubicName}&pageSize=10${filter}`
     );

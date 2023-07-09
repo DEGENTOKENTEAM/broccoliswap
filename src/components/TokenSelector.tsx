@@ -147,7 +147,7 @@ export const TokenSelector = (props: {
                                     setTokens(null);
                                 }}
                                 className={classNames(
-                                    "p-3 border-2 rounded-xl cursor-pointer transition-colors ease-in",
+                                    "p-3 border-2 rounded-xl cursor-pointer transition-colors ease-in flex flex-col items-center w-20 gap-2",
                                     props.selectedChain === chain
                                         ? "border-orange-600"
                                         : "border-slate-800 hover:border-slate-400"
@@ -159,6 +159,7 @@ export const TokenSelector = (props: {
                                     alt={chainInfo.name}
                                     src={`/chains/${chainInfo.logo}`}
                                 />
+                                {chainInfo.symbol.toUpperCase()}
                             </div>
                         );
                     })}
