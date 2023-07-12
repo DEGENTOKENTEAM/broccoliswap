@@ -6,7 +6,7 @@ import { Chain, NULL_ADDRESS, RubicToken, Token, chainsInfo } from "@/types"
 import { useMemo, useState } from "react"
 import { calculateSwap } from '@/helpers/swap'
 import { useAsyncEffect } from '@/hooks/useAsyncEffect'
-import { CHAIN_TYPE, CROSS_CHAIN_TRADE_TYPE, CrossChainTrade, OnChainTrade } from 'rubic-sdk'
+import { CHAIN_TYPE, CrossChainTrade, OnChainTrade } from 'rubic-sdk'
 import { FaWallet } from 'react-icons/fa'
 import { LuSettings2 } from 'react-icons/lu'
 import { PiWarningBold } from 'react-icons/pi'

@@ -1,6 +1,6 @@
 import { Token, chainsInfo } from "@/types";
 import { debounce } from "./debounce";
-import { BlockchainName, OnChainTrade, SDK } from "rubic-sdk";
+import { BlockchainName, OnChainTrade } from "rubic-sdk";
 import { getSDK } from "./rubic";
 
 const calculateBestTrade = async (
@@ -20,11 +20,12 @@ const calculateBestTrade = async (
                 gasCalculation: "disabled",
                 slippageTolerance: slippage / 100,
                 disableMultihops: false,
-                useProxy: false,
+                useProxy: true,
                 deadlineMinutes: 20
             }
         );
 
+        console.log(trades)
         const availableTrades = trades.filter(
             // @ts-expect-error error type
             (trade): trade is OnChainTrade => !trade?.error

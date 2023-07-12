@@ -7,8 +7,7 @@ import {
     CHAIN_TYPE,
     BlockchainName,
     OnChainTrade,
-    CrossChainTrade,
-    WrappedCrossChainTrade
+    CrossChainTrade
 } from "rubic-sdk";
 import {
     rubicNetworkToBitqueryNetwork,

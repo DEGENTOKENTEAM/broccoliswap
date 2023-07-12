@@ -16,12 +16,7 @@ import { Chain, NULL_ADDRESS, chainsInfo } from "@/types";
 import { TokenImage } from "./TokenImage";
 import { RxCaretDown } from "react-icons/rx";
 import { useAsyncEffect } from "@/hooks/useAsyncEffect";
-import {
-    CrossChainStatus,
-    CrossChainStatusManager,
-    CrossChainTradeType,
-    TxStatus
-} from "rubic-sdk";
+import { CrossChainTradeType, TxStatus } from "rubic-sdk";
 import { IoMdRefresh } from "react-icons/io";
 import { getSDK } from "@/helpers/rubic";
 
