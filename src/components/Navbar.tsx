@@ -94,7 +94,7 @@ export const Navbar = (props: { onClickRecentTrades?: () => void }) => {
                                     Recent Trades
                                     <BridgeTokenStatusWarning
                                         swapTx={
-                                            getMostRecentTxHistoryItem().swapTx
+                                            getMostRecentTxHistoryItem()?.swapTx
                                         }
                                         onClick={() =>
                                             props.onClickRecentTrades?.()
