@@ -1,5 +1,8 @@
 /** @type {import('next').NextConfig} */
 const nextConfig = {
+  transpilePackages: [
+     "rubic-sdk",
+  ],
   images: {
     unoptimized: true,
   },
@@ -14,6 +17,9 @@ const nextConfig = {
       },
     ];
   },
+  experimental: {
+    esmExternals: 'loose'
+  }
 }
 
 module.exports = nextConfig

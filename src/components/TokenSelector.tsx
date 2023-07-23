@@ -12,6 +12,7 @@ import { debounce } from "@/helpers/debounce";
 import { TokenImage } from "./TokenImage";
 import { useAccount, useBalance } from "wagmi";
 import { toPrecision } from "@/helpers/number";
+import useDisableScroll from "@/hooks/useDisableScroll";
 
 const TokenListItem = (props: {
     token: RubicToken;
@@ -101,6 +102,7 @@ export const TokenSelector = (props: {
             props.setSelectedChain?.()
         }
     }, [props.show])
+    useDisableScroll(props.show);
 
     useAsyncEffect(async () => {
         if (!props.show || !props.selectedChain) {
@@ -117,7 +119,7 @@ export const TokenSelector = (props: {
     return (
         <div
             className={classNames(
-                "absolute top-0 left-0 right-0 bottom-0 flex items-center justify-center bg-[rgba(0,0,0,0.4)] transition-opacity ease-in z-10",
+                "fixed top-0 left-0 right-0 bottom-0 flex items-center justify-center bg-[rgba(0,0,0,0.4)] transition-opacity ease-in z-10",
                 props.show ? "opacity-100" : "opacity-0 pointer-events-none"
             )}
         >

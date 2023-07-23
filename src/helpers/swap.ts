@@ -2,6 +2,7 @@ import { Token, chainsInfo } from "@/types";
 import { debounce } from "./debounce";
 import { BlockchainName, OnChainTrade } from "rubic-sdk";
 import { getSDK } from "./rubic";
+import { AutoQueue } from "./queue";
 
 const calculateBestTrade = async (
     slippage: number,
@@ -25,7 +26,6 @@ const calculateBestTrade = async (
             }
         );
 
-        console.log(trades)
         const availableTrades = trades.filter(
             // @ts-expect-error error type
             (trade): trade is OnChainTrade => !trade?.error
@@ -50,20 +50,22 @@ const calculateBestTrade = async (
     return bestTrade.trade || "Something went wrong";
 };
 
-const calculate = async (inputToken: Token, outputToken: Token, inputAmount: number, slippage: number, callback: Function) => {
-    const trade = await calculateBestTrade(
+
+
+const calculate = async (inputToken: Token, outputToken: Token, inputAmount: number, slippage: number, queue: AutoQueue, callback: Function) => {
+    const trade = await queue.enqueue(() => calculateBestTrade(
         slippage,
         { blockchain: chainsInfo[inputToken.chain].rubicSdkChainName, address: inputToken.token.address },
         inputAmount,
         { blockchain: chainsInfo[outputToken.chain].rubicSdkChainName, address: outputToken.token.address }
-    )
+    ))
     callback(trade);
 }
 
-const debouncedCalculate = debounce(calculate, 500);
+const debouncedCalculate = debounce(calculate, 2000);
 
-export const calculateSwap = (inputToken: Token, outputToken: Token, inputAmount: number, slippage: number): Promise<ReturnType<typeof calculateBestTrade>> => {
+export const calculateSwap = (inputToken: Token, outputToken: Token, inputAmount: number, slippage: number, queue: AutoQueue): Promise<ReturnType<typeof calculateBestTrade>> => {
     return new Promise(resolve => {
-        debouncedCalculate(inputToken, outputToken, inputAmount, slippage, resolve)
+        debouncedCalculate(inputToken, outputToken, inputAmount, slippage, queue, resolve)
     });
 }

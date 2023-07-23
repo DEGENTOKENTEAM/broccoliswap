@@ -56,6 +56,7 @@ export const chainsInfo = {
         rubicName: 'ethereum',
         explorer: 'https://etherscan.io/',
         rubicSdkChainName: BLOCKCHAIN_NAME.ETHEREUM,
+        bitqueryChainName: 'ethereum'
     },
     [Chain.BSC]: {
         chain: Chain.BSC,
@@ -66,6 +67,7 @@ export const chainsInfo = {
         rubicName: 'binance-smart-chain',
         explorer: 'https://bscscan.com/',
         rubicSdkChainName: BLOCKCHAIN_NAME.BINANCE_SMART_CHAIN,
+        bitqueryChainName: 'bsc'
     },
     [Chain.AVAX]: {
         chain: Chain.AVAX,
@@ -76,5 +78,6 @@ export const chainsInfo = {
         rubicName: 'avalanche',
         explorer: 'https://snowtrace.io/',
         rubicSdkChainName: BLOCKCHAIN_NAME.AVALANCHE,
+        bitqueryChainName: 'avalanche'
     },
 }

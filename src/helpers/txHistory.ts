@@ -25,6 +25,13 @@ export type TxHistoryItem ={
 
     finalStatus?: TxStatus;
     finalDstHash?: string;
+
+    bridgeToTokenInfo?: {
+        toAddress: string;
+        toTokenAddress: string;
+        toSymbol: string;
+        toAmount: number;
+    };
 }
 
 export const getTxHistory = () => {
@@ -52,6 +59,22 @@ export const updateHistory = (tx: string, status: TxStatus, hash?: string) => {
 
         item.finalStatus = status;
         item.finalDstHash = hash;
+        return item;
+    })
+
+    localStorage.setItem('txHistory', JSON.stringify(updatedHistory));
+    return updatedHistory;
+}
+
+export const updateBridgeTxStatus = (tx: string, bridgeToTokenInfo: TxHistoryItem['bridgeToTokenInfo']) => {
+    const history = getTxHistory();
+
+    const updatedHistory = history.map(item => {
+        if (item.swapTx !== tx) {
+            return item;
+        }
+
+        item.bridgeToTokenInfo = bridgeToTokenInfo;
         return item;
     })
 

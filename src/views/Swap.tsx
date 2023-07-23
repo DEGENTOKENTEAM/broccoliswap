@@ -6,7 +6,7 @@ import { Chain, NULL_ADDRESS, RubicToken, Token, chainsInfo } from "@/types"
 import { useMemo, useState } from "react"
 import { calculateSwap } from '@/helpers/swap'
 import { useAsyncEffect } from '@/hooks/useAsyncEffect'
-import { CHAIN_TYPE, CrossChainTrade, OnChainTrade } from 'rubic-sdk'
+import { CHAIN_TYPE, CROSS_CHAIN_TRADE_TYPE, CrossChainTrade, OnChainTrade } from 'rubic-sdk'
 import { FaWallet } from 'react-icons/fa'
 import { LuSettings2 } from 'react-icons/lu'
 import { PiWarningBold } from 'react-icons/pi'
@@ -23,6 +23,9 @@ import { GoPlusTokenReponse, getTokenSecurity } from '@/helpers/goPlus'
 import { GoLinkExternal } from 'react-icons/go'
 import Link from 'next/link'
 import { ImCross } from 'react-icons/im'
+import { AutoQueue } from '@/helpers/queue'
+
+const queue = new AutoQueue();
 
 export const SwapView = (props: { showRecentTrades?: boolean, setShowRecentTrades?: (show: boolean) => void }) => {
     const [inputToken, setInputToken] = useState<Token | undefined>();
@@ -110,11 +113,11 @@ export const SwapView = (props: { showRecentTrades?: boolean, setShowRecentTrade
         setTrade(undefined)
 
         const [_trade, _inputGPSec, _outputGPSec] = await Promise.all([
-            calculateSwap(inputToken, outputToken, inputAmount, slippage),
+            calculateSwap(inputToken, outputToken, inputAmount, slippage, queue),
             getTokenSecurity(chainsInfo[inputToken.chain].id, inputToken.token.address),
             getTokenSecurity(chainsInfo[outputToken.chain].id, outputToken.token.address),
         ]);
-        setTradeLoading(false);
+        setTradeLoading(queue.size !== 0);
         setTrade(_trade);
         setInputGPSec(_inputGPSec)
         setOutputGPSec(_outputGPSec)

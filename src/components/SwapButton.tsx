@@ -158,7 +158,7 @@ const MaybeSwapButton = (props:{
         if (_needApprove) {
             return setButtonAction({
                 text: 'Approve',
-                action: () => props.trade.approve.bind(props.trade)({ onTransactionHash: hash => setApproveTxHash(hash) })
+                action: () => props.trade.approve.bind(props.trade)({ onTransactionHash: hash => setTimeout(() => setApproveTxHash(hash), 2000) })
             })
         }
         

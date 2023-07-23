@@ -1,4 +1,5 @@
 import { classNames } from "@/helpers/classNames";
+import useDisableScroll from "@/hooks/useDisableScroll";
 import useOutsideClick from "@/hooks/useOutsideClick";
 import { useRef } from "react";
 import { ImCross } from "react-icons/im";
@@ -13,6 +14,7 @@ export const SlippageSelector = (props: {
     const divRef = useRef<HTMLDivElement>(null);
     const inputRef = useRef<HTMLInputElement>(null);
     useOutsideClick([divRef], () => props.setShow?.(false));
+    useDisableScroll(props.show);
 
     const tokenTax = props.tokenTax || 0;
 
@@ -27,7 +29,7 @@ export const SlippageSelector = (props: {
     return (
         <div
             className={classNames(
-                "absolute top-0 left-0 right-0 bottom-0 flex items-center justify-center bg-[rgba(0,0,0,0.4)] transition-opacity ease-in z-10",
+                "fixed top-0 left-0 right-0 bottom-0 flex items-center justify-center bg-[rgba(0,0,0,0.4)] transition-opacity ease-in z-10",
                 props.show ? "opacity-100" : "opacity-0 pointer-events-none"
             )}
         >

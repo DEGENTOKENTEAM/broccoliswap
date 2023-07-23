@@ -4,7 +4,10 @@ import { Configuration, SDK } from "rubic-sdk";
 const config: Configuration = {
     rpcProviders: rubicRPCEndpoints,
     providerAddress: {
-        EVM: '0x000007eba76b61031826E9cF306EaC1b1B59eF5A'
+        EVM: {
+            crossChain: '0x000007eba76b61031826E9cF306EaC1b1B59eF5A',
+            onChain: '0x000007eba76b61031826E9cF306EaC1b1B59eF5A',
+        }
     }
 };
 const sdk = SDK.createSDK(config);
