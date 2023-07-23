@@ -6,7 +6,7 @@ import { Chain, NULL_ADDRESS, RubicToken, Token, chainsInfo } from "@/types"
 import { useMemo, useState } from "react"
 import { calculateSwap } from '@/helpers/swap'
 import { useAsyncEffect } from '@/hooks/useAsyncEffect'
-import { CHAIN_TYPE, CROSS_CHAIN_TRADE_TYPE, CrossChainTrade, OnChainTrade } from 'rubic-sdk'
+import { CHAIN_TYPE, CrossChainTrade, OnChainTrade } from 'rubic-sdk'
 import { FaWallet } from 'react-icons/fa'
 import { LuSettings2 } from 'react-icons/lu'
 import { PiWarningBold } from 'react-icons/pi'
@@ -15,17 +15,11 @@ import { useAccount } from 'wagmi'
 import { SlippageSelector } from '@/components/SlippageSelector'
 import { getSDK, searchToken } from '@/helpers/rubic'
 import { SwapHistory } from '@/components/SwapHistory'
-import { IoMdRefresh } from 'react-icons/io'
-import { classNames } from '@/helpers/classNames'
-import { useProgress } from '@/hooks/useProgress'
 import { RefreshButton } from '@/components/RefreshButton'
 import { GoPlusTokenReponse, getTokenSecurity } from '@/helpers/goPlus'
 import { GoLinkExternal } from 'react-icons/go'
 import Link from 'next/link'
 import { ImCross } from 'react-icons/im'
-import { AutoQueue } from '@/helpers/queue'
-
-const queue = new AutoQueue();
 
 export const SwapView = (props: { showRecentTrades?: boolean, setShowRecentTrades?: (show: boolean) => void }) => {
     const [inputToken, setInputToken] = useState<Token | undefined>();
@@ -48,7 +42,7 @@ export const SwapView = (props: { showRecentTrades?: boolean, setShowRecentTrade
     const [inputBalance, setInputBalance] = useState<number>();
     const [externallySetAmount, setExternallySetAmount] = useState<number>(0);
 
-    const [trade, setTrade] = useState<Awaited<ReturnType<typeof calculateSwap>>>();
+    const [trade, setTrade] = useState<Awaited<Awaited<ReturnType<typeof calculateSwap>>['trade']>>();
     const [tradeLoading, setTradeLoading] = useState(false);
 
     const { address } = useAccount();
@@ -66,7 +60,6 @@ export const SwapView = (props: { showRecentTrades?: boolean, setShowRecentTrade
             setInputChain(inputChain)
             if (inputChain && qs.get('inputToken')) {
                 const [token]: RubicToken[] = await searchToken(inputChain, qs.get('inputToken') || undefined);
-                console.log(token)
                 if (token) {
                     setInputToken({ token, chain: inputChain })
                 }
@@ -78,7 +71,6 @@ export const SwapView = (props: { showRecentTrades?: boolean, setShowRecentTrade
             setOutputChain(outputChain)
             if (outputChain && qs.get('outputToken')) {
                 const [token]: RubicToken[] = await searchToken(outputChain, qs.get('outputToken') || undefined);
-                console.log(token)
                 if (token) {
                     setOutputToken({ token, chain: outputChain })
                 }
@@ -96,7 +88,6 @@ export const SwapView = (props: { showRecentTrades?: boolean, setShowRecentTrade
 
     useAsyncEffect(async () => {
         if (!address || !inputChain) return;
-        console.log("updating config");
         (await getSDK()).updateWalletProviderCore(CHAIN_TYPE.EVM, {
             core: window.ethereum!,
             address
@@ -112,12 +103,12 @@ export const SwapView = (props: { showRecentTrades?: boolean, setShowRecentTrade
         setTradeLoading(true);
         setTrade(undefined)
 
-        const [_trade, _inputGPSec, _outputGPSec] = await Promise.all([
-            calculateSwap(inputToken, outputToken, inputAmount, slippage, queue),
+        const [{ trade: _trade, cancel: _cancelTrade }, _inputGPSec, _outputGPSec] = await Promise.all([
+            calculateSwap(inputToken, outputToken, inputAmount, slippage),
             getTokenSecurity(chainsInfo[inputToken.chain].id, inputToken.token.address),
             getTokenSecurity(chainsInfo[outputToken.chain].id, outputToken.token.address),
         ]);
-        setTradeLoading(queue.size !== 0);
+        setTradeLoading(false);
         setTrade(_trade);
         setInputGPSec(_inputGPSec)
         setOutputGPSec(_outputGPSec)

@@ -24,7 +24,7 @@ const tradeStatusToButtonStatus = (
     isConnected: boolean,
     chain: ReturnType<typeof useNetwork>["chain"],
     tradeLoading: boolean,
-    trade?: Awaited<ReturnType<typeof calculateSwap>>
+    trade?: Awaited<Awaited<ReturnType<typeof calculateSwap>>['trade']>
 ) => {
     if (tradeLoading) {
         return { text: "Calculating route...", disabled: true };
@@ -256,7 +256,7 @@ const MaybeSwapButton = (props:{
 
 export const SwapButton = (props: {
     tradeLoading: boolean;
-    trade?: Awaited<ReturnType<typeof calculateSwap>>;
+    trade?: Awaited<Awaited<ReturnType<typeof calculateSwap>>['trade']>;
     onSwapDone?: (tx: string) => void;
     inputToken?: Token,
     outputToken?: Token

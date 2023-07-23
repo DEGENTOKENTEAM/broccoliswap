@@ -140,8 +140,6 @@ const BridgeTokenStatusWarning = (props: {
         props.setBridgeTokenInfo(status)
     }, [])
 
-    console.log(swap,status)
-
     return status?.status === 'failed'
         ? <PiWarningBold className="text-yellow-600 cursor-pointer" onClick={() => props.setShowBridgeTokenWarning(true)} />
         : null;
@@ -157,7 +155,6 @@ const BridgeStatus = (props: { swap: TxHistoryItem, setBridgeTokenInfo: Function
     const [forceRefreshVar, forceRefresh] = useState(0);
 
     useAsyncEffect(async () => {
-        console.log(swap)
         if (
             swap.finalStatus &&
             swap.finalStatus !== TxStatus.PENDING

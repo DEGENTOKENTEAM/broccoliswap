@@ -2,7 +2,6 @@ import { Token, chainsInfo } from "@/types";
 import { debounce } from "./debounce";
 import { BlockchainName, OnChainTrade } from "rubic-sdk";
 import { getSDK } from "./rubic";
-import { AutoQueue } from "./queue";
 
 const calculateBestTrade = async (
     slippage: number,
@@ -52,20 +51,28 @@ const calculateBestTrade = async (
 
 
 
-const calculate = async (inputToken: Token, outputToken: Token, inputAmount: number, slippage: number, queue: AutoQueue, callback: Function) => {
-    const trade = await queue.enqueue(() => calculateBestTrade(
-        slippage,
-        { blockchain: chainsInfo[inputToken.chain].rubicSdkChainName, address: inputToken.token.address },
-        inputAmount,
-        { blockchain: chainsInfo[outputToken.chain].rubicSdkChainName, address: outputToken.token.address }
-    ))
-    callback(trade);
+const calculate = async (inputToken: Token, outputToken: Token, inputAmount: number, slippage: number, callback: Function) => {
+    let cancel;
+    const cancelPromise = new Promise((resolve, reject) => {
+        cancel = reject.bind(null, { canceled: true })
+    });
+
+    const trade = await Promise.race([
+        calculateBestTrade(
+            slippage,
+            { blockchain: chainsInfo[inputToken.chain].rubicSdkChainName, address: inputToken.token.address },
+            inputAmount,
+            { blockchain: chainsInfo[outputToken.chain].rubicSdkChainName, address: outputToken.token.address }
+        ),
+        cancelPromise
+    ])
+    callback({ trade, cancel });
 }
 
 const debouncedCalculate = debounce(calculate, 2000);
 
-export const calculateSwap = (inputToken: Token, outputToken: Token, inputAmount: number, slippage: number, queue: AutoQueue): Promise<ReturnType<typeof calculateBestTrade>> => {
+export const calculateSwap = (inputToken: Token, outputToken: Token, inputAmount: number, slippage: number): Promise<{ trade: Awaited<ReturnType<typeof calculateBestTrade>>; cancel: Function }> => {
     return new Promise(resolve => {
-        debouncedCalculate(inputToken, outputToken, inputAmount, slippage, queue, resolve)
+        debouncedCalculate(inputToken, outputToken, inputAmount, slippage, resolve)
     });
 }
