@@ -67,7 +67,7 @@ export const SwapHistoryItem = (props: { swapTx: string }) => {
                 />
             </div>
             {showBridgeTokenWarning && swap.bridgeToTokenInfo && (
-                <div className="flex flex-col w-full items-start justify-start col-span-12 mt-2 sm:mt-5 bg-yellow-400 border-2 border-yellow-500 p-3 rounded-xl text-black">
+                <div className="flex flex-col w-full items-start justify-start col-span-12 mt-2 sm:mt-5 bg-dark border-2 border-rusty p-3 rounded-xl text-light-100 font-bold">
                     The swap on the target chain to {swap.toSymbol} failed (most
                     commonly because of slippage), therefore you did not receive{" "}
                     {toPrecision(swap.toAmount, 4)} {swap.toSymbol} but{" "}
@@ -79,7 +79,7 @@ export const SwapHistoryItem = (props: { swapTx: string }) => {
                         <a
                             href={`?inputChain=${swap.toChain}&inputToken=${swap.bridgeToTokenInfo.toTokenAddress}&outputChain=${swap.toChain}&outputToken=${swap.toAddress}&amount=${swap.bridgeToTokenInfo.toAmount}`}
                         >
-                            <button className="bg-yellow-500 transition-colors border-2 border-yellow-600 hover:bg-yellow-600 px-3 py-2 rounded-xl">
+                            <button className="bg-darkblue transition-colors border-2 border-activeblue hover:bg-activeblue px-3 py-2 rounded-xl">
                                 Fix swap
                             </button>
                         </a>{" "}

@@ -10,7 +10,7 @@ export const TokenAmount = (props: {
     chain: Chain;
 }) => {
     return (
-        <div className="bg-slate-600 relative rounded-xl flex items-center justify-center px-3 py-1 font-bold gap-1 text-white">
+        <div className="bg-activeblue relative rounded-xl flex items-center justify-center px-3 py-1 font-bold gap-1 text-white">
             <div className="flex flex-col sm:flex-row items-center gap-1">
                 <div className="relative">
                     <TokenImage

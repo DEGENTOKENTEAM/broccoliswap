@@ -7,6 +7,7 @@ import { useRef, useState } from "react";
 import { ImCross } from "react-icons/im";
 import useDisableScroll from "@/hooks/useDisableScroll";
 import { SwapHistoryItem } from "./SwapHistory/HistoryItem";
+import { SubHeader } from "./SubHeader";
 
 export const SwapHistory = (props: {
     show?: boolean;
@@ -27,16 +28,16 @@ export const SwapHistory = (props: {
         >
             <div
                 ref={divRef}
-                className="max-w-2xl w-full m-5 bg-slate-700 p-5 rounded-xl relative z-20"
+                className="max-w-2xl w-full m-5 bg-darkblue border-2 border-activeblue p-5 rounded-xl relative z-20"
             >
-                <div className="flex text-2xl text-white mb-3 items-center justify-center">
-                    <h2 className="flex-grow">Swap History</h2>
+                <div className="flex text-white mb-3 items-center justify-center">
+                    <SubHeader className="flex-grow">Swap History</SubHeader>
                     <ImCross
-                        className="text-xl cursor-pointer hover:text-orange-600 transition-colors"
+                        className="text-xl cursor-pointer hover:text-activeblue transition-colors"
                         onClick={() => props.setShow?.(false)}
                     />
                 </div>
-                <div className="w-full grid grid-cols-12 pr-3 gap-1 max-h-[calc(80vh-200px)] overflow-y-auto overflow-x-hidden scrollbar-thin scrollbar-thumb-slate-800">
+                <div className="w-full grid grid-cols-12 pr-3 gap-1 max-h-[calc(80vh-200px)] overflow-y-auto overflow-x-hidden scrollbar-thin scrollbar-thumb-activeblue">
                     {recentTrades.reverse().map(trade => {
                         return (
                             <SwapHistoryItem

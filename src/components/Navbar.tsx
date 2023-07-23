@@ -1,4 +1,10 @@
-import { useAccount, useConnect, useDisconnect, useNetwork } from "wagmi";
+import {
+    useAccount,
+    useBalance,
+    useConnect,
+    useDisconnect,
+    useNetwork
+} from "wagmi";
 import { InjectedConnector } from "wagmi/connectors/injected";
 import Image from "next/image";
 import { Disclosure, Menu, Transition } from "@headlessui/react";
@@ -11,11 +17,43 @@ import { useRouter } from "next/router";
 import { ConnectKitButton } from "connectkit";
 import { BridgeTokenStatusWarning } from "./SwapHistory/BridgeTokenStatusWarning";
 import { getMostRecentTxHistoryItem } from "@/helpers/txHistory";
+import { toPrecision } from "@/helpers/number";
+import { TokenImage } from "./TokenImage";
+import { chainsInfo } from "@/types";
+import { chainFromChainId } from "@/helpers/chain";
 
 const navigation = [
     { name: "Trade", href: "/trade/trade" }
     // { name: 'Portfolio', href: '/portfolio' },
 ];
+
+const ConnectedButton = () => {
+    const { address } = useAccount();
+    const { chain } = useNetwork();
+
+    const { data: balanceData } = useBalance({
+        address,
+        chainId: chain?.id
+    });
+
+    const chainInfo = chainFromChainId(chain?.id);
+
+    return (
+        <div className="flex gap-0.5 items-center p-0 -my-2">
+            {balanceData && (
+                <div className="border-r-2 border-activeblue flex items-center py-1 pr-2 mr-2">
+                    <TokenImage
+                        src={`/chains/${chainInfo.logo}`}
+                        symbol={chainInfo.symbol}
+                        size={16}
+                    />
+                    {toPrecision(parseFloat(balanceData?.formatted || "0"), 4)}
+                </div>
+            )}
+            {address?.slice(0, 6)}...{address?.slice(address.length - 3)}
+        </div>
+    );
+};
 
 export const Navbar = (props: { onClickRecentTrades?: () => void }) => {
     return (
@@ -51,7 +89,7 @@ export const Navbar = (props: { onClickRecentTrades?: () => void }) => {
                                     onClick={() =>
                                         props.onClickRecentTrades?.()
                                     }
-                                    className="bg-slate-600 px-3 py-2 flex gap-1 items-center rounded-xl text-white hover:bg-slate-400 transition-colors"
+                                    className="bg-darkblue border-2 border-activeblue px-3 py-2 flex gap-1 items-center rounded-full text-light-200 hover:bg-activeblue transition-colors"
                                 >
                                     Recent Trades
                                     <BridgeTokenStatusWarning
@@ -64,27 +102,24 @@ export const Navbar = (props: { onClickRecentTrades?: () => void }) => {
                                     />
                                 </button>
                             </div>
-                            <ConnectKitButton
-                                label="Connect"
-                                showAvatar={false}
-                                showBalance={true}
-                                mode="dark"
-                                customTheme={{
-                                    "--ck-primary-button-color": "#97A3B6",
-                                    "--ck-connectbutton-balance-background":
-                                        "#030616",
-                                    "--ck-connectbutton-balance-hover-background":
-                                        "#4A5567",
-                                    "--ck-connectbutton-background": "#4A5567",
-                                    "--ck-connectbutton-active-background":
-                                        "#4A5567",
-                                    "--ck-connectbutton-hover-background":
-                                        "#4A5567",
-                                    "--ck-connectbutton-color": "#ffffff",
-                                    "--ck-connectbutton-border-radius": "8px",
-                                    "--ck-font-family": "Ysabeau Infant"
+                            <ConnectKitButton.Custom>
+                                {({ isConnected, show, address }) => {
+                                    return (
+                                        <button
+                                            onClick={show}
+                                            className={classNames(
+                                                "bg-darkblue border-2 border-activeblue px-3 py-2 flex gap-1 items-center rounded-full text-light-200 hover:bg-activeblue transition-colors"
+                                            )}
+                                        >
+                                            {isConnected ? (
+                                                <ConnectedButton />
+                                            ) : (
+                                                "Connect Wallet"
+                                            )}
+                                        </button>
+                                    );
                                 }}
-                            />
+                            </ConnectKitButton.Custom>
                         </div>
                     </div>
                 </>

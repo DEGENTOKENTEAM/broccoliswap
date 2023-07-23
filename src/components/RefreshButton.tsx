@@ -9,7 +9,7 @@ export const RefreshButton = (props: {
 }) => {
     return (
         <div
-            className="bg-slate-700 px-2 rounded-full cursor-pointer border border-slate-700 hover:border-slate-500 transition-colors hover:bg-slate-500 flex gap-1 items-center text-sm "
+            className="bg-darkblue px-2 rounded-full cursor-pointer border-2 border-activeblue transition-colors hover:bg-activeblue flex gap-1 items-center text-sm "
             onClick={() => props.refreshFn?.()}
         >
             <IoMdRefresh

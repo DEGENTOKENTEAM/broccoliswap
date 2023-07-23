@@ -13,6 +13,7 @@ import { TokenImage } from "./TokenImage";
 import { useAccount, useBalance } from "wagmi";
 import { toPrecision } from "@/helpers/number";
 import useDisableScroll from "@/hooks/useDisableScroll";
+import { SubHeader } from "./SubHeader";
 
 const TokenListItem = (props: {
     token: RubicToken;
@@ -36,7 +37,7 @@ const TokenListItem = (props: {
     const token = props.token;
     return (
         <div
-            className="hover:bg-slate-500 p-3 rounded-xl cursor-pointer flex gap-3 items-center"
+            className="hover:bg-activeblue p-3 rounded-xl cursor-pointer flex gap-3 items-center"
             onClick={() =>
                 props.onSelectToken({ chain: props.selectedChain!, token })
             }
@@ -44,7 +45,7 @@ const TokenListItem = (props: {
             <TokenImage src={token.image} symbol={token.symbol} />
             <div className="flex flex-col flex-grow">
                 <div className="flex items-center gap-3">
-                    <div className="leading-5 text-white">{token.symbol}</div>
+                    <div className="leading-5 text-light-200">{token.symbol}</div>
                     {!token.address.startsWith("0x0000") && (
                         <Link
                             href={`${
@@ -53,7 +54,7 @@ const TokenListItem = (props: {
                             target="_blank"
                             onClick={e => e.stopPropagation()}
                         >
-                            <div className="text-xs bg-slate-800 py-0.5 px-1.5 rounded flex items-center gap-1">
+                            <div className="text-xs bg-dark py-0.5 px-1.5 rounded flex items-center gap-1">
                                 {token.address.slice(0, 5)}...{" "}
                                 <BiLinkExternal />
                             </div>
@@ -63,7 +64,7 @@ const TokenListItem = (props: {
                 <div className="text-xs leading-5">{token.name}</div>
             </div>
             {balanceData?.value.gt(0) && <div className="flex flex-col gap-0 text-right">
-                <div className="text-white text-lg leading-5">{toPrecision(parseFloat(balanceData?.formatted), 4)}</div>
+                <div className="text-light-200 text-lg leading-5">{toPrecision(parseFloat(balanceData?.formatted), 4)}</div>
                 <div className="text-sm">{props.token.usdPrice && `$${toPrecision(parseFloat(balanceData?.formatted) * parseFloat(props.token.usdPrice), 4)}`}</div>
             </div>}
         </div>
@@ -125,12 +126,12 @@ export const TokenSelector = (props: {
         >
             <div
                 ref={divRef}
-                className="max-w-2xl w-full m-5 bg-slate-700 p-5 rounded-xl relative z-20"
+                className="max-w-2xl w-full m-5 bg-darkblue border-2 border-activeblue p-5 rounded-xl relative z-20"
             >
-                <div className="flex text-2xl text-white mb-3 items-center justify-center">
-                    <h2 className="flex-grow">Select Chain</h2>
+                <div className="flex text-2xl text-light-200 mb-3 items-center justify-center">
+                    <SubHeader className="flex-grow">Select Chain</SubHeader>
                     <ImCross
-                        className="text-xl cursor-pointer hover:text-orange-600 transition-colors"
+                        className="text-xl cursor-pointer hover:text-activeblue transition-colors"
                         onClick={() => props.setShow?.(false)}
                     />
                 </div>
@@ -151,8 +152,8 @@ export const TokenSelector = (props: {
                                 className={classNames(
                                     "p-3 border-2 rounded-xl cursor-pointer transition-colors ease-in flex flex-col items-center w-20 gap-2",
                                     props.selectedChain === chain
-                                        ? "border-orange-600"
-                                        : "border-slate-800 hover:border-slate-400"
+                                        ? "bg-activeblue border-activeblue"
+                                        : "border-activeblue hover:bg-activeblue"
                                 )}
                             >
                                 <Image
@@ -169,18 +170,18 @@ export const TokenSelector = (props: {
 
                 {props.selectedChain && (
                     <>
-                        <h2 className="text-2xl text-white my-3">
+                        <SubHeader className="my-3 text-light-200">
                             Select Token
-                        </h2>
+                        </SubHeader>
                         <input
                             type="text"
                             placeholder="Search token name, symbol or address..."
-                            className="bg-slate-800 rounded border border-slate-600 focus:border-slate-300 focus:outline-none w-full py-1 px-3 mb-3"
+                            className="bg-dark rounded border-2 border-activeblue focus:border-light-200 focus:outline-none w-full py-1 px-3 mb-3"
                             onChange={e =>
                                 debouncedSearchFilter(e.target.value)
                             }
                         />
-                        <div className=" max-h-[calc(80vh-200px)] overflow-auto scrollbar-thin scrollbar-thumb-slate-800">
+                        <div className=" max-h-[calc(80vh-200px)] overflow-auto scrollbar-thin scrollbar-thumb-activeblue">
                             {tokens
                                 ? tokens.map(token => (
                                       <TokenListItem

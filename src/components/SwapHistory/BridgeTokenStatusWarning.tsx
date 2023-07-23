@@ -14,7 +14,7 @@ export const BridgeTokenStatusWarning = (props: {
 
     return swap.bridge && swap.bridgeToTokenInfo?.toSymbol !== swap.toSymbol ? (
         <PiWarningBold
-            className="text-yellow-600 cursor-pointer"
+            className="text-rusty cursor-pointer"
             onClick={() => props.onClick(true)}
         />
     ) : null;

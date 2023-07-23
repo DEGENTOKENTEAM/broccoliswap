@@ -177,18 +177,18 @@ export const SwapView = (props: {
                     <div className="flex-grow"></div>
                     <div
                         onClick={() => setShowSlippageSelector(true)}
-                        className="bg-slate-700 px-2 py-0.5 rounded-full cursor-pointer border border-slate-700 hover:border-slate-500 transition-colors hover:bg-slate-500 flex gap-1 items-center text-sm"
+                        className="bg-darkblue px-2 py-0.5 rounded-full cursor-pointer border-2 border-activeblue transition-colors hover:bg-activeblue flex gap-1 items-center text-sm"
                     >
                         <LuSettings2 />
                         {slippage}%
                         {(slippage < tokenTax || slippage - tokenTax > 10) && (
-                            <PiWarningBold className="text-yellow-600" />
+                            <PiWarningBold className="text-rusty" />
                         )}
                     </div>
                 </div>
-                <div className="bg-slate-700 p-5 rounded-xl w-full">
+                <div className="bg-darkblue border-activeblue border-2 p-5 rounded-xl w-full">
                     <div className="flex items-end gap-1">
-                        <div className="flex-grow">You&apos;re paying</div>
+                        <div className="flex-grow">You pay</div>
                         {address && inputToken && (
                             <div className="flex items-center gap-1 text-xs">
                                 <FaWallet />{' '}
@@ -223,7 +223,7 @@ export const SwapView = (props: {
                                         inputToken.token.address
                                     )
                                 }
-                                className="text-xs px-2 bg-slate-800 rounded-full border border-slate-900 cursor-pointer hover:border-orange-600 transition-colors hidden sm:block"
+                                className="text-xs px-2 bg-darkblue rounded-full border border-activeblue cursor-pointer hover:bg-activeblue transition-colors hidden sm:block"
                             >
                                 HALF
                             </div>
@@ -241,7 +241,7 @@ export const SwapView = (props: {
                                         inputToken.token.address
                                     )
                                 }
-                                className="text-xs px-2 bg-slate-800 rounded-full border border-slate-900 cursor-pointer hover:border-orange-600 transition-colors"
+                                className="text-xs px-2 bg-darkblue rounded-full border border-activeblue cursor-pointer hover:bg-activeblue transition-colors hidden sm:block"
                             >
                                 MAX
                             </div>
@@ -314,7 +314,7 @@ export const SwapView = (props: {
                     />
 
                     {slippage && slippage < tokenTax && (
-                        <div className="bg-yellow-400 border-2 border-yellow-500 p-3 rounded-xl text-black my-3">
+                        <div className="bg-dark border-2 border-rusty p-3 rounded-xl text-center text-light-200 my-3 font-bold">
                             The slippage you have selected is less than what you
                             will need for token taxes. This means the
                             transaction will most likely fail. Please make sure
@@ -324,7 +324,7 @@ export const SwapView = (props: {
                     )}
 
                     {swapSuccessTx && (
-                        <div className="bg-green-400 border-2 border-green-500 p-3 rounded-xl text-black my-3">
+                        <div className="bg-broccoli border-2 border-persianGreen p-3 rounded-xl text-light-200 my-3">
                             <div className="flex mb-3 items-center justify-center">
                                 <div className="flex-grow">
                                     Swap successful!
@@ -344,7 +344,7 @@ export const SwapView = (props: {
                                             : swapSuccessTx?.outputChain
                                     ].explorer
                                 }tx/${swapSuccessTx.tx}`}
-                                className="hover:underline bg-green-600 p-3 rounded-xl text-white mt-2 cursor-pointer hover:bg-green-800 font-bold transition-colors block text-center"
+                                className="hover:underline bg-persianGreen p-3 rounded-xl text-white mt-2 cursor-pointer border-persianGreen border-2 hover:bg-broccoli font-bold transition-colors block text-center"
                             >
                                 View on explorer{' '}
                                 <GoLinkExternal className="inline" />

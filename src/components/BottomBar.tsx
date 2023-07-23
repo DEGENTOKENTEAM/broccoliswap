@@ -6,6 +6,8 @@ import { classNames } from "@/helpers/classNames";
 import { RiFileCopyFill, RiShareForward2Fill } from "react-icons/ri";
 import { FaTelegramPlane, FaTwitter, FaDiscord, FaGlobe } from "react-icons/fa";
 import { useProgress } from "@/hooks/useProgress";
+import { Header } from "./Header";
+import Link from "next/link";
 
 const navigation = [
     { name: "Trade", href: "#", current: true },
@@ -71,103 +73,91 @@ const DGNXPrice = () => {
 
 export const BottomBar = () => {
     return (
-        <Disclosure
-            as="nav"
-            className="fixed bottom-0 w-full mt-10 bg-slate-950"
-        >
-            {({ open }) => (
-                <>
-                    <div className="mx-auto pl-2 sm:pl-3 lg:pl-3">
-                        <div className="relative flex h-10 items-center justify-between">
-                            <div className="flex flex-1 h-full stems-center justify-start">
-                                <div className="flex text-slate-200 items-center pr-2 h-full">
-                                    <DGNXPrice />
-                                </div>
-                                <div className="flex flex-grow"></div>
-                                <div className="hidden sm:flex text-slate-200 items-center px-2 h-full text-xs">
-                                    Powered by
-                                    <a
-                                        href="https://coingecko.com/"
-                                        target="_blank"
-                                        rel="noreferrer"
-                                    >
-                                        <Image
-                                            src="/cg.png"
-                                            alt="Coingecko"
-                                            unoptimized
-                                            width="20"
-                                            height="20"
-                                            className="ml-2"
-                                        />
-                                    </a>
-                                    <a
-                                        href="https://bitquery.io/"
-                                        target="_blank"
-                                        rel="noreferrer"
-                                    >
-                                        <Image
-                                            src="/bitquery.png"
-                                            alt="Bitquery"
-                                            unoptimized
-                                            width="20"
-                                            height="20"
-                                            className="ml-1"
-                                        />
-                                    </a>
-                                    <a
-                                        href="https://rubic.exchange/"
-                                        target="_blank"
-                                        rel="noreferrer"
-                                    >
-                                        <Image
-                                            src="/rubic.png"
-                                            alt="Rubic Exchange"
-                                            unoptimized
-                                            width="20"
-                                            height="20"
-                                            className="ml-1"
-                                        />
-                                    </a>
-                                </div>
-                                <div className="flex text-slate-200 items-center px-2 h-full">
-                                    <a
-                                        className="px-1.5"
-                                        href="https://dgnx.finance/"
-                                        target="_blank"
-                                        rel="noreferrer"
-                                    >
-                                        <FaGlobe className="text-orange-500 hover:text-orange-600" />
-                                    </a>
-                                    <a
-                                        className="px-1.5"
-                                        href="https://twitter.com/DegenEcosystem"
-                                        target="_blank"
-                                        rel="noreferrer"
-                                    >
-                                        <FaTwitter className="text-orange-500 hover:text-orange-600" />
-                                    </a>
-                                    <a
-                                        className="px-1.5"
-                                        href="https://t.me/DegenXportal"
-                                        target="_blank"
-                                        rel="noreferrer"
-                                    >
-                                        <FaTelegramPlane className="text-orange-500 hover:text-orange-600" />
-                                    </a>
-                                    <a
-                                        className="px-1.5"
-                                        href="https://discord.com/invite/pyaZqZrS"
-                                        target="_blank"
-                                        rel="noreferrer"
-                                    >
-                                        <FaDiscord className="text-orange-500 hover:text-orange-600" />
-                                    </a>
-                                </div>
-                            </div>
-                        </div>
+        <div className="sm:bottom-0 lg:fixed text-center mb-10 sm:text-right sm:right-0 sm:mr-10">
+            <Header className="text-xl">Powered By</Header>
+            <Link href="https://dgnx.finance" target="_blank">
+                <Header className="mb-5">
+                    <span className="text-techGreen">DEGEN</span>
+                    <span className="text-degenOrange">X</span>
+                </Header>
+            </Link>
+            <div className="flex text-slate-200 items-center justify-center sm:justify-end gap-2 h-full text-2xl">
+                {/* <a
+                    href="https://coingecko.com/"
+                    target="_blank"
+                    rel="noreferrer"
+                >
+                    <Image
+                        src="/cg.png"
+                        alt="Coingecko"
+                        unoptimized
+                        width="20"
+                        height="20"
+                    />
+                </a>
+                <a href="https://bitquery.io/" target="_blank" rel="noreferrer">
+                    <Image
+                        src="/bitquery.png"
+                        alt="Bitquery"
+                        unoptimized
+                        width="20"
+                        height="20"
+                    />
+                </a>
+                <a
+                    href="https://rubic.exchange/"
+                    target="_blank"
+                    rel="noreferrer"
+                >
+                    <Image
+                        src="/rubic.png"
+                        alt="Rubic Exchange"
+                        unoptimized
+                        width="20"
+                        height="20"
+                    />
+                </a> */}
+                <a
+                    href="https://dgnx.finance/"
+                    target="_blank"
+                    rel="noreferrer"
+                >
+                    <FaGlobe className="text-orange-500 hover:text-orange-600" />
+                </a>
+                <a
+                    href="https://twitter.com/DegenEcosystem"
+                    target="_blank"
+                    rel="noreferrer"
+                >
+                    <FaTwitter className="text-orange-500 hover:text-orange-600" />
+                </a>
+                <a
+                    href="https://t.me/DegenXportal"
+                    target="_blank"
+                    rel="noreferrer"
+                >
+                    <FaTelegramPlane className="text-orange-500 hover:text-orange-600" />
+                </a>
+                <a
+                    href="https://discord.com/invite/pyaZqZrS"
+                    target="_blank"
+                    rel="noreferrer"
+                >
+                    <FaDiscord className="text-orange-500 hover:text-orange-600" />
+                </a>
+            </div>
+        </div>
+    );
+
+    return (
+        <div className="fixed bottom-0 w-full mt-10 bg-dark">
+            <div className="mx-auto pl-2 sm:pl-3 lg:pl-3">
+                <div className="relative flex h-10 items-center justify-between">
+                    <div className="flex flex-1 h-full stems-center justify-start">
+                        <div className="flex flex-grow"></div>
                     </div>
-                </>
-            )}
-        </Disclosure>
+                </div>
+            </div>
+        </div>
     );
 };

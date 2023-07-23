@@ -35,13 +35,13 @@ export const TokenInput = (props: {
                 className={classNames(
                     "w-full px-3 py-3 rounded-xl my-3 text-xl flex",
                     props.isOtherToken
-                        ? "bg-slate-800 cursor-not-allowed"
-                        : "bg-slate-900"
+                        ? "bg-dark border border-activeblue cursor-not-allowed"
+                        : "bg-dark border border-activeblue"
                 )}
             >
                 <div
                     onClick={() => setShowSelector(true)}
-                    className="bg-slate-600 relative rounded-xl flex items-center justify-center px-3 py-1 font-bold gap-1 text-white cursor-pointer hover:bg-slate-500 transition-colors"
+                    className="bg-darkblue border border-activeblue relative rounded-xl flex items-center justify-center px-3 py-1 font-bold gap-1 text-white cursor-pointer hover:bg-activeblue transition-colors"
                 >
                     {props.token ? (
                         <div className="flex items-center gap-1">
@@ -90,7 +90,7 @@ export const TokenInput = (props: {
                 <div className="flex flex-col justify-end items-end gap-1">
                     {props.setInputAmount ? (
                         <input
-                            className="inputNumber ml-3 w-32 sm:w-full text-right font-bold text-white leading-5 text-2xl bg-slate-900 ring-0 border-0 focus:outline-none -my-1.5"
+                            className="inputNumber ml-3 w-32 sm:w-full text-right font-bold text-white leading-5 text-2xl bg-dark ring-0 border-0 focus:outline-none -my-1.5"
                             type="number"
                             ref={inputRef}
                             inputMode="decimal"
@@ -106,7 +106,7 @@ export const TokenInput = (props: {
                             {!props.tradeLoading && props.amount ? (
                                 toPrecision(props.amount, 6)
                             ) : props.tradeLoading ? (
-                                <div className="animate-pulse rounded w-24 bg-gradient-to-r from-slate-900 to-slate-950 py-1 -mb-2">
+                                <div className="animate-pulse rounded w-24 bg-gradient-to-r from-activeblue to-darkblue py-1 -mb-2">
                                     &nbsp;
                                 </div>
                             ) : (

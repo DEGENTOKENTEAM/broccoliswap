@@ -3,6 +3,7 @@ import useDisableScroll from "@/hooks/useDisableScroll";
 import useOutsideClick from "@/hooks/useOutsideClick";
 import { useRef } from "react";
 import { ImCross } from "react-icons/im";
+import { SubHeader } from "./SubHeader";
 
 export const SlippageSelector = (props: {
     show?: boolean;
@@ -35,17 +36,17 @@ export const SlippageSelector = (props: {
         >
             <div
                 ref={divRef}
-                className="max-w-2xl w-full m-5 bg-slate-700 p-5 rounded-xl relative z-20"
+                className="max-w-2xl w-full m-5 bg-darkblue border-2 border-activeblue p-5 rounded-xl relative z-20"
             >
                 <div className="flex text-2xl text-white mb-3 items-center justify-center">
-                    <h2 className="flex-grow">Set Slippage</h2>
+                    <SubHeader className="flex-grow">Set Slippage</SubHeader>
                     <ImCross
-                        className="text-xl cursor-pointer hover:text-orange-600 transition-colors"
+                        className="text-xl cursor-pointer hover:text-activeblue transition-colors"
                         onClick={() => props.setShow?.(false)}
                     />
                 </div>
                 {props.slippage && props.slippage < tokenTax && (
-                    <div className="bg-yellow-400 border-2 border-yellow-500 p-3 rounded-xl text-black my-3">
+                    <div className="bg-dark border-2 border-rusty p-3 rounded-xl text-light-200 font-bold text-center my-3">
                         The slippage you have selected is less than what you
                         will need for token taxes. This means the transaction
                         will most likely fail. Please make sure the slippage
@@ -54,7 +55,7 @@ export const SlippageSelector = (props: {
                     </div>
                 )}
                 {props.slippage && props.slippage - tokenTax > 10 && (
-                    <div className="bg-yellow-400 border-2 border-yellow-500 p-3 rounded-xl text-black my-3">
+                    <div className="bg-dark border-2 border-rusty p-3 rounded-xl text-light-200 font-bold text-center my-3">
                         You have selected a very high slippage, even when
                         accounting for the token taxes. Please make sure you
                         know what you are doing!
@@ -62,19 +63,19 @@ export const SlippageSelector = (props: {
                 )}
                 <div className="flex gap-2">
                     <div
-                        className="bg-slate-800 hover:bg-slate-600 transition-colors px-3 py-1 rounded-full cursor-pointer text-slate-400"
+                        className="bg-darkblue hover:bg-activeblue border-2 border-activeblue transition-colors px-3 py-1 rounded-full cursor-pointer text-light-200"
                         onClick={() => onSetSlippage(1 + tokenTax)}
                     >
                         {1 + tokenTax}%
                     </div>
                     <div
-                        className="bg-slate-800 hover:bg-slate-600 transition-colors px-3 py-1 rounded-full cursor-pointer text-slate-400"
+                        className="bg-darkblue hover:bg-activeblue border-2 border-activeblue transition-colors px-3 py-1 rounded-full cursor-pointer text-light-200"
                         onClick={() => onSetSlippage(2 + tokenTax)}
                     >
                         {2 + tokenTax}%
                     </div>
                     <div
-                        className="bg-slate-800 hover:bg-slate-600 transition-colors px-3 py-1 rounded-full cursor-pointer text-slate-400"
+                        className="bg-darkblue hover:bg-activeblue border-2 border-activeblue transition-colors px-3 py-1 rounded-full cursor-pointer text-light-200"
                         onClick={() => onSetSlippage(4 + tokenTax)}
                     >
                         {4 + tokenTax}%
@@ -83,12 +84,12 @@ export const SlippageSelector = (props: {
                         <input
                             type="text"
                             ref={inputRef}
-                            className="bg-slate-800 w-24 focus:outline-none px-3 py-1 rounded-l-full"
+                            className="bg-darkblue w-24 border-activeblue border-2 focus:outline-none px-3 py-1 rounded-l-full"
                             placeholder="Custom..."
                         />
                         <div
                             onClick={() => onSetSlippage()}
-                            className="bg-slate-800 hover:bg-slate-600 transition-colors px-3 py-1 rounded-r-full border-l border-slate-700 cursor-pointer text-slate-400"
+                            className="bg-darkblue hover:bg-activeblue border-2 border-activeblue transition-colors px-3 py-1 rounded-r-full border-l cursor-pointer text-light-200"
                         >
                             Set
                         </div>

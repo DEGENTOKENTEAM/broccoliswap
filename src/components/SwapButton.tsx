@@ -1,4 +1,4 @@
-import { blockchainNameToChain, blockchainNameToChainID, chainIdToBlockchainName } from "@/helpers/chain";
+import { blockchainNameToChain, blockchainNameToChainID, chainFromChainId } from "@/helpers/chain";
 import { classNames } from "@/helpers/classNames";
 import { toPrecision } from "@/helpers/number";
 import { calculateSwap } from "@/helpers/swap";
@@ -19,6 +19,8 @@ import {
     useSwitchNetwork,
     useWaitForTransaction
 } from "wagmi";
+
+const buttonStyle = "w-full mt-10 px-3 py-3 rounded-xl my-3 text-lg flex items-center justify-center text-light-200 font-bold bg-dark border-activeblue border-2 uppercase transition-colors"
 
 const tradeStatusToButtonStatus = (
     isConnected: boolean,
@@ -49,7 +51,7 @@ const tradeStatusToButtonStatus = (
         };
     }
 
-    if (chainIdToBlockchainName(chain?.id) !== trade.from.blockchain) {
+    if (chainFromChainId(chain?.id).rubicSdkChainName !== trade.from.blockchain) {
         return {
             disabled: false,
             buttonType: "switchNetworkButton",
@@ -66,11 +68,11 @@ const SwitchNetworkButton = (props: { targetChainId?: number }) => {
         <div
             onClick={() => switchNetwork?.(props.targetChainId)}
             className={classNames(
-                "w-full mt-10 px-3 py-3 rounded-xl my-3 text-xl flex items-center justify-center text-orange-600 font-bold bg-slate-950 border-slate-950 border-2  transition-colors",
+                buttonStyle,
                 " ",
                 isLoading
                     ? "animate-pulse cursor-not-allowed"
-                    : "cursor-pointer hover:border-orange-600"
+                    : "cursor-pointer hover:bg-activeblue"
             )}
         >
             Switch Network
@@ -175,14 +177,14 @@ const MaybeSwapButton = (props:{
             <>
                 <div
                     className={classNames(
-                        "w-full mt-10 px-3 py-3 rounded-xl my-3 text-xl flex items-center justify-center text-orange-600 font-bold bg-slate-950 border-slate-950 border-2  transition-colors",
+                        buttonStyle,
                         "cursor-not-allowed"
                     )}
                 >
                     Something went wrong. Send this to Rock: {swapError}
                 </div>
-                <div className="bg-red-400 border-2 border-red-500 p-3 rounded-xl text-black">
-                    We could not execute your swap because of an error.
+                <div className="bg-rusty border-2 border-degenOrange p-3 rounded-xl text-light-200">
+                    We could not execute your swap because of an error. Please refresh trade and try again.
                     {tradeAmount < 5 && props.trade.from.blockchain !== props.trade.to.blockchain && ` Most probably it failed because you try to bridge a very low amount ($${toPrecision(tradeAmount, 4)}). If you are bridging funds, please make sure the token value is at least $5.`}
                 </div>
             </>
@@ -192,7 +194,7 @@ const MaybeSwapButton = (props:{
     if (balanceIsLoading) {
         return (<div
                 className={classNames(
-                    "w-full mt-10 px-3 py-3 rounded-xl my-3 text-xl flex items-center justify-center text-orange-600 font-bold bg-slate-950 border-slate-950 border-2  transition-colors",
+                    buttonStyle,
                     "cursor-not-allowed animate-pulse"
                 )}
             >
@@ -204,7 +206,7 @@ const MaybeSwapButton = (props:{
     if (approveTxLoading) {
         return (<div
                 className={classNames(
-                    "w-full mt-10 px-3 py-3 rounded-xl my-3 text-xl flex items-center justify-center text-orange-600 font-bold bg-slate-950 border-slate-950 border-2  transition-colors",
+                    buttonStyle,
                     "cursor-not-allowed animate-pulse"
                 )}
             >
@@ -216,7 +218,7 @@ const MaybeSwapButton = (props:{
     if (isSwapping) {
         return (<div
                 className={classNames(
-                    "w-full mt-10 px-3 py-3 rounded-xl my-3 text-xl flex items-center justify-center text-orange-600 font-bold bg-slate-950 border-slate-950 border-2  transition-colors",
+                    buttonStyle,
                     "cursor-not-allowed animate-pulse"
                 )}
             >
@@ -229,7 +231,7 @@ const MaybeSwapButton = (props:{
         return (
             <div
                 className={classNames(
-                    "w-full mt-10 px-3 py-3 rounded-xl my-3 text-xl flex items-center justify-center text-orange-600 font-bold bg-slate-950 border-slate-950 border-2  transition-colors",
+                    buttonStyle,
                         "cursor-not-allowed"
                 )}
             >
@@ -241,8 +243,8 @@ const MaybeSwapButton = (props:{
     if (buttonAction) {
         return (<div
                 className={classNames(
-                    "w-full mt-10 px-3 py-3 rounded-xl my-3 text-xl flex items-center justify-center text-orange-600 font-bold bg-slate-950 border-slate-950 border-2  transition-colors",
-                    "hover:border-orange-600 cursor-pointer",
+                    buttonStyle,
+                    "hover:bg-activeblue cursor-pointer",
                 )}
                 onClick={() => buttonAction.action()}
             >
@@ -280,8 +282,8 @@ export const SwapButton = (props: {
                         <button
                             onClick={show}
                             className={classNames(
-                                "w-full mt-10 px-3 py-3 rounded-xl my-3 text-xl flex items-center justify-center text-orange-600 font-bold bg-slate-950 border-slate-950 border-2  transition-colors",
-                                "hover:border-orange-600 cursor-pointer"
+                                buttonStyle,
+                                "hover:bg-activeblue cursor-pointer"
                             )}
                         >
                             Connect Wallet
@@ -301,7 +303,7 @@ export const SwapButton = (props: {
     if (buttonStatus.disabled) {
         return <div
             className={classNames(
-                "w-full mt-10 px-3 py-3 rounded-xl my-3 text-xl flex items-center justify-center text-orange-600 font-bold bg-slate-950 border-slate-950 border-2  transition-colors",
+                buttonStyle,
                     "cursor-not-allowed",
                 props.tradeLoading && "animate-pulse"
             )}
