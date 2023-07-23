@@ -4,7 +4,7 @@ import { useAccount } from "wagmi";
 
 export const BridgeTokenStatusWarning = (props: {
     swapTx: string;
-    setShowBridgeTokenWarning: Function;
+    onClick: Function;
 }) => {
     const swap = getTxHistoryItem(props.swapTx);
 
@@ -12,10 +12,10 @@ export const BridgeTokenStatusWarning = (props: {
         return null;
     }
 
-    return swap.bridgeToTokenInfo?.toSymbol !== swap.toSymbol ? (
+    return swap.bridge && swap.bridgeToTokenInfo?.toSymbol !== swap.toSymbol ? (
         <PiWarningBold
             className="text-yellow-600 cursor-pointer"
-            onClick={() => props.setShowBridgeTokenWarning(true)}
+            onClick={() => props.onClick(true)}
         />
     ) : null;
 };

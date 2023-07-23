@@ -9,6 +9,8 @@ import { Token } from "@/__old__types";
 import Link from "next/link";
 import { useRouter } from "next/router";
 import { ConnectKitButton } from "connectkit";
+import { BridgeTokenStatusWarning } from "./SwapHistory/BridgeTokenStatusWarning";
+import { getMostRecentTxHistoryItem } from "@/helpers/txHistory";
 
 const navigation = [
     { name: "Trade", href: "/trade/trade" }
@@ -49,9 +51,17 @@ export const Navbar = (props: { onClickRecentTrades?: () => void }) => {
                                     onClick={() =>
                                         props.onClickRecentTrades?.()
                                     }
-                                    className="bg-slate-600 px-3 py-2 rounded-xl text-white hover:bg-slate-400 transition-colors"
+                                    className="bg-slate-600 px-3 py-2 flex gap-1 items-center rounded-xl text-white hover:bg-slate-400 transition-colors"
                                 >
                                     Recent Trades
+                                    <BridgeTokenStatusWarning
+                                        swapTx={
+                                            getMostRecentTxHistoryItem().swapTx
+                                        }
+                                        onClick={() =>
+                                            props.onClickRecentTrades?.()
+                                        }
+                                    />
                                 </button>
                             </div>
                             <ConnectKitButton

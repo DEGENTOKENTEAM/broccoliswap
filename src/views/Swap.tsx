@@ -36,7 +36,11 @@ export const SwapView = (props: {
 
     const [slippage, setSlippage] = useState(4)
 
-    const [swapSuccessTx, setSwapSuccessTx] = useState('')
+    const [swapSuccessTx, setSwapSuccessTx] = useState<{
+        tx: string
+        inputChain: Chain
+        outputChain: Chain
+    }>()
 
     const [forceRefreshVar, forceRefresh] = useState(0)
 
@@ -293,8 +297,16 @@ export const SwapView = (props: {
                     <SwapButton
                         tradeLoading={tradeLoading}
                         trade={trade}
-                        onSwapDone={(tx: string) => {
-                            setSwapSuccessTx(tx)
+                        onSwapDone={(
+                            tx: string,
+                            swapInputChain: Chain,
+                            swapOutputChain: Chain
+                        ) => {
+                            setSwapSuccessTx({
+                                tx,
+                                inputChain: swapInputChain,
+                                outputChain: swapOutputChain,
+                            })
                             forceRefresh(Math.random())
                         }}
                         inputToken={inputToken}
@@ -311,7 +323,7 @@ export const SwapView = (props: {
                         </div>
                     )}
 
-                    {swapSuccessTx && outputChain && (
+                    {swapSuccessTx && (
                         <div className="bg-green-400 border-2 border-green-500 p-3 rounded-xl text-black my-3">
                             <div className="flex mb-3 items-center justify-center">
                                 <div className="flex-grow">
@@ -319,24 +331,26 @@ export const SwapView = (props: {
                                 </div>
                                 <ImCross
                                     className="cursor-pointer hover:text-orange-600 transition-colors"
-                                    onClick={() => setSwapSuccessTx('')}
+                                    onClick={() => setSwapSuccessTx(undefined)}
                                 />
                             </div>
                             <Link
                                 target="_blank"
                                 href={`${
                                     chainsInfo[
-                                        inputToken?.chain !== outputToken?.chain
-                                            ? inputChain!
-                                            : outputChain!
+                                        swapSuccessTx?.inputChain !==
+                                        swapSuccessTx?.outputChain
+                                            ? swapSuccessTx?.inputChain
+                                            : swapSuccessTx?.outputChain
                                     ].explorer
-                                }tx/${swapSuccessTx}`}
+                                }tx/${swapSuccessTx.tx}`}
                                 className="hover:underline bg-green-600 p-3 rounded-xl text-white mt-2 cursor-pointer hover:bg-green-800 font-bold transition-colors block text-center"
                             >
                                 View on explorer{' '}
                                 <GoLinkExternal className="inline" />
                             </Link>
-                            {inputToken?.chain !== outputToken?.chain && (
+                            {swapSuccessTx?.inputChain !==
+                                swapSuccessTx?.outputChain && (
                                 <div
                                     onClick={() =>
                                         props.setShowRecentTrades?.(true)

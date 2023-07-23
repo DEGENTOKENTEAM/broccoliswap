@@ -4,7 +4,7 @@ import { toPrecision } from "@/helpers/number";
 import { calculateSwap } from "@/helpers/swap";
 import { SwapType, putHistory } from "@/helpers/txHistory";
 import { useAsyncEffect } from "@/hooks/useAsyncEffect";
-import { NULL_ADDRESS, Token, chainsInfo } from "@/types";
+import { Chain, NULL_ADDRESS, Token, chainsInfo } from "@/types";
 import { waitForTransaction } from "@wagmi/core";
 import { ConnectKitButton } from "connectkit";
 import Image from "next/image";
@@ -80,7 +80,7 @@ const SwitchNetworkButton = (props: { targetChainId?: number }) => {
 
 const MaybeSwapButton = (props:{
     trade: OnChainTrade | CrossChainTrade,
-    onSwapDone?: (show: string) => void ,
+    onSwapDone?: (tx: string, swapInputChain: Chain, swapOutputChain: Chain) => void ,
     inputToken?: Token,
     outputToken?: Token
 }) => {
@@ -107,6 +107,7 @@ const MaybeSwapButton = (props:{
     })
 
     const doSwap = async () => {
+        console.log(props.trade)
         setIsSwapping(true);
         try {
             const tx = await props.trade.swap();
@@ -138,7 +139,7 @@ const MaybeSwapButton = (props:{
 
             putHistory(data);
 
-            props.onSwapDone?.(tx);
+            props.onSwapDone?.(tx, blockchainNameToChain(props.trade.from.blockchain).chain, blockchainNameToChain(props.trade.to.blockchain).chain);
         } catch (e) {
             if (e instanceof UserRejectError) {
                 setIsSwapping(false);
@@ -257,7 +258,7 @@ const MaybeSwapButton = (props:{
 export const SwapButton = (props: {
     tradeLoading: boolean;
     trade?: Awaited<Awaited<ReturnType<typeof calculateSwap>>['trade']>;
-    onSwapDone?: (tx: string) => void;
+    onSwapDone?: (tx: string, swapInputChain: Chain, swapOutputChain: Chain) => void;
     inputToken?: Token,
     outputToken?: Token
 }) => {

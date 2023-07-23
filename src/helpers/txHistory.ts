@@ -45,6 +45,10 @@ export const getTxHistoryItem = (tx: string) => {
     return getTxHistory().find(x => x.swapTx === tx)
 }
 
+export const getMostRecentTxHistoryItem = () => {
+    return getTxHistory().reverse()[0]
+}
+
 export const putHistory = (data: Omit<TxHistoryItem, 'date'>) => {
     console.log(data)
 

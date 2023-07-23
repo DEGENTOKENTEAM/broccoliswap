@@ -43,7 +43,7 @@ export const BridgeStatus = (props: {
             </div>
         );
     }
-    console.log(status);
+
     if (status?.status === TxStatus.SUCCESS && !status.bridgeStatus) {
         return (
             <div className="flex gap-1 px-2 items-center">
@@ -68,7 +68,7 @@ export const BridgeStatus = (props: {
                 </Link>
                 <BridgeTokenStatusWarning
                     swapTx={swap.swapTx}
-                    setShowBridgeTokenWarning={props.setShowBridgeTokenWarning}
+                    onClick={props.setShowBridgeTokenWarning}
                 />
             </>
         );
