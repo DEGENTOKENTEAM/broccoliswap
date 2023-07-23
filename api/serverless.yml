@@ -85,6 +85,22 @@ functions:
                 chain: true
                 tokenAddress: true
 
+  getBridgeTxInfo:
+    handler: transactions/getBridgeTxInfo.handler
+    memorySize: 1024
+    timeout: 29
+    events:
+      - http:
+          cors: true
+          path: /getBridgeTxInfo/{address}/{toChain}/{hash}
+          method: get
+          request:
+            parameters:
+              paths:
+                address: true
+                toChain: true
+                hash: true
+
 resources:
   Resources:
     TranslationsTable:

@@ -188,3 +188,26 @@ export const getTxForConnectorAddress = async (network: string, tokenAddress: st
       "token": tokenAddress
   })
 }
+
+export const getBridgeTxInfo = (address: string, toChain: string, hash: string) => {
+  return bitqueryFetch(`#graphql
+      query MyQuery($network: EthereumNetwork, $txHash: String, $receiver: String) {
+        ethereum(network: $network) {
+          transfers(
+            txHash: {is: $txHash}
+            receiver: {is: $receiver}
+          ) {
+            currency {
+              address
+              symbol
+            }
+            amount
+          }
+        }
+      }
+    `, {
+      "network": toChain,
+      "txHash": hash,
+      "receiver": address
+    })
+}
