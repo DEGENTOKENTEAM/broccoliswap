@@ -46,7 +46,7 @@ export const SlippageSelector = (props: {
                     />
                 </div>
                 {props.slippage && props.slippage < tokenTax && (
-                    <div className="bg-dark border-2 border-rusty p-3 rounded-xl text-light-200 font-bold text-center my-3">
+                    <div className="bg-dark border-2 border-warning p-3 rounded-xl text-light-200 font-bold text-center my-3">
                         The slippage you have selected is less than what you
                         will need for token taxes. This means the transaction
                         will most likely fail. Please make sure the slippage
@@ -55,7 +55,7 @@ export const SlippageSelector = (props: {
                     </div>
                 )}
                 {props.slippage && props.slippage - tokenTax > 10 && (
-                    <div className="bg-dark border-2 border-rusty p-3 rounded-xl text-light-200 font-bold text-center my-3">
+                    <div className="bg-dark border-2 border-warning p-3 rounded-xl text-light-200 font-bold text-center my-3">
                         You have selected a very high slippage, even when
                         accounting for the token taxes. Please make sure you
                         know what you are doing!

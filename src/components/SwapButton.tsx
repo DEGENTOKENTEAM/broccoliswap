@@ -183,7 +183,7 @@ const MaybeSwapButton = (props:{
                 >
                     Something went wrong. Send this to Rock: {swapError}
                 </div>
-                <div className="bg-rusty border-2 border-degenOrange p-3 rounded-xl text-light-200">
+                <div className="bg-dark border-2 border-error p-3 rounded-xl text-light-200">
                     We could not execute your swap because of an error. Please refresh trade and try again.
                     {tradeAmount < 5 && props.trade.from.blockchain !== props.trade.to.blockchain && ` Most probably it failed because you try to bridge a very low amount ($${toPrecision(tradeAmount, 4)}). If you are bridging funds, please make sure the token value is at least $5.`}
                 </div>

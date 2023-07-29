@@ -2,6 +2,7 @@ import { Token, chainsInfo } from '@/types'
 import { debounce } from './debounce'
 import { BlockchainName, OnChainTrade } from 'rubic-sdk'
 import { getSDK } from './rubic'
+import { GoPlusTokenReponse, getTokenSecurity } from './goPlus'
 
 const calculateBestTrade = async (
     slippage: number,
@@ -49,16 +50,21 @@ const calculateBestTrade = async (
     return bestTrade.trade || 'Something went wrong'
 }
 
+let cancel: Function
 const calculate = async (
     inputToken: Token,
     outputToken: Token,
     inputAmount: number,
     slippage: number,
+    setTradeLoading: (loading: boolean) => void,
     callback: Function
 ) => {
-    let cancel
-    const cancelPromise = new Promise((resolve, reject) => {
-        cancel = reject.bind(null, { canceled: true })
+    setTradeLoading(true)
+
+    cancel?.()
+
+    const cancelPromise = new Promise<'cancelled'>((resolve, reject) => {
+        cancel = resolve.bind(null, 'cancelled')
     })
 
     const trade = await Promise.race([
@@ -76,19 +82,40 @@ const calculate = async (
         ),
         cancelPromise,
     ])
-    callback({ trade, cancel })
+
+    if (trade === 'cancelled') {
+        return
+    }
+
+    // Goplus security
+    const [inputGPSec, outputGPSec] = await Promise.all([
+        getTokenSecurity(
+            chainsInfo[inputToken.chain].id,
+            inputToken.token.address
+        ),
+        getTokenSecurity(
+            chainsInfo[outputToken.chain].id,
+            outputToken.token.address
+        ),
+    ])
+
+    setTradeLoading(false)
+    callback({ trade, inputGPSec, outputGPSec })
 }
 
-const debouncedCalculate = debounce(calculate, 2000)
+const debouncedCalculate = debounce(calculate, 200)
 
 export const calculateSwap = (
     inputToken: Token,
     outputToken: Token,
     inputAmount: number,
-    slippage: number
+    slippage: number,
+    setTradeLoading: (loading: boolean) => void
 ): Promise<{
     trade: Awaited<ReturnType<typeof calculateBestTrade>>
     cancel: Function
+    inputGPSec: GoPlusTokenReponse
+    outputGPSec: GoPlusTokenReponse
 }> => {
     return new Promise(resolve => {
         debouncedCalculate(
@@ -96,6 +123,7 @@ export const calculateSwap = (
             outputToken,
             inputAmount,
             slippage,
+            setTradeLoading,
             resolve
         )
     })

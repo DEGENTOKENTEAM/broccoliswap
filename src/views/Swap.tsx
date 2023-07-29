@@ -106,7 +106,9 @@ export const SwapView = (props: {
     }, [])
 
     useAsyncEffect(async () => {
-        if (!address || !inputChain) return
+        if (!address || !inputChain) {
+            return
+        }
         ;(await getSDK()).updateWalletProviderCore(CHAIN_TYPE.EVM, {
             core: window.ethereum!,
             address,
@@ -119,25 +121,20 @@ export const SwapView = (props: {
             return
         }
 
-        setTradeLoading(true)
         setTrade(undefined)
 
-        const [
-            { trade: _trade, cancel: _cancelTrade },
-            _inputGPSec,
-            _outputGPSec,
-        ] = await Promise.all([
-            calculateSwap(inputToken, outputToken, inputAmount, slippage),
-            getTokenSecurity(
-                chainsInfo[inputToken.chain].id,
-                inputToken.token.address
-            ),
-            getTokenSecurity(
-                chainsInfo[outputToken.chain].id,
-                outputToken.token.address
-            ),
-        ])
-        setTradeLoading(false)
+        const {
+            trade: _trade,
+            inputGPSec: _inputGPSec,
+            outputGPSec: _outputGPSec,
+        } = await calculateSwap(
+            inputToken,
+            outputToken,
+            inputAmount,
+            slippage,
+            setTradeLoading
+        )
+
         setTrade(_trade)
         setInputGPSec(_inputGPSec)
         setOutputGPSec(_outputGPSec)
@@ -182,7 +179,7 @@ export const SwapView = (props: {
                         <LuSettings2 />
                         {slippage}%
                         {(slippage < tokenTax || slippage - tokenTax > 10) && (
-                            <PiWarningBold className="text-rusty" />
+                            <PiWarningBold className="text-warning" />
                         )}
                     </div>
                 </div>
@@ -314,7 +311,7 @@ export const SwapView = (props: {
                     />
 
                     {slippage && slippage < tokenTax && (
-                        <div className="bg-dark border-2 border-rusty p-3 rounded-xl text-center text-light-200 my-3 font-bold">
+                        <div className="bg-dark border-2 border-warning p-3 rounded-xl text-center text-light-200 my-3 font-bold">
                             The slippage you have selected is less than what you
                             will need for token taxes. This means the
                             transaction will most likely fail. Please make sure
@@ -324,13 +321,13 @@ export const SwapView = (props: {
                     )}
 
                     {swapSuccessTx && (
-                        <div className="bg-broccoli border-2 border-persianGreen p-3 rounded-xl text-light-200 my-3">
+                        <div className="bg-dark border-2 border-success p-3 rounded-xl text-light-200 my-3">
                             <div className="flex mb-3 items-center justify-center">
                                 <div className="flex-grow">
                                     Swap successful!
                                 </div>
                                 <ImCross
-                                    className="cursor-pointer hover:text-orange-600 transition-colors"
+                                    className="cursor-pointer hover:text-activeblue transition-colors"
                                     onClick={() => setSwapSuccessTx(undefined)}
                                 />
                             </div>
@@ -344,7 +341,7 @@ export const SwapView = (props: {
                                             : swapSuccessTx?.outputChain
                                     ].explorer
                                 }tx/${swapSuccessTx.tx}`}
-                                className="hover:underline bg-persianGreen p-3 rounded-xl text-white mt-2 cursor-pointer border-persianGreen border-2 hover:bg-broccoli font-bold transition-colors block text-center"
+                                className="hover:underline bg-broccoli p-3 rounded-xl text-white mt-2 cursor-pointer border-success border-2 hover:bg-success font-bold transition-colors block text-center"
                             >
                                 View on explorer{' '}
                                 <GoLinkExternal className="inline" />
@@ -355,7 +352,7 @@ export const SwapView = (props: {
                                     onClick={() =>
                                         props.setShowRecentTrades?.(true)
                                     }
-                                    className="bg-green-600 p-3 rounded-xl text-white mt-2 cursor-pointer hover:bg-green-800 transition-colors font-bold text-center"
+                                    className="hover:underline bg-broccoli p-3 rounded-xl text-white mt-2 cursor-pointer border-success border-2 hover:bg-success font-bold transition-colors block text-center"
                                 >
                                     View Bridge Status
                                 </div>

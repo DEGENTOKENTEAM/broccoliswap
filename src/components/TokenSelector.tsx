@@ -10,10 +10,11 @@ import { searchToken } from "@/helpers/rubic";
 import Link from "next/link";
 import { debounce } from "@/helpers/debounce";
 import { TokenImage } from "./TokenImage";
-import { useAccount, useBalance } from "wagmi";
+import { useAccount, useBalance, useNetwork } from "wagmi";
 import { toPrecision } from "@/helpers/number";
 import useDisableScroll from "@/hooks/useDisableScroll";
 import { SubHeader } from "./SubHeader";
+import { chainFromChainId } from "@/helpers/chain";
 
 const TokenListItem = (props: {
     token: RubicToken;
@@ -37,7 +38,7 @@ const TokenListItem = (props: {
     const token = props.token;
     return (
         <div
-            className="hover:bg-activeblue p-3 rounded-xl cursor-pointer flex gap-3 items-center"
+            className="hover:bg-activeblue p-3 m-2 rounded-xl cursor-pointer flex gap-3 items-center"
             onClick={() =>
                 props.onSelectToken({ chain: props.selectedChain!, token })
             }
@@ -73,7 +74,7 @@ const TokenListItem = (props: {
 
 const TokenListSkeletonItem = () => {
     return (
-        <div className="hover:bg-slate-500 p-3 rounded-xl cursor-pointer flex gap-3 items-center">
+        <div className="hover:bg-slate-500 p-3 mr-2 rounded-xl cursor-pointer flex gap-3 items-center">
             <div className="w-8 h-8 bg-slate-900 rounded-full" />
             <div className="flex flex-col gap-1">
                 <div className="from-slate-900 to-slate-800 bg-gradient-to-r w-32 h-5 rounded"></div>
@@ -93,6 +94,8 @@ export const TokenSelector = (props: {
     const [tokens, setTokens] = useState<RubicToken[] | null>();
     const [searchFilter, setSearchFilter] = useState("");
 
+    const { chain } = useNetwork();
+
     const divRef = useRef<HTMLDivElement>(null);
     useOutsideClick([divRef], () => props.setShow?.(false));
 
@@ -100,7 +103,7 @@ export const TokenSelector = (props: {
         if (props.show) {
             setTokens(null)
             setSearchFilter('')
-            props.setSelectedChain?.()
+            props.setSelectedChain?.(chain && chainFromChainId(chain.id).chain)
         }
     }, [props.show])
     useDisableScroll(props.show);
@@ -181,7 +184,7 @@ export const TokenSelector = (props: {
                                 debouncedSearchFilter(e.target.value)
                             }
                         />
-                        <div className=" max-h-[calc(80vh-200px)] overflow-auto scrollbar-thin scrollbar-thumb-activeblue">
+                        <div className="max-h-[calc(80vh-200px)] overflow-auto scrollbar-thin scrollbar-thumb-activeblue">
                             {tokens
                                 ? tokens.map(token => (
                                       <TokenListItem

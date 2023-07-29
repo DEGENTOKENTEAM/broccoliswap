@@ -49,7 +49,7 @@ const DGNXPrice = () => {
                 onClick={() => {
                     progress.click();
                 }}
-                className="radial-progress text-orange-600 mr-3 cursor-pointer"
+                className="radial-progress text-rusty mr-3 cursor-pointer"
                 style={{
                     // @ts-ignore
                     "--value": progress.progress * 100,
@@ -122,41 +122,29 @@ export const BottomBar = () => {
                     target="_blank"
                     rel="noreferrer"
                 >
-                    <FaGlobe className="text-orange-500 hover:text-orange-600" />
+                    <FaGlobe className="text-degenOrange hover:text-rusty transition-colors" />
                 </a>
                 <a
                     href="https://twitter.com/DegenEcosystem"
                     target="_blank"
                     rel="noreferrer"
                 >
-                    <FaTwitter className="text-orange-500 hover:text-orange-600" />
+                    <FaTwitter className="text-degenOrange hover:text-rusty transition-colors" />
                 </a>
                 <a
                     href="https://t.me/DegenXportal"
                     target="_blank"
                     rel="noreferrer"
                 >
-                    <FaTelegramPlane className="text-orange-500 hover:text-orange-600" />
+                    <FaTelegramPlane className="text-degenOrange hover:text-rusty transition-colors" />
                 </a>
                 <a
                     href="https://discord.com/invite/pyaZqZrS"
                     target="_blank"
                     rel="noreferrer"
                 >
-                    <FaDiscord className="text-orange-500 hover:text-orange-600" />
+                    <FaDiscord className="text-degenOrange hover:text-rusty transition-colors" />
                 </a>
-            </div>
-        </div>
-    );
-
-    return (
-        <div className="fixed bottom-0 w-full mt-10 bg-dark">
-            <div className="mx-auto pl-2 sm:pl-3 lg:pl-3">
-                <div className="relative flex h-10 items-center justify-between">
-                    <div className="flex flex-1 h-full stems-center justify-start">
-                        <div className="flex flex-grow"></div>
-                    </div>
-                </div>
             </div>
         </div>
     );

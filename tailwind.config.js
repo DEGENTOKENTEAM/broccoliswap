@@ -60,6 +60,10 @@ module.exports = {
                 techGreen: '#0f978e',
                 persianGreen: '#00ac8c',
                 seafoamGreen: '#78cc97',
+
+                error: '#ff264d',
+                success: '#00ac8c',
+                yellow: '#ffd926',
             },
         },
     },
