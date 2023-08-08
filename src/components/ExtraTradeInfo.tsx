@@ -17,11 +17,11 @@ console.log(props.trade.getTradeInfo())
                 </div>
                 <div className="flex w-full">
                     <div className="flex-grow">Slippage</div>
-                    <div>{trade.slippageTolerance * 100}%</div>
+                    <div>{(trade.slippageTolerance * 100).toFixed(2)}%</div>
                 </div>
                 <div className="flex w-full">
                     <div className="flex-grow">Price impact</div>
-                    <div>{trade.priceImpact}%</div>
+                    <div>{trade.priceImpact || 0}%</div>
                 </div>
             </div>
         )
@@ -36,11 +36,11 @@ console.log(props.trade.getTradeInfo())
             </div>
             <div className="flex w-full">
                 <div className="flex-grow">Slippage</div>
-                <div>{trade.getTradeInfo().slippage}%</div>
+                <div>{(trade.getTradeInfo().slippage).toFixed(2)}%</div>
             </div>
             <div className="flex w-full">
                 <div className="flex-grow">Price impact</div>
-                <div>{trade.getTradeInfo().priceImpact}%</div>
+                <div>{trade.getTradeInfo().priceImpact || 0}%</div>
             </div>
         </div>
     )
