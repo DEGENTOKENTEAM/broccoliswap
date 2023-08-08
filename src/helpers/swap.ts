@@ -1,6 +1,6 @@
 import { Token, chainsInfo } from '@/types'
 import { debounce } from './debounce'
-import { BlockchainName, OnChainTrade } from 'rubic-sdk'
+import { BlockchainName, CROSS_CHAIN_TRADE_TYPE, CrossChainTradeType, OnChainTrade } from 'rubic-sdk'
 import { getSDK } from './rubic'
 import { GoPlusTokenReponse, getTokenSecurity } from './goPlus'
 
@@ -12,42 +12,95 @@ const calculateBestTrade = async (
 ) => {
     const sdk = await getSDK()
     if (fromToken.blockchain === toToken.blockchain) {
-        const trades = await sdk.onChainManager.calculateTrade(
-            fromToken,
-            fromAmount,
-            toToken.address,
-            {
-                timeout: 10000,
-                gasCalculation: 'disabled',
-                slippageTolerance: slippage / 100,
-                disableMultihops: false,
-                useProxy: true,
-                deadlineMinutes: 20,
-            }
-        )
+        const [trades, tradesWithoutProxy] = await Promise.all([
+            sdk.onChainManager.calculateTrade(
+                fromToken,
+                fromAmount,
+                toToken.address,
+                {
+                    timeout: 10000,
+                    gasCalculation: 'disabled',
+                    slippageTolerance: slippage / 100,
+                    disableMultihops: false,
+                    useProxy: true,
+                    deadlineMinutes: 20,
+                }
+            ),
+            sdk.onChainManager.calculateTrade(
+                fromToken,
+                fromAmount,
+                toToken.address,
+                {
+                    timeout: 10000,
+                    gasCalculation: 'disabled',
+                    slippageTolerance: slippage / 100,
+                    disableMultihops: false,
+                    useProxy: false,
+                    deadlineMinutes: 20,
+                }
+            ),
+        ]);
 
         const availableTrades = trades.filter(
             // @ts-expect-error error type
             (trade): trade is OnChainTrade => !trade?.error
         )
-        if (availableTrades.length === 0) return 'No trades available'
-        return availableTrades.sort((a, b) =>
-            a.to.tokenAmount > b.to.tokenAmount ? -1 : 1
-        )[0] as OnChainTrade
-    }
-    const trades = await sdk.crossChainManager.calculateTrade(
-        fromToken,
-        fromAmount,
-        toToken
-    )
 
-    const bestTrade = trades
+        const availableTradesWithoutProxy = tradesWithoutProxy.filter(
+            // @ts-expect-error error type
+            (trade): trade is OnChainTrade => !trade?.error
+        )
+
+        if (availableTrades.length === 0) return 'No trades available'
+        return availableTrades
+            .sort((a, b) =>
+                a.to.tokenAmount > b.to.tokenAmount ? -1 : 1
+            )
+            .concat(availableTradesWithoutProxy)
+            .filter(trade => !['PangolinTrade', 'JoeTrade'].includes(trade.constructor.name)) as OnChainTrade[]       
+    }
+
+    const [trades, tradesWithoutProxy] = await Promise.all([
+        sdk.crossChainManager.calculateTrade(
+            fromToken,
+            fromAmount,
+            toToken,
+            {
+                useProxy: Object.values(CROSS_CHAIN_TRADE_TYPE).reduce((acc, val) => {
+                    acc[val] = true;
+                    return acc;
+                }, {} as Record<CrossChainTradeType, boolean>)
+            }
+        ),
+        sdk.crossChainManager.calculateTrade(
+            fromToken,
+            fromAmount,
+            toToken,
+            {
+                useProxy: Object.values(CROSS_CHAIN_TRADE_TYPE).reduce((acc, val) => {
+                    acc[val] = false;
+                    return acc;
+                }, {} as Record<CrossChainTradeType, boolean>)
+            }
+        ),
+    ]);
+
+    const availableTradesWithoutProxy = tradesWithoutProxy.filter(
+            // @ts-expect-error error type
+            (trade): trade is OnChainTrade => !trade?.error
+        )
+
+    const bestTrades = trades
         .filter(trade => !!trade?.trade?.to)
         .sort((a, b) =>
             a.trade!.to.tokenAmount > b.trade!.to.tokenAmount ? -1 : 1
-        )[0]
-    if (!bestTrade) return 'No trades available'
-    return bestTrade.trade || 'Something went wrong'
+        )
+        .concat(availableTradesWithoutProxy)
+        // @ts-expect-error onChainTrade is not a prop but exists sometimes
+        .filter(trade => !trade.trade?.onChainTrade || !['PangolinTrade', 'JoeTrade'].includes(trade.trade?.onChainTrade.constructor.name))
+    if (!bestTrades || bestTrades.length === 0) return 'No trades available'
+
+    return bestTrades.map(bestTrade => bestTrade.trade);
 }
 
 let cancel: Function

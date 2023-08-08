@@ -82,7 +82,7 @@ export const SlippageSelector = (props: {
                     </div>
                     <div className="flex">
                         <input
-                            type="text"
+                            type="number"
                             ref={inputRef}
                             className="bg-darkblue w-24 border-activeblue border-2 focus:outline-none px-3 py-1 rounded-l-full"
                             placeholder="Custom..."

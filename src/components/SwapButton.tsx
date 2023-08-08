@@ -26,21 +26,24 @@ const tradeStatusToButtonStatus = (
     isConnected: boolean,
     chain: ReturnType<typeof useNetwork>["chain"],
     tradeLoading: boolean,
-    trade?: Awaited<Awaited<ReturnType<typeof calculateSwap>>['trade']>
+    trades?: Awaited<Awaited<ReturnType<typeof calculateSwap>>['trade']>
 ) => {
     if (tradeLoading) {
         return { text: "Calculating route...", disabled: true };
     }
 
-    if (!trade) {
+    
+    if (!trades || trades.length === 0) {
         return { text: "Select route", disabled: true };
     }
+    
+    const trade = trades[0];
 
     if (trade === "No trades available") {
         return { text: "No trades available", disabled: true };
     }
 
-    if (trade === "Something went wrong") {
+    if (typeof trade === 'string') {
         return { text: "Something went wrong", disabled: true };
     }
 
@@ -51,15 +54,15 @@ const tradeStatusToButtonStatus = (
         };
     }
 
-    if (chainFromChainId(chain?.id).rubicSdkChainName !== trade.from.blockchain) {
+    if (chainFromChainId(chain?.id)?.rubicSdkChainName !== trade?.from.blockchain) {
         return {
             disabled: false,
             buttonType: "switchNetworkButton",
-            targetChainId: blockchainNameToChainID(trade.from.blockchain)
+            targetChainId: blockchainNameToChainID(trade?.from.blockchain)
         };
     }
 
-    return { text: "Swap", disabled: false, trade };
+    return { text: "Swap", disabled: false, trades: trades as (OnChainTrade[] | CrossChainTrade[]) };
 };
 
 const SwitchNetworkButton = (props: { targetChainId?: number }) => {
@@ -81,7 +84,7 @@ const SwitchNetworkButton = (props: { targetChainId?: number }) => {
 };
 
 const MaybeSwapButton = (props:{
-    trade: OnChainTrade | CrossChainTrade,
+    trades: OnChainTrade[] | CrossChainTrade[],
     onSwapDone?: (tx: string, swapInputChain: Chain, swapOutputChain: Chain) => void ,
     inputToken?: Token,
     outputToken?: Token
@@ -93,59 +96,71 @@ const MaybeSwapButton = (props:{
     const [swapError, setSwapError] = useState('')
     const [buttonAction, setButtonAction] = useState<{ text: string, action: Function } | undefined>()
 
+    const referenceTrade = props.trades[0];
+
     const { isLoading: balanceIsLoading, data: balanceData } = useBalance({
         address,
         token:
-            (props.trade as OnChainTrade | CrossChainTrade | undefined)?.from
+            (referenceTrade as OnChainTrade | CrossChainTrade | undefined)?.from
                 ?.address !== NULL_ADDRESS
-                ? (props.trade as OnChainTrade | CrossChainTrade | undefined)
+                ? (referenceTrade as OnChainTrade | CrossChainTrade | undefined)
                       ?.from?.address as `0x${string}`
                 : undefined,
-        chainId: blockchainNameToChainID(props.trade?.from.blockchain)
+        chainId: blockchainNameToChainID(referenceTrade?.from.blockchain)
     });
 
     const { data: approveTxLoaded, isLoading: approveTxLoading } = useWaitForTransaction({
         hash: approveTxHash as `0x${string}`,
     })
 
-    const doSwap = async () => {
-        console.log(props.trade)
+    const doSwap = async (tradeIterator = 0): Promise<void> => {
+        const currentTrade = props.trades[tradeIterator];
+        console.log(currentTrade, tradeIterator)
         setIsSwapping(true);
         try {
-            const tx = await props.trade.swap();
+            const tx = await currentTrade.swap();
             setIsSwapping(false);
+
+            if (!currentTrade) {
+                throw Error('No valid trades');
+            }
 
             const data = {
                 swapTx: tx,
-                fromChain: blockchainNameToChain(props.trade.from.blockchain).chain,
-                toChain: blockchainNameToChain(props.trade.to.blockchain).chain,
-                fromSymbol: props.trade.from.symbol,
-                fromAddress: props.trade.from.address,
+                fromChain: blockchainNameToChain(currentTrade.from.blockchain)!.chain,
+                toChain: blockchainNameToChain(currentTrade.to.blockchain)!.chain,
+                fromSymbol: currentTrade.from.symbol,
+                fromAddress: currentTrade.from.address,
                 fromLogo: props.inputToken?.token.image || '',
-                toSymbol: props.trade.to.symbol,
-                toAddress: props.trade.to.address,
-                fromAmount: props.trade.from.tokenAmount.toNumber(),
-                toAmount: props.trade.to.tokenAmount.toNumber(),
+                toSymbol: currentTrade.to.symbol,
+                toAddress: currentTrade.to.address,
+                fromAmount: currentTrade.from.tokenAmount.toNumber(),
+                toAmount: currentTrade.to.tokenAmount.toNumber(),
                 toLogo: props.outputToken?.token.image || '',
             }
             
             // @ts-expect-error typeguard for cross chain trades
-            if (props.trade?.bridgeType) {
+            if (currentTrade?.bridgeType) {
                 // @ts-expect-error typeguard for cross chain trades
-                data.bridge = props.trade.type
+                data.bridge = currentTrade.type
                 // @ts-expect-error typeguard for cross chain trades
-                data.bridgeId = props.trade.id
+                data.bridgeId = currentTrade.id
                 // @ts-expect-error typeguard for cross chain trades
-                data.bridgeType = props.trade.bridgeType
+                data.bridgeType = currentTrade.bridgeType
             }
 
             putHistory(data);
 
-            props.onSwapDone?.(tx, blockchainNameToChain(props.trade.from.blockchain).chain, blockchainNameToChain(props.trade.to.blockchain).chain);
+            props.onSwapDone?.(tx, blockchainNameToChain(currentTrade.from.blockchain)!.chain, blockchainNameToChain(currentTrade.to.blockchain)!.chain);
         } catch (e) {
             if (e instanceof UserRejectError) {
                 setIsSwapping(false);
                 return;
+            }
+
+            // Try another trade if possible
+            if (props.trades[tradeIterator + 1]) {
+                return doSwap(tradeIterator + 1)
             }
 
             setSwapError(JSON.stringify(e))
@@ -156,12 +171,14 @@ const MaybeSwapButton = (props:{
     useAsyncEffect(async () => {
         setButtonAction(undefined)
 
-        const _needApprove = await props.trade.needApprove();
+        const referenceTrade = props.trades[0];
+
+        const _needApprove = await referenceTrade.needApprove();
 
         if (_needApprove) {
             return setButtonAction({
                 text: 'Approve',
-                action: () => props.trade.approve.bind(props.trade)({ onTransactionHash: hash => setTimeout(() => setApproveTxHash(hash), 2000) })
+                action: () => referenceTrade.approve.bind(referenceTrade)({ onTransactionHash: hash => setTimeout(() => setApproveTxHash(hash), 2000) })
             })
         }
         
@@ -169,10 +186,10 @@ const MaybeSwapButton = (props:{
             text: 'Swap',
             action: doSwap
         })
-    }, [props.trade, approveTxLoaded])
+    }, [props.trades, approveTxLoaded])
 
     if (swapError) {
-        const tradeAmount = props.trade?.from?.tokenAmount?.toNumber() * parseFloat(props.inputToken?.token.usdPrice || '0');
+        const tradeAmount = props.trades?.[0]?.from?.tokenAmount?.toNumber() * parseFloat(props.inputToken?.token.usdPrice || '0');
         return (
             <>
                 <div
@@ -185,7 +202,7 @@ const MaybeSwapButton = (props:{
                 </div>
                 <div className="bg-dark border-2 border-error p-3 rounded-xl text-light-200">
                     We could not execute your swap because of an error. Please refresh trade and try again.
-                    {tradeAmount < 5 && props.trade.from.blockchain !== props.trade.to.blockchain && ` Most probably it failed because you try to bridge a very low amount ($${toPrecision(tradeAmount, 4)}). If you are bridging funds, please make sure the token value is at least $5.`}
+                    {tradeAmount < 5 && props.trades[0].from.blockchain !== props.trades[0].to.blockchain && ` Most probably it failed because you try to bridge a very low amount ($${toPrecision(tradeAmount, 4)}). If you are bridging funds, please make sure the token value is at least $5.`}
                 </div>
             </>
         )
@@ -227,7 +244,7 @@ const MaybeSwapButton = (props:{
         )
     }
 
-    if (balanceData && props.trade.from.tokenAmount.toNumber() > parseFloat(balanceData.formatted)) {
+    if (balanceData && props.trades[0].from.tokenAmount.toNumber() > parseFloat(balanceData.formatted)) {
         return (
             <div
                 className={classNames(
@@ -259,7 +276,7 @@ const MaybeSwapButton = (props:{
 
 export const SwapButton = (props: {
     tradeLoading: boolean;
-    trade?: Awaited<Awaited<ReturnType<typeof calculateSwap>>['trade']>;
+    trades?: Awaited<Awaited<ReturnType<typeof calculateSwap>>['trade']>;
     onSwapDone?: (tx: string, swapInputChain: Chain, swapOutputChain: Chain) => void;
     inputToken?: Token,
     outputToken?: Token
@@ -271,7 +288,7 @@ export const SwapButton = (props: {
         isConnected,
         chain,
         props.tradeLoading,
-        props.trade,
+        props.trades,
     );
 
     if (buttonStatus.buttonType === "connectButton") {
@@ -312,9 +329,9 @@ export const SwapButton = (props: {
         </div>
     }
 
-    if (buttonStatus.trade) {
+    if (buttonStatus.trades) {
         return (
-            <MaybeSwapButton inputToken={props.inputToken} outputToken={props.outputToken} trade={buttonStatus.trade} onSwapDone={props.onSwapDone} />
+            <MaybeSwapButton inputToken={props.inputToken} outputToken={props.outputToken} trades={buttonStatus.trades} onSwapDone={props.onSwapDone} />
         );
     }
 

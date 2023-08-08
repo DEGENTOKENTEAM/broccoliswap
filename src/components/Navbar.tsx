@@ -36,17 +36,23 @@ const ConnectedButton = () => {
         chainId: chain?.id
     });
 
-    const chainInfo = chainFromChainId(chain?.id);
+    let chainInfo;
+
+    try {
+        chainInfo = chainFromChainId(chain?.id);
+    } catch (e) {
+        return <div>Unsupported chain</div>
+    }
 
     return (
         <div className="flex gap-0.5 items-center p-0 -my-2">
             {balanceData && (
                 <div className="border-r-2 border-activeblue flex items-center py-1 pr-2 mr-2">
-                    <TokenImage
+                    {chainInfo && <TokenImage
                         src={`/chains/${chainInfo.logo}`}
                         symbol={chainInfo.symbol}
                         size={16}
-                    />
+                    />}
                     {toPrecision(parseFloat(balanceData?.formatted || "0"), 4)}
                 </div>
             )}

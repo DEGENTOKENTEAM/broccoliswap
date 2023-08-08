@@ -49,7 +49,7 @@ export const SwapView = (props: {
     const [inputBalance, setInputBalance] = useState<number>()
     const [externallySetAmount, setExternallySetAmount] = useState<number>(0)
 
-    const [trade, setTrade] = useState<
+    const [trades, setTrades] = useState<
         Awaited<Awaited<ReturnType<typeof calculateSwap>>['trade']>
     >()
     const [tradeLoading, setTradeLoading] = useState(false)
@@ -121,10 +121,10 @@ export const SwapView = (props: {
             return
         }
 
-        setTrade(undefined)
+        setTrades(undefined)
 
         const {
-            trade: _trade,
+            trade: _trades,
             inputGPSec: _inputGPSec,
             outputGPSec: _outputGPSec,
         } = await calculateSwap(
@@ -134,8 +134,8 @@ export const SwapView = (props: {
             slippage,
             setTradeLoading
         )
-
-        setTrade(_trade)
+console.log(_trades)
+        setTrades(_trades)
         setInputGPSec(_inputGPSec)
         setOutputGPSec(_outputGPSec)
     }, [inputToken, outputToken, inputAmount, slippage, forceRefreshVar])
@@ -286,14 +286,14 @@ export const SwapView = (props: {
                         setToken={setOutputToken}
                         isOtherToken
                         tradeLoading={tradeLoading}
-                        amount={(trade as
+                        amount={(trades?.[0] as
                             | OnChainTrade
                             | CrossChainTrade)?.to?.tokenAmount?.toNumber()}
                     />
 
                     <SwapButton
                         tradeLoading={tradeLoading}
-                        trade={trade}
+                        trades={trades}
                         onSwapDone={(
                             tx: string,
                             swapInputChain: Chain,

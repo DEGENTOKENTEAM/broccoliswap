@@ -1,6 +1,10 @@
 import { chainsInfo } from '@/types'
 
 export const chainFromChainId = (id?: number) => {
+    if (!id) {
+        return;
+    }
+
     const chain = Object.values(chainsInfo).find(info => info.id === id)
 
     if (!chain) {
@@ -11,6 +15,10 @@ export const chainFromChainId = (id?: number) => {
 }
 
 export const blockchainNameToChainID = (blockchain?: string) => {
+    if (!blockchain) {
+        return;
+    }
+
     const chain = Object.values(chainsInfo).find(
         info => info.rubicSdkChainName === blockchain
     )
@@ -23,6 +31,10 @@ export const blockchainNameToChainID = (blockchain?: string) => {
 }
 
 export const blockchainNameToChain = (blockchain?: string) => {
+    if (!blockchain) {
+        return;
+    }
+
     const chain = Object.values(chainsInfo).find(
         info => info.rubicSdkChainName === blockchain
     )

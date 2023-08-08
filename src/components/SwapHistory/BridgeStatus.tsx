@@ -2,7 +2,7 @@ import { GoLinkExternal } from "react-icons/go";
 import { BridgeTokenStatusWarning } from "./BridgeTokenStatusWarning";
 import Link from "next/link";
 import { chainsInfo } from "@/types";
-import { TxStatus } from "rubic-sdk";
+import { TX_STATUS, TxStatus } from "rubic-sdk";
 import { IoMdRefresh } from "react-icons/io";
 import {
     TxHistoryItem,
@@ -35,7 +35,7 @@ export const BridgeStatus = (props: {
         return null;
     }
 
-    if (status?.status === TxStatus.PENDING) {
+    if (status?.status === TX_STATUS.PENDING) {
         return (
             <div className="flex gap-1 px-2 items-center">
                 Bridge pending
@@ -44,16 +44,25 @@ export const BridgeStatus = (props: {
         );
     }
 
-    if (status?.status === TxStatus.SUCCESS && !status.bridgeStatus) {
+    if (status?.status === TX_STATUS.SUCCESS && !status.bridgeStatus) {
         return (
             <div className="flex gap-1 px-2 items-center">
-                Verifying bridge tx
+                Verifying tx
+                <Link
+                    className="flex gap-1 items-center px-2 py-1 rounded-xl hover:underline"
+                    target="_blank"
+                    href={`${chainsInfo[swap.toChain].explorer}tx/${
+                        status.hash
+                    }`}
+                >
+                    <GoLinkExternal />
+                </Link>
                 <IoMdRefresh className="animate-spin" />
             </div>
         );
     }
 
-    if (status?.status === TxStatus.SUCCESS) {
+    if (status?.status === TX_STATUS.SUCCESS) {
         return (
             <>
                 <Link

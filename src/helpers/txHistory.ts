@@ -1,5 +1,5 @@
 import { Chain, chainsInfo } from '@/types'
-import { CrossChainTradeType, TxStatus } from 'rubic-sdk'
+import { CrossChainTradeType, TX_STATUS, TxStatus } from 'rubic-sdk'
 import { getSDK } from './rubic'
 
 export enum SwapType {
@@ -120,7 +120,7 @@ const checkBridgeTransferTokenSuccess = async (
     swap: TxHistoryItem
 ): Promise<any> => {
     if (
-        swap.finalStatus !== TxStatus.SUCCESS ||
+        swap.finalStatus !== TX_STATUS.SUCCESS ||
         !address ||
         !swap.finalDstHash
     ) {
@@ -148,7 +148,7 @@ export const checkBridgeStatus = async (
         return
     }
 
-    if (swap.finalStatus && swap.finalStatus !== TxStatus.PENDING) {
+    if (swap.finalStatus && swap.finalStatus !== TX_STATUS.PENDING) {
         return setStatus({
             status: swap.finalStatus,
             hash: swap.finalDstHash || null,
@@ -202,13 +202,13 @@ export const checkBridgeStatus = async (
             bridgeStatus
         )
 
-        if (_status.dstTxStatus === TxStatus.PENDING) {
+        if (_status.dstTxStatus === TX_STATUS.PENDING) {
             await new Promise(resolve => setTimeout(resolve, 10000))
             checkBridgeStatus(address, swapTx, setStatus)
         }
     } catch (e) {
         setStatus({
-            status: TxStatus.FAIL,
+            status: TX_STATUS.FAIL,
             hash: '',
         })
     }

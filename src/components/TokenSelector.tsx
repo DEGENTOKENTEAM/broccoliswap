@@ -103,7 +103,7 @@ export const TokenSelector = (props: {
         if (props.show) {
             setTokens(null)
             setSearchFilter('')
-            props.setSelectedChain?.(chain && chainFromChainId(chain.id).chain)
+            props.setSelectedChain?.(chain && chainFromChainId(chain.id)?.chain)
         }
     }, [props.show])
     useDisableScroll(props.show);
