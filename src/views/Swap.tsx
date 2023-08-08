@@ -16,7 +16,8 @@ import { SlippageSelector } from '@/components/SlippageSelector'
 import { getSDK, searchToken } from '@/helpers/rubic'
 import { SwapHistory } from '@/components/SwapHistory'
 import { RefreshButton } from '@/components/RefreshButton'
-import { GoPlusTokenReponse, getTokenSecurity } from '@/helpers/goPlus'
+import { ExtraTradeInfo } from '@/components/ExtraTradeInfo'
+import { getTokenSecurity } from '@/helpers/goPlus'
 import { GoLinkExternal } from 'react-icons/go'
 import Link from 'next/link'
 import { ImCross } from 'react-icons/im'
@@ -108,9 +109,9 @@ export const SwapView = (props: {
 
     useAsyncEffect(async () => {
         if (!address || !inputChain) {
-            return
+            return;
         }
-        ;(await getSDK()).updateWalletProviderCore(CHAIN_TYPE.EVM, {
+        (await getSDK()).updateWalletProviderCore(CHAIN_TYPE.EVM, {
             core: window.ethereum!,
             address,
         })
@@ -405,6 +406,8 @@ export const SwapView = (props: {
                         </div>
                     )}
                 </div>
+                
+                <ExtraTradeInfo trade={trades?.[0]} />
             </div>
 
             <SlippageSelector
