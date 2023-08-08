@@ -11,6 +11,9 @@ export const SlippageSelector = (props: {
     slippage?: number;
     setSlippage?: (slippage: number) => void;
     tokenTax?: number;
+    inputTokenSellTax?: number;
+    outputTokenBuyTax?: number;
+    isBridge?: boolean;
 }) => {
     const divRef = useRef<HTMLDivElement>(null);
     const inputRef = useRef<HTMLInputElement>(null);
@@ -39,12 +42,27 @@ export const SlippageSelector = (props: {
                 className="max-w-2xl w-full m-5 bg-darkblue border-2 border-activeblue p-5 rounded-xl relative z-20"
             >
                 <div className="flex text-2xl text-white mb-3 items-center justify-center">
-                    <SubHeader className="flex-grow">Set Slippage</SubHeader>
+                    <SubHeader className="flex-grow">Slippage</SubHeader>
                     <ImCross
                         className="text-xl cursor-pointer hover:text-activeblue transition-colors"
                         onClick={() => props.setShow?.(false)}
                     />
                 </div>
+
+                <div className="flex flex-col gap-5">
+                    <span>The {props.slippage}% slippage is determined automatically, here is the breakdown:</span>
+                    <div className="grid grid-cols-4 gap-x-3 gap-y-1 w-1/2 mx-auto">
+                        <div className="col-span-3">Input token sell tax:<div className="text-xs">*This includes LP fees</div></div>
+                        <div className="text-right">{props.inputTokenSellTax}%</div>
+                        <div className="col-span-3">Output token buy tax:<div className="text-xs">*This includes LP fees</div></div>
+                        <div className="text-right">{props.outputTokenBuyTax}%</div>
+                        {props.isBridge && <><div className="col-span-3">Bridge swap:</div><div className="text-right">4%</div></>}
+                        {!props.isBridge && <><div className="col-span-3">On-chain swap:</div><div className="text-right">1%</div></>}
+                    </div>
+                </div>
+
+                <div className="my-3">If the slippage calculation is incorrect, you can override the slippage here:</div>
+
                 {props.slippage && props.slippage < tokenTax && (
                     <div className="bg-dark border-2 border-warning p-3 rounded-xl text-light-200 font-bold text-center my-3">
                         The slippage you have selected is less than what you

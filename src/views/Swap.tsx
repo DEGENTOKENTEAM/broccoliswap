@@ -3,7 +3,7 @@ import { TokenInput } from '@/components/TokenInput'
 import { SwapButton } from '@/components/SwapButton'
 import { SwapTokens } from '@/components/SwapTokens'
 import { Chain, NULL_ADDRESS, RubicToken, Token, chainsInfo } from '@/types'
-import { useMemo, useState } from 'react'
+import { useEffect, useMemo, useState } from 'react'
 import { calculateSwap } from '@/helpers/swap'
 import { useAsyncEffect } from '@/hooks/useAsyncEffect'
 import { CHAIN_TYPE, CrossChainTrade, OnChainTrade } from 'rubic-sdk'
@@ -20,6 +20,7 @@ import { GoPlusTokenReponse, getTokenSecurity } from '@/helpers/goPlus'
 import { GoLinkExternal } from 'react-icons/go'
 import Link from 'next/link'
 import { ImCross } from 'react-icons/im'
+import { getTokenTaxes } from '@/helpers/tokenTax'
 
 export const SwapView = (props: {
     showRecentTrades?: boolean
@@ -31,10 +32,10 @@ export const SwapView = (props: {
     const [outputChain, setOutputChain] = useState<Chain>()
     const [inputAmount, setInputAmount] = useState<number>()
 
-    const [inputGPSec, setInputGPSec] = useState<GoPlusTokenReponse>()
-    const [outputGPSec, setOutputGPSec] = useState<GoPlusTokenReponse>()
+    const [inputTokenSellTax, setInputTokenSellTax] = useState<number>()
+    const [outputTokenBuyTax, setOutputTokenBuyTax] = useState<number>()
 
-    const [slippage, setSlippage] = useState(4)
+    const [slippage, setSlippage] = useState<number>()
 
     const [swapSuccessTx, setSwapSuccessTx] = useState<{
         tx: string
@@ -116,6 +117,10 @@ export const SwapView = (props: {
         forceRefresh(Math.random())
     }, [address, inputChain])
 
+    useEffect(() => {
+        setSlippage(undefined);
+    }, [inputToken, outputToken])
+
     useAsyncEffect(async () => {
         if (!inputToken || !outputToken || !inputAmount) {
             return
@@ -123,21 +128,61 @@ export const SwapView = (props: {
 
         setTrades(undefined)
 
+        let _inputTokenSellTax;
+        let _outputTokenBuyTax;
+
+        const [inputTokenTaxes, outputTokenTaxes] = await Promise.all([
+            getTokenTaxes(
+                inputToken.chain,
+                inputToken.token.address,
+            ),
+            getTokenTaxes(
+                outputToken.chain,
+                outputToken.token.address,
+            ),
+        ]);
+
+        if (inputTokenTaxes.sellTax === -1 || outputTokenTaxes.buyTax === -1) {
+            // Goplus security
+            const [_inputGPSec, _outputGPSec] = await Promise.all([
+                getTokenSecurity(
+                    chainsInfo[inputToken.chain].id,
+                    inputToken.token.address
+                ),
+                getTokenSecurity(
+                    chainsInfo[outputToken.chain].id,
+                    outputToken.token.address
+                ),
+            ])
+
+            _inputTokenSellTax = _inputGPSec.sell_tax;
+            _outputTokenBuyTax = _outputGPSec.buy_tax;
+        } else {
+            _inputTokenSellTax = inputTokenTaxes.sellTax;
+            _outputTokenBuyTax = outputTokenTaxes.buyTax;
+        }
+
+        setInputTokenSellTax(_inputTokenSellTax);
+        setOutputTokenBuyTax(_outputTokenBuyTax);
+        
+
+        let tradeSlippage = slippage;
+        if (!tradeSlippage) {
+            tradeSlippage = (_inputTokenSellTax + _outputTokenBuyTax + (inputToken.chain  === outputToken.chain ? 1 : 4));
+            setSlippage(tradeSlippage)
+        }
+
         const {
             trade: _trades,
-            inputGPSec: _inputGPSec,
-            outputGPSec: _outputGPSec,
         } = await calculateSwap(
             inputToken,
             outputToken,
             inputAmount,
-            slippage,
+            tradeSlippage,
             setTradeLoading
         )
-console.log(_trades)
+
         setTrades(_trades)
-        setInputGPSec(_inputGPSec)
-        setOutputGPSec(_outputGPSec)
     }, [inputToken, outputToken, inputAmount, slippage, forceRefreshVar])
 
     const setInputFromBalance = async (
@@ -159,20 +204,20 @@ console.log(_trades)
     }
 
     const tokenTax = useMemo(() => {
-        return (inputGPSec?.sell_tax || 0) + (outputGPSec?.buy_tax || 0)
-    }, [inputGPSec, outputGPSec])
+        return (inputTokenSellTax || 0) + (outputTokenBuyTax || 0)
+    }, [inputTokenSellTax, outputTokenBuyTax])
 
     return (
         <>
             <div className="flex flex-col mt-20 mx-5 mb-5 gap-3">
-                <div className="flex">
+                <div className="flex h-8">
                     <RefreshButton
                         tradeLoading={tradeLoading}
                         interval={60}
                         refreshFn={() => forceRefresh(Math.random())}
                     />
                     <div className="flex-grow"></div>
-                    <div
+                    {slippage && <div
                         onClick={() => setShowSlippageSelector(true)}
                         className="bg-darkblue px-2 py-0.5 rounded-full cursor-pointer border-2 border-activeblue transition-colors hover:bg-activeblue flex gap-1 items-center text-sm"
                     >
@@ -181,7 +226,7 @@ console.log(_trades)
                         {(slippage < tokenTax || slippage - tokenTax > 10) && (
                             <PiWarningBold className="text-warning" />
                         )}
-                    </div>
+                    </div>}
                 </div>
                 <div className="bg-darkblue border-activeblue border-2 p-5 rounded-xl w-full">
                     <div className="flex items-end gap-1">
@@ -368,6 +413,9 @@ console.log(_trades)
                 slippage={slippage}
                 setSlippage={setSlippage}
                 tokenTax={tokenTax}
+                inputTokenSellTax={inputTokenSellTax}
+                outputTokenBuyTax={outputTokenBuyTax}
+                isBridge={inputToken?.chain !== outputToken?.chain}
             />
 
             <SwapHistory

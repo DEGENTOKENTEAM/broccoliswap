@@ -12,8 +12,6 @@ export const BridgeTokenStatusWarning = (props: {
         return null;
     }
 
-    console.log(swap)
-
     return swap.bridge && swap.bridgeToTokenInfo && swap.bridgeToTokenInfo?.toSymbol !== swap.toSymbol ? (
         <PiWarningBold
             className="text-warning cursor-pointer"

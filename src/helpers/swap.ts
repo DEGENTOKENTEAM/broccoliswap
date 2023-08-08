@@ -140,20 +140,8 @@ const calculate = async (
         return
     }
 
-    // Goplus security
-    const [inputGPSec, outputGPSec] = await Promise.all([
-        getTokenSecurity(
-            chainsInfo[inputToken.chain].id,
-            inputToken.token.address
-        ),
-        getTokenSecurity(
-            chainsInfo[outputToken.chain].id,
-            outputToken.token.address
-        ),
-    ])
-
     setTradeLoading(false)
-    callback({ trade, inputGPSec, outputGPSec })
+    callback({ trade })
 }
 
 const debouncedCalculate = debounce(calculate, 200)
@@ -167,8 +155,6 @@ export const calculateSwap = (
 ): Promise<{
     trade: Awaited<ReturnType<typeof calculateBestTrade>>
     cancel: Function
-    inputGPSec: GoPlusTokenReponse
-    outputGPSec: GoPlusTokenReponse
 }> => {
     return new Promise(resolve => {
         debouncedCalculate(
