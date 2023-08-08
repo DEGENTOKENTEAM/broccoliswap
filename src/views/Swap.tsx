@@ -209,7 +209,7 @@ export const SwapView = (props: {
 
     return (
         <>
-            <div className="flex flex-col mt-20 mx-5 mb-5 gap-3">
+            <div className="flex flex-col mt-24 sm:mt-20 mx-5 mb-5 gap-3">
                 <div className="flex h-8">
                     <RefreshButton
                         tradeLoading={tradeLoading}

@@ -56,7 +56,8 @@ const ConnectedButton = () => {
                     {toPrecision(parseFloat(balanceData?.formatted || "0"), 4)}
                 </div>
             )}
-            {address?.slice(0, 6)}...{address?.slice(address.length - 3)}
+            <div className="hidden md:inline">{address?.slice(0, 6)}...{address?.slice(address.length - 3)}</div>
+            <div className="md:hidden inline">{address?.slice(0, 5)}...{address?.slice(address.length - 2)}</div>
         </div>
     );
 };
@@ -70,23 +71,23 @@ export const Navbar = (props: { onClickRecentTrades?: () => void }) => {
                         <div className="flex sm:hidden mt-3 flex-grow items-center justify-center">
                             <div className="flex flex-shrink-0 items-center">
                                 <Image
-                                    src="/swap.png"
+                                    src="/logo-full.png"
                                     alt="Swap image"
                                     unoptimized
-                                    width="25"
-                                    height="25"
+                                    width="285"
+                                    height="50"
                                 />
                             </div>
                         </div>
                         <div className="relative m-3 flex h-10 items-center justify-between gap-3">
                             <div className="hidden sm:flex flex-grow items-start justify-start">
-                                <div className="flex flex-shrink-0 items-start">
+                                <div className="flex flex-shrink-0 items-start pt-5">
                                     <Image
-                                        src="/swap.png"
+                                        src="/logo-full.png"
                                         alt="Swap image"
                                         unoptimized
-                                        width="25"
-                                        height="25"
+                                        width="285"
+                                        height="50"
                                     />
                                 </div>
                             </div>
@@ -97,7 +98,7 @@ export const Navbar = (props: { onClickRecentTrades?: () => void }) => {
                                     }
                                     className="bg-darkblue border-2 border-activeblue px-3 py-2 flex gap-1 items-center rounded-full text-light-200 hover:bg-activeblue transition-colors"
                                 >
-                                    Recent Trades
+                                    Trade History
                                     <BridgeTokenStatusWarning
                                         swapTx={
                                             getMostRecentTxHistoryItem()?.swapTx
