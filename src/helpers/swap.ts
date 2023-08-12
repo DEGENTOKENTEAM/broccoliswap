@@ -3,17 +3,25 @@ import { debounce } from './debounce'
 import { BlockchainName, CROSS_CHAIN_TRADE_TYPE, CrossChainTradeType, OnChainTrade } from 'rubic-sdk'
 import { getSDK } from './rubic'
 import { GoPlusTokenReponse, getTokenSecurity } from './goPlus'
+import { DGNX_ADDRESS, addressHasDisburserRewards } from './dgnx'
 
 const calculateBestTrade = async (
     slippage: number,
     fromToken: { blockchain: BlockchainName; address: string },
     fromAmount: number,
-    toToken: { blockchain: BlockchainName; address: string }
+    toToken: { blockchain: BlockchainName; address: string },
+    connectedAddress?: string
 ) => {
+    // Check if we need to disable proxy for legacy disburser DGNX holders
+    let disabledProxy = 1;
+    if (connectedAddress && toToken.address === DGNX_ADDRESS && toToken.blockchain === 'AVALANCHE') {
+        disabledProxy = await addressHasDisburserRewards(connectedAddress)
+    }
+
     const sdk = await getSDK()
     if (fromToken.blockchain === toToken.blockchain) {
         const [trades, tradesWithoutProxy] = await Promise.all([
-            sdk.onChainManager.calculateTrade(
+            disabledProxy ? [] as unknown as ReturnType<typeof sdk.onChainManager.calculateTrade> : sdk.onChainManager.calculateTrade(
                 fromToken,
                 fromAmount,
                 toToken.address,
@@ -61,7 +69,7 @@ const calculateBestTrade = async (
     }
 
     const [trades, tradesWithoutProxy] = await Promise.all([
-        sdk.crossChainManager.calculateTrade(
+        disabledProxy ? [] : sdk.crossChainManager.calculateTrade(
             fromToken,
             fromAmount,
             toToken,
@@ -107,6 +115,7 @@ const calculateBestTrade = async (
 
 let cancel: Function
 const calculate = async (
+    connectedAddress: string | undefined,
     inputToken: Token,
     outputToken: Token,
     inputAmount: number,
@@ -133,7 +142,8 @@ const calculate = async (
             {
                 blockchain: chainsInfo[outputToken.chain].rubicSdkChainName,
                 address: outputToken.token.address,
-            }
+            },
+            connectedAddress
         ),
         cancelPromise,
     ])
@@ -149,6 +159,7 @@ const calculate = async (
 const debouncedCalculate = debounce(calculate, 200)
 
 export const calculateSwap = (
+    connectedAddress: string | undefined,
     inputToken: Token,
     outputToken: Token,
     inputAmount: number,
@@ -160,6 +171,7 @@ export const calculateSwap = (
 }> => {
     return new Promise(resolve => {
         debouncedCalculate(
+            connectedAddress,
             inputToken,
             outputToken,
             inputAmount,

@@ -195,6 +195,7 @@ export const SwapView = (props: {
         const {
             trade: _trades,
         } = await calculateSwap(
+            address,
             inputToken,
             outputToken,
             inputAmount,
