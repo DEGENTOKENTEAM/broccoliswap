@@ -41,7 +41,9 @@ export const SwapView = (props: {
     const [swapSuccessTx, setSwapSuccessTx] = useState<{
         tx: string
         inputChain: Chain
-        outputChain: Chain
+        outputChain: Chain,
+        inputToken: Token,
+        outputToken: Token,
     }>()
 
     const [forceRefreshVar, forceRefresh] = useState(0)
@@ -62,6 +64,23 @@ export const SwapView = (props: {
         const _input = inputToken ? merge({}, inputToken) : undefined
         setInputToken(outputToken)
         setOutputToken(_input)
+    }
+
+    const addTokenToWallet = (token: Token) => {
+        window.ethereum?.request({
+            // @ts-ignore
+            "method": "wallet_watchAsset",
+            "params": {
+                // @ts-ignore
+                "type": "ERC20",
+                "options": {
+                "address": token.token.address,
+                "symbol": token.token.symbol,
+                "decimals": token.token.decimals,
+                "image": token.token.image
+                }
+            }
+        });
     }
 
     useAsyncEffect(async () => {
@@ -343,17 +362,22 @@ export const SwapView = (props: {
                         onSwapDone={(
                             tx: string,
                             swapInputChain: Chain,
-                            swapOutputChain: Chain
+                            swapOutputChain: Chain,
+                            swapInputToken: Token,
+                            swapOutputToken: Token
                         ) => {
                             setSwapSuccessTx({
                                 tx,
                                 inputChain: swapInputChain,
                                 outputChain: swapOutputChain,
+                                inputToken: swapInputToken,
+                                outputToken: swapOutputToken,
                             })
                             forceRefresh(Math.random())
                         }}
                         inputToken={inputToken}
                         outputToken={outputToken}
+                        inputTokenSellTax={inputTokenSellTax}
                     />
 
                     {slippage && slippage < tokenTax && (
@@ -392,6 +416,7 @@ export const SwapView = (props: {
                                 View on explorer{' '}
                                 <GoLinkExternal className="inline" />
                             </Link>
+
                             {swapSuccessTx?.inputChain !==
                                 swapSuccessTx?.outputChain && (
                                 <div
@@ -403,6 +428,16 @@ export const SwapView = (props: {
                                     View Bridge Status
                                 </div>
                             )}
+
+                            {swapSuccessTx?.inputChain === swapSuccessTx?.outputChain
+                                && swapSuccessTx.outputToken.token.address !== NULL_ADDRESS
+                                && <button
+                                onClick={() => addTokenToWallet(swapSuccessTx.outputToken)}
+                                className="flex items-center w-full gap-1 justify-end text-success underline hover:no-underline mt-3"
+                            >
+                                Add output token to wallet
+                                <GoLinkExternal className="inline" />
+                            </button>}
                         </div>
                     )}
                 </div>

@@ -66,6 +66,7 @@ const calculateBestTrade = async (
             fromAmount,
             toToken,
             {
+                slippageTolerance: slippage / 100,
                 useProxy: Object.values(CROSS_CHAIN_TRADE_TYPE).reduce((acc, val) => {
                     acc[val] = true;
                     return acc;
@@ -77,6 +78,7 @@ const calculateBestTrade = async (
             fromAmount,
             toToken,
             {
+                slippageTolerance: slippage / 100,
                 useProxy: Object.values(CROSS_CHAIN_TRADE_TYPE).reduce((acc, val) => {
                     acc[val] = false;
                     return acc;

@@ -26,12 +26,20 @@ const tradeStatusToButtonStatus = (
     isConnected: boolean,
     chain: ReturnType<typeof useNetwork>["chain"],
     tradeLoading: boolean,
-    trades?: Awaited<Awaited<ReturnType<typeof calculateSwap>>['trade']>
+    trades?: Awaited<Awaited<ReturnType<typeof calculateSwap>>['trade']>,
+    inputChain?: Chain,
 ) => {
     if (tradeLoading) {
         return { text: "Calculating route...", disabled: true };
     }
 
+    if (chain && inputChain && isConnected && chainFromChainId(chain?.id)?.chain !== inputChain) {
+        return {
+            disabled: false,
+            buttonType: "switchNetworkButton",
+            targetChainId: chainsInfo[inputChain].id
+        };
+    }
     
     if (!trades || trades.length === 0) {
         return { text: "Select route", disabled: true };
@@ -85,9 +93,10 @@ const SwitchNetworkButton = (props: { targetChainId?: number }) => {
 
 const MaybeSwapButton = (props:{
     trades: OnChainTrade[] | CrossChainTrade[],
-    onSwapDone?: (tx: string, swapInputChain: Chain, swapOutputChain: Chain) => void ,
+    onSwapDone?: (tx: string, swapInputChain: Chain, swapOutputChain: Chain, swapInputToken: Token, swapOutputToken: Token) => void ,
     inputToken?: Token,
-    outputToken?: Token
+    outputToken?: Token,
+    inputTokenSellTax?: number
 }) => {
     const { address } = useAccount();
     
@@ -115,7 +124,6 @@ const MaybeSwapButton = (props:{
 
     const doSwap = async (tradeIterator = 0): Promise<void> => {
         const currentTrade = props.trades[tradeIterator];
-        console.log(currentTrade, tradeIterator)
         setIsSwapping(true);
         try {
             const tx = await currentTrade.swap();
@@ -151,7 +159,13 @@ const MaybeSwapButton = (props:{
 
             putHistory(data);
 
-            props.onSwapDone?.(tx, blockchainNameToChain(currentTrade.from.blockchain)!.chain, blockchainNameToChain(currentTrade.to.blockchain)!.chain);
+            props.onSwapDone?.(
+                tx,
+                blockchainNameToChain(currentTrade.from.blockchain)!.chain,
+                blockchainNameToChain(currentTrade.to.blockchain)!.chain,
+                props.inputToken!,
+                props.outputToken!
+            );
         } catch (e) {
             if (e instanceof UserRejectError) {
                 setIsSwapping(false);
@@ -198,11 +212,17 @@ const MaybeSwapButton = (props:{
                         "cursor-not-allowed"
                     )}
                 >
-                    Something went wrong. Send this to Rock: {swapError}
+                    Something went wrong.
                 </div>
-                <div className="bg-dark border-2 border-error p-3 rounded-xl text-light-200">
-                    We could not execute your swap because of an error. Please refresh trade and try again.
-                    {tradeAmount < 5 && props.trades[0].from.blockchain !== props.trades[0].to.blockchain && ` Most probably it failed because you try to bridge a very low amount ($${toPrecision(tradeAmount, 4)}). If you are bridging funds, please make sure the token value is at least $5.`}
+                <div className="bg-dark border-2 border-error p-3 rounded-xl text-light-200 flex flex-col gap-3">
+                    <div>We could not execute your swap because of an error. Please refresh trade and try again.</div>
+                    
+                    {tradeAmount < 5 && props.trades[0].from.blockchain !== props.trades[0].to.blockchain && <div>Most probably it failed because you try to bridge a very low amount ($${toPrecision(tradeAmount, 4)}). If you are bridging funds, please make sure the token value is at least $5.</div>}
+                    
+                    {props.trades[0].from.blockchain !== props.trades[0].to.blockchain && (props?.inputTokenSellTax || 0) > 1 && 
+                        <div>It seems you are trying to bridge an input token that has a token tax. Currently there is an issue where this
+                        can fail. Please try again by first manually swapping to another token that has no tax (e.g. USDC, or the native token
+                        such as ETH, BNB or AVAX depending on what chain you are on), and then bridging that token.</div>}
                 </div>
             </>
         )
@@ -277,9 +297,10 @@ const MaybeSwapButton = (props:{
 export const SwapButton = (props: {
     tradeLoading: boolean;
     trades?: Awaited<Awaited<ReturnType<typeof calculateSwap>>['trade']>;
-    onSwapDone?: (tx: string, swapInputChain: Chain, swapOutputChain: Chain) => void;
+    onSwapDone?: (tx: string, swapInputChain: Chain, swapOutputChain: Chain, swapInputToken: Token, swapOutputToken: Token) => void;
     inputToken?: Token,
-    outputToken?: Token
+    outputToken?: Token,
+    inputTokenSellTax?: number
 }) => {
     const { isConnected } = useAccount();
     const { chain } = useNetwork();
@@ -289,6 +310,7 @@ export const SwapButton = (props: {
         chain,
         props.tradeLoading,
         props.trades,
+        props.inputToken?.chain
     );
 
     if (buttonStatus.buttonType === "connectButton") {
@@ -331,7 +353,13 @@ export const SwapButton = (props: {
 
     if (buttonStatus.trades) {
         return (
-            <MaybeSwapButton inputToken={props.inputToken} outputToken={props.outputToken} trades={buttonStatus.trades} onSwapDone={props.onSwapDone} />
+            <MaybeSwapButton
+                inputToken={props.inputToken}
+                outputToken={props.outputToken}
+                trades={buttonStatus.trades}
+                onSwapDone={props.onSwapDone}
+                inputTokenSellTax={props.inputTokenSellTax}
+            />
         );
     }
 
