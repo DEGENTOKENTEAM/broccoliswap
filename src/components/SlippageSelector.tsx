@@ -84,19 +84,19 @@ export const SlippageSelector = (props: {
                         className="bg-darkblue hover:bg-activeblue border-2 border-activeblue transition-colors px-3 py-1 rounded-full cursor-pointer text-light-200"
                         onClick={() => onSetSlippage(1 + tokenTax)}
                     >
-                        {1 + tokenTax}%
+                        {(1 + tokenTax).toFixed(2)}%
                     </div>
                     <div
                         className="bg-darkblue hover:bg-activeblue border-2 border-activeblue transition-colors px-3 py-1 rounded-full cursor-pointer text-light-200"
                         onClick={() => onSetSlippage(2 + tokenTax)}
                     >
-                        {2 + tokenTax}%
+                        {(2 + tokenTax).toFixed(2)}%
                     </div>
                     <div
                         className="bg-darkblue hover:bg-activeblue border-2 border-activeblue transition-colors px-3 py-1 rounded-full cursor-pointer text-light-200"
                         onClick={() => onSetSlippage(4 + tokenTax)}
                     >
-                        {4 + tokenTax}%
+                        {(4 + tokenTax).toFixed(2)}%
                     </div>
                     <div className="flex">
                         <input

@@ -230,7 +230,7 @@ export const SwapView = (props: {
 
     return (
         <>
-            <div className="flex flex-col mt-24 sm:mt-20 mx-5 mb-5 gap-3">
+            <div className="flex flex-grow flex-col mt-24 sm:mt-20 mx-5 mb-5 gap-3">
                 <div className="flex h-8">
                     <RefreshButton
                         tradeLoading={tradeLoading}
@@ -286,7 +286,7 @@ export const SwapView = (props: {
                                         inputToken.token.address
                                     )
                                 }
-                                className="text-xs px-2 bg-darkblue rounded-full border border-activeblue cursor-pointer hover:bg-activeblue transition-colors hidden sm:block"
+                                className="text-xs px-2 bg-darkblue rounded-full border border-activeblue cursor-pointer hover:bg-activeblue transition-colors"
                             >
                                 HALF
                             </div>
@@ -304,7 +304,7 @@ export const SwapView = (props: {
                                         inputToken.token.address
                                     )
                                 }
-                                className="text-xs px-2 bg-darkblue rounded-full border border-activeblue cursor-pointer hover:bg-activeblue transition-colors hidden sm:block"
+                                className="text-xs px-2 bg-darkblue rounded-full border border-activeblue cursor-pointer hover:bg-activeblue transition-colors"
                             >
                                 MAX
                             </div>

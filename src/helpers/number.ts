@@ -9,5 +9,9 @@
  */
 export const toPrecision = (x: number, precision = 2) => {
     const numberOfDigits = Math.floor(Math.log10(x)) + 1;
-    return x.toPrecision(Math.max(numberOfDigits, precision));
+    return Intl.NumberFormat('en-US', {
+        minimumSignificantDigits: 1,
+        maximumSignificantDigits: Math.max(numberOfDigits, precision),
+        
+    }).format(x)
 };
