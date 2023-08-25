@@ -379,6 +379,7 @@ export const SwapView = (props: {
                         inputToken={inputToken}
                         outputToken={outputToken}
                         inputTokenSellTax={inputTokenSellTax}
+                        inputAmountInUsd={(inputAmount && inputToken) ? inputAmount * parseFloat(inputToken.token.usdPrice) : undefined}
                     />
 
                     {slippage && slippage < tokenTax && (

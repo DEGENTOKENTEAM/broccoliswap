@@ -28,6 +28,8 @@ const tradeStatusToButtonStatus = (
     tradeLoading: boolean,
     trades?: Awaited<Awaited<ReturnType<typeof calculateSwap>>['trade']>,
     inputChain?: Chain,
+    outputChain?: Chain,
+    inputAmountInUsd?: number
 ) => {
     if (tradeLoading) {
         return { text: "Calculating route...", disabled: true };
@@ -47,11 +49,15 @@ const tradeStatusToButtonStatus = (
     
     const trade = trades[0];
 
-    if (trade === "No trades available") {
+    if (trades === "No trades available") {
+        if (inputChain !== outputChain && inputAmountInUsd && inputAmountInUsd < 5) {
+            return { text: "Please bridge at least $5", disabled: true };
+        }
+
         return { text: "No trades available", disabled: true };
     }
 
-    if (typeof trade === 'string') {
+    if (typeof trades === 'string' || typeof trade === 'string') {
         return { text: "Something went wrong", disabled: true };
     }
 
@@ -300,7 +306,8 @@ export const SwapButton = (props: {
     onSwapDone?: (tx: string, swapInputChain: Chain, swapOutputChain: Chain, swapInputToken: Token, swapOutputToken: Token) => void;
     inputToken?: Token,
     outputToken?: Token,
-    inputTokenSellTax?: number
+    inputTokenSellTax?: number,
+    inputAmountInUsd?: number,
 }) => {
     const { isConnected } = useAccount();
     const { chain } = useNetwork();
@@ -310,7 +317,9 @@ export const SwapButton = (props: {
         chain,
         props.tradeLoading,
         props.trades,
-        props.inputToken?.chain
+        props.inputToken?.chain,
+        props.outputToken?.chain,
+        props.inputAmountInUsd
     );
 
     if (buttonStatus.buttonType === "connectButton") {

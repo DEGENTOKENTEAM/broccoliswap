@@ -1,7 +1,6 @@
 import { BottomBar } from '@/components/BottomBar'
 import { Navbar } from '@/components/Navbar'
 import '@/styles/globals.css'
-import { SearchResult, Token } from '@/__old__types'
 import type { AppProps } from 'next/app'
 import { useEffect, useState } from 'react'
 import { WagmiConfig, createClient, configureChains } from 'wagmi'

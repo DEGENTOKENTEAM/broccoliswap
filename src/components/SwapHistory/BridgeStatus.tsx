@@ -38,7 +38,7 @@ export const BridgeStatus = (props: {
     if (status?.status === TX_STATUS.PENDING) {
         return (
             <div className="flex gap-1 px-2 items-center">
-                Bridge pending
+                Bridging
                 <IoMdRefresh className="animate-spin" />
             </div>
         );

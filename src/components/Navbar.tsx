@@ -1,25 +1,16 @@
 import {
     useAccount,
     useBalance,
-    useConnect,
-    useDisconnect,
     useNetwork
 } from "wagmi";
-import { InjectedConnector } from "wagmi/connectors/injected";
 import Image from "next/image";
-import { Disclosure, Menu, Transition } from "@headlessui/react";
-import { Bars3Icon, BellIcon, XMarkIcon } from "@heroicons/react/24/outline";
+import { Disclosure } from "@headlessui/react";
 import { classNames } from "@/helpers/classNames";
-import { SearchToken } from "./__old/SearchToken";
-import { Token } from "@/__old__types";
-import Link from "next/link";
-import { useRouter } from "next/router";
 import { ConnectKitButton } from "connectkit";
 import { BridgeTokenStatusWarning } from "./SwapHistory/BridgeTokenStatusWarning";
 import { getMostRecentTxHistoryItem } from "@/helpers/txHistory";
 import { toPrecision } from "@/helpers/number";
 import { TokenImage } from "./TokenImage";
-import { chainsInfo } from "@/types";
 import { chainFromChainId } from "@/helpers/chain";
 
 const navigation = [
@@ -68,10 +59,10 @@ export const Navbar = (props: { onClickRecentTrades?: () => void }) => {
             {({ open }) => (
                 <>
                     <div className="mx-auto">
-                        <div className="flex sm:hidden mt-3 flex-grow items-center justify-center">
+                        <div className="flex sm:hidden mt-1 flex-grow items-center justify-center">
                             <div className="flex flex-shrink-0 items-center">
                                 <Image
-                                    src="/logo-full.png"
+                                    src="/logo-full.svg"
                                     alt="Swap image"
                                     unoptimized
                                     width="285"
@@ -81,9 +72,9 @@ export const Navbar = (props: { onClickRecentTrades?: () => void }) => {
                         </div>
                         <div className="relative m-3 flex h-10 items-center justify-between gap-3">
                             <div className="hidden sm:flex flex-grow items-start justify-start">
-                                <div className="flex flex-shrink-0 items-start pt-5">
+                                <div className="flex flex-shrink-0 items-start">
                                     <Image
-                                        src="/logo-full.png"
+                                        src="/logo-full.svg"
                                         alt="Swap image"
                                         unoptimized
                                         width="285"

@@ -119,7 +119,6 @@ const checkBridgeTransferTokenSuccess = async (
     address: string | undefined,
     swap: TxHistoryItem
 ): Promise<any> => {
-    console.log('need check')
     if (
         swap.finalStatus !== TX_STATUS.SUCCESS ||
         !address ||
@@ -127,7 +126,6 @@ const checkBridgeTransferTokenSuccess = async (
     ) {
         return
     }
-    console.log('huh')
 
     const status = await getBridgeTransferTokenStatus(address, swap)
 

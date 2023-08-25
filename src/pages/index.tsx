@@ -1,10 +1,10 @@
 import Head from 'next/head'
 import { SwapView } from '@/views/Swap';
 import { useEffect, useState } from 'react';
-import { Token } from '@/__old__types';
 
 import "allotment/dist/style.css";
 import NonSSR from '@/components/NonSSR';
+import { Token } from '@/types';
 
 
 export default function Home(props: { activeToken: Token, showRecentTrades?: boolean, setShowRecentTrades?: (show: boolean) => void }) {
