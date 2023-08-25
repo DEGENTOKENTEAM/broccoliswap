@@ -8,10 +8,10 @@
  * @param precision The number of decimal
  */
 export const toPrecision = (x: number, precision = 2) => {
-    const numberOfDigits = Math.floor(Math.log10(x)) + 1;
+    const numberOfDigits = x >= 0 ? Math.floor(Math.log10(x)) + 1 : 1;
     return Intl.NumberFormat('en-US', {
         minimumSignificantDigits: 1,
-        maximumSignificantDigits: Math.max(numberOfDigits, precision),
+        maximumSignificantDigits: Math.max(numberOfDigits, precision, 1),
         
     }).format(x)
 };

@@ -59,13 +59,16 @@ const calculateBestTrade = async (
             (trade): trade is OnChainTrade => !trade?.error
         )
 
-        if (availableTrades.length === 0) return 'No trades available'
-        return availableTrades
+        const allTrades = availableTrades
             .sort((a, b) =>
                 a.to.tokenAmount > b.to.tokenAmount ? -1 : 1
             )
             .concat(availableTradesWithoutProxy)
             .filter(trade => !['PangolinTrade', 'JoeTrade'].includes(trade.constructor.name)) as OnChainTrade[]       
+
+        if (allTrades.length === 0) return 'No trades available'
+
+        return allTrades
     }
 
     const [trades, tradesWithoutProxy] = await Promise.all([
