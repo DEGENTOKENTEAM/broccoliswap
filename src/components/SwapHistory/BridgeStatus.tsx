@@ -31,7 +31,7 @@ export const BridgeStatus = (props: {
         checkBridgeStatus(address, props.swapTx, setStatus);
     }, []);
 
-    return <p className="overflow-auto">{JSON.stringify(status)}</p>
+    return <p className="overflow-auto">{JSON.stringify(props.swapTx)}</p>
 
     // if (!swap) {
     //     return null;
