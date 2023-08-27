@@ -41,7 +41,7 @@ jobs:
 
       - name: Deploy API
         run: |
-          ./node_modules/serverless/bin/serverless.js config credentials --provider aws --key ${{ secrets.DGNX_WEBSITE_AWS_ACCOUNT_ID }} --secret ${{ secrets.DGNX_WEBSITE_AWS_ACCOUNT_KEY }} --profile dgnx
+          ./node_modules/serverless/bin/serverless.js config credentials --provider aws --key ${{ secrets.BROCCOLISWAP_WEBSITE_AWS_ACCOUNT_ID }} --secret ${{ secrets.BROCCOLISWAP_WEBSITE_AWS_ACCOUNT_KEY }} --profile dgnx
           cd api && ../node_modules/serverless/bin/serverless.js deploy -s staging --force
 
       - name: Deploy static site to S3 bucket
