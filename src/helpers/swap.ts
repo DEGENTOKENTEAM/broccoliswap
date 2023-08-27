@@ -13,7 +13,7 @@ const calculateBestTrade = async (
     connectedAddress?: string
 ) => {
     // Check if we need to disable proxy for legacy disburser DGNX holders
-    let disabledProxy = 1;
+    let disabledProxy = false;
     if (connectedAddress && toToken.address === DGNX_ADDRESS && toToken.blockchain === 'AVALANCHE') {
         disabledProxy = await addressHasDisburserRewards(connectedAddress)
     }
@@ -59,12 +59,12 @@ const calculateBestTrade = async (
             (trade): trade is OnChainTrade => !trade?.error
         )
 
-        const allTrades = availableTrades
+        const tradesToUse = availableTrades.length > 0 ? availableTrades : availableTradesWithoutProxy;
+        const allTrades = tradesToUse
+            .filter(trade => !['PangolinTrade', 'JoeTrade'].includes(trade.constructor.name))
             .sort((a, b) =>
                 a.to.tokenAmount > b.to.tokenAmount ? -1 : 1
-            )
-            .concat(availableTradesWithoutProxy)
-            .filter(trade => !['PangolinTrade', 'JoeTrade'].includes(trade.constructor.name)) as OnChainTrade[]       
+            ) as OnChainTrade[]
 
         if (allTrades.length === 0) return 'No trades available'
 
@@ -107,12 +107,13 @@ const calculateBestTrade = async (
             (trade): trade is OnChainTrade => !trade?.error
         )
 
-    const bestTrades = trades
+    const tradesToUse = trades.length > 0 ? trades : availableTradesWithoutProxy;
+
+    const bestTrades = tradesToUse
         .filter(trade => !!trade?.trade?.to)
         .sort((a, b) =>
             a.trade!.to.tokenAmount > b.trade!.to.tokenAmount ? -1 : 1
         )
-        .concat(availableTradesWithoutProxy)
         // @ts-expect-error onChainTrade is not a prop but exists sometimes
         .filter(trade => !trade.trade?.onChainTrade || !['PangolinTrade', 'JoeTrade'].includes(trade.trade?.onChainTrade.constructor.name))
     if (!bestTrades || bestTrades.length === 0) return 'No trades available'

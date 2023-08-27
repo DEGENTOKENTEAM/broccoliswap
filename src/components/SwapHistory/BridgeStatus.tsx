@@ -31,6 +31,8 @@ export const BridgeStatus = (props: {
         checkBridgeStatus(address, props.swapTx, setStatus);
     }, []);
 
+    return <p>{JSON.stringify(status)}</p>
+
     if (!swap) {
         return null;
     }
