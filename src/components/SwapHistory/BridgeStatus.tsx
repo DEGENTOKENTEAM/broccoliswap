@@ -28,10 +28,12 @@ export const BridgeStatus = (props: {
     }>();
 
     useAsyncEffect(async () => {
-        checkBridgeStatus(address, props.swapTx, setStatus);
+        checkBridgeStatus(address, '0x825e696b8387a01e695f0b36b5222f000dbcf37cdf9b492f526e136c763f1102', setStatus);
     }, []);
 
-    return <p className="overflow-auto">{JSON.stringify(props.swapTx)}</p>
+    console.log(status)
+
+    return <p className="overflow-auto">{JSON.stringify(swap)}</p>
 
     // if (!swap) {
     //     return null;
