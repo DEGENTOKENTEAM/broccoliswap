@@ -31,61 +31,61 @@ export const BridgeStatus = (props: {
         checkBridgeStatus(address, props.swapTx, setStatus);
     }, []);
 
-    return <p>{JSON.stringify(status)}</p>
+    return <p className="overflow-auto">{JSON.stringify(status)}</p>
 
-    if (!swap) {
-        return null;
-    }
+    // if (!swap) {
+    //     return null;
+    // }
 
-    if (status?.status === TX_STATUS.PENDING) {
-        return (
-            <div className="flex gap-1 px-2 items-center">
-                Bridging
-                <IoMdRefresh className="animate-spin" />
-            </div>
-        );
-    }
+    // if (status?.status === TX_STATUS.PENDING) {
+    //     return (
+    //         <div className="flex gap-1 px-2 items-center">
+    //             Bridging
+    //             <IoMdRefresh className="animate-spin" />
+    //         </div>
+    //     );
+    // }
 
-    if (status?.status === TX_STATUS.SUCCESS && !status.bridgeStatus) {
-        return (
-            <div className="flex gap-1 px-2 items-center">
-                Verifying tx
-                <Link
-                    className="flex gap-1 items-center px-2 py-1 rounded-xl hover:underline"
-                    target="_blank"
-                    href={`${chainsInfo[swap.toChain].explorer}tx/${
-                        status.hash
-                    }`}
-                >
-                    <GoLinkExternal />
-                </Link>
-                <IoMdRefresh className="animate-spin" />
-            </div>
-        );
-    }
+    // if (status?.status === TX_STATUS.SUCCESS && !status.bridgeStatus) {
+    //     return (
+    //         <div className="flex gap-1 px-2 items-center">
+    //             Verifying tx
+    //             <Link
+    //                 className="flex gap-1 items-center px-2 py-1 rounded-xl hover:underline"
+    //                 target="_blank"
+    //                 href={`${chainsInfo[swap.toChain].explorer}tx/${
+    //                     status.hash
+    //                 }`}
+    //             >
+    //                 <GoLinkExternal />
+    //             </Link>
+    //             <IoMdRefresh className="animate-spin" />
+    //         </div>
+    //     );
+    // }
 
-    if (status?.status === TX_STATUS.SUCCESS) {
-        return (
-            <>
-                <Link
-                    className="flex gap-1 items-center px-2 py-1 rounded-xl hover:underline"
-                    target="_blank"
-                    href={`${chainsInfo[swap.toChain].explorer}tx/${
-                        status.hash
-                    }`}
-                >
-                    View dest tx
-                    <GoLinkExternal />
-                </Link>
-                <BridgeTokenStatusWarning
-                    swapTx={swap.swapTx}
-                    onClick={props.setShowBridgeTokenWarning}
-                />
-            </>
-        );
-    }
+    // if (status?.status === TX_STATUS.SUCCESS) {
+    //     return (
+    //         <>
+    //             <Link
+    //                 className="flex gap-1 items-center px-2 py-1 rounded-xl hover:underline"
+    //                 target="_blank"
+    //                 href={`${chainsInfo[swap.toChain].explorer}tx/${
+    //                     status.hash
+    //                 }`}
+    //             >
+    //                 View dest tx
+    //                 <GoLinkExternal />
+    //             </Link>
+    //             <BridgeTokenStatusWarning
+    //                 swapTx={swap.swapTx}
+    //                 onClick={props.setShowBridgeTokenWarning}
+    //             />
+    //         </>
+    //     );
+    // }
 
-    return (
-        <div className="flex gap-1 items-center px-2 py-1">Error bridging</div>
-    );
+    // return (
+    //     <div className="flex gap-1 items-center px-2 py-1">Error bridging</div>
+    // );
 };
