@@ -178,6 +178,8 @@ export const checkBridgeStatus = async (
             swap.bridge! as CrossChainTradeType
         )
 
+        console.log(_status)
+
         setStatus({
             status: _status.dstTxStatus,
             hash: _status.dstTxHash,

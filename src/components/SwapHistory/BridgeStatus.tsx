@@ -27,6 +27,8 @@ export const BridgeStatus = (props: {
         bridgeStatus: TxHistoryItem["bridgeToTokenInfo"];
     }>();
 
+    console.log(swap,status)
+
     useAsyncEffect(async () => {
         checkBridgeStatus(address, props.swapTx, setStatus);
     }, []);
