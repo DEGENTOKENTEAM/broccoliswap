@@ -28,66 +28,60 @@ export const BridgeStatus = (props: {
     }>();
 
     useAsyncEffect(async () => {
-        checkBridgeStatus(address, '0x825e696b8387a01e695f0b36b5222f000dbcf37cdf9b492f526e136c763f1102', setStatus);
+        checkBridgeStatus(address, props.swapTx, setStatus);
     }, []);
 
-    console.log(status)
+    if (!swap) {
+        return null;
+    }
 
-    return <p className="overflow-auto">{JSON.stringify(swap)}</p>
+    if (status?.status === TX_STATUS.PENDING) {
+        return (
+            <div className="flex gap-1 px-2 items-center">
+                Bridging
+                <IoMdRefresh className="animate-spin" />
+            </div>
+        );
+    }
 
-    // if (!swap) {
-    //     return null;
-    // }
+    if (status?.status === TX_STATUS.SUCCESS && !status.bridgeStatus) {
+        return (
+            <div className="flex gap-1 px-2 items-center">
+                Verifying tx
+                <Link
+                    className="flex gap-1 items-center px-2 py-1 rounded-xl hover:underline"
+                    target="_blank"
+                    href={`${chainsInfo[swap.toChain].explorer}tx/${
+                        status.hash
+                    }`}
+                >
+                    <GoLinkExternal />
+                </Link>
+                <IoMdRefresh className="animate-spin" />
+            </div>
+        );
+    }
 
-    // if (status?.status === TX_STATUS.PENDING) {
-    //     return (
-    //         <div className="flex gap-1 px-2 items-center">
-    //             Bridging
-    //             <IoMdRefresh className="animate-spin" />
-    //         </div>
-    //     );
-    // }
+    if (status?.status === TX_STATUS.SUCCESS) {
+        return (
+            <>
+                <Link
+                    className="flex gap-1 items-center px-2 py-1 rounded-xl hover:underline"
+                    target="_blank"
+                    href={`${chainsInfo[swap.toChain].explorer}tx/${
+                        status.hash
+                    }`}
+                >
+                    View dest tx
+                    <GoLinkExternal />
+                </Link>
+                <BridgeTokenStatusWarning
+                    swapTx={swap.swapTx}
+                    onClick={props.setShowBridgeTokenWarning}
+                />
+            </>
+        );
+    }
 
-    // if (status?.status === TX_STATUS.SUCCESS && !status.bridgeStatus) {
-    //     return (
-    //         <div className="flex gap-1 px-2 items-center">
-    //             Verifying tx
-    //             <Link
-    //                 className="flex gap-1 items-center px-2 py-1 rounded-xl hover:underline"
-    //                 target="_blank"
-    //                 href={`${chainsInfo[swap.toChain].explorer}tx/${
-    //                     status.hash
-    //                 }`}
-    //             >
-    //                 <GoLinkExternal />
-    //             </Link>
-    //             <IoMdRefresh className="animate-spin" />
-    //         </div>
-    //     );
-    // }
-
-    // if (status?.status === TX_STATUS.SUCCESS) {
-    //     return (
-    //         <>
-    //             <Link
-    //                 className="flex gap-1 items-center px-2 py-1 rounded-xl hover:underline"
-    //                 target="_blank"
-    //                 href={`${chainsInfo[swap.toChain].explorer}tx/${
-    //                     status.hash
-    //                 }`}
-    //             >
-    //                 View dest tx
-    //                 <GoLinkExternal />
-    //             </Link>
-    //             <BridgeTokenStatusWarning
-    //                 swapTx={swap.swapTx}
-    //                 onClick={props.setShowBridgeTokenWarning}
-    //             />
-    //         </>
-    //     );
-    // }
-
-    // return (
-    //     <div className="flex gap-1 items-center px-2 py-1">Error bridging</div>
-    // );
+    return null;
 };
