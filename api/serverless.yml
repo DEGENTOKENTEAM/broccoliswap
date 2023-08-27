@@ -15,12 +15,15 @@ custom:
   secrets: ${ssm:/aws/reference/secretsmanager/broccoliswap}
   corsAllowedOrigin:
     dev: http://localhost:3000
+    staging: https://staging.broccoliswap.com
     production: https://www.broccoliswap.com
   ohlcCacheAge:
     dev: 60
+    staging: 60
     production: 86400
   transactionsCacheAge:
     dev: 10
+    staging: 60
     production: 60
 
 provider:
