@@ -27,8 +27,6 @@ export const BridgeStatus = (props: {
         bridgeStatus: TxHistoryItem["bridgeToTokenInfo"];
     }>();
 
-    console.log(swap,status)
-
     useAsyncEffect(async () => {
         checkBridgeStatus(address, props.swapTx, setStatus);
     }, []);
@@ -85,5 +83,7 @@ export const BridgeStatus = (props: {
         );
     }
 
-    return null;
+    return (
+        <div className="flex gap-1 items-center px-2 py-1">Error bridging</div>
+    );
 };
