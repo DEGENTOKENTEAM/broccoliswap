@@ -1,8 +1,6 @@
 service: broccoliswap
 frameworkVersion: '2 || 3'
 
-useDotEnv: true
-
 package:
   individually: true
 

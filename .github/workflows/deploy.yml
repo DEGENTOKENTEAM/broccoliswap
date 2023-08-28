@@ -32,7 +32,6 @@ jobs:
           NEXT_PUBLIC_WALLET_CONNECT_PROJECT_ID: ${{ vars.NEXT_PUBLIC_WALLET_CONNECT_PROJECT_ID }}
           NEXT_PUBLIC_INFURA_ID: ${{ vars.NEXT_PUBLIC_INFURA_ID }}
           NEXT_PUBLIC_BACKEND_ENDPOINT: ${{ vars.NEXT_PUBLIC_BACKEND_ENDPOINT }}
-          BITQUERY_API_KEY: ${{ secrets.BITQUERY_API_KEY }}
 
       - name: Configure AWS Credentials
         uses: aws-actions/configure-aws-credentials@v1
@@ -45,6 +44,8 @@ jobs:
         run: |
           ./node_modules/serverless/bin/serverless.js config credentials --provider aws --key ${{ secrets.BROCCOLISWAP_WEBSITE_AWS_ACCOUNT_ID }} --secret ${{ secrets.BROCCOLISWAP_WEBSITE_AWS_ACCOUNT_KEY }} --profile broccoliswap
           cd api && ../node_modules/serverless/bin/serverless.js deploy -s production --force
+        env:
+          BITQUERY_API_KEY: ${{ secrets.BITQUERY_API_KEY }}
 
       - name: Deploy static site to S3 bucket
         run: aws s3 sync ./out/ s3://broccoliswap.com/ --delete
