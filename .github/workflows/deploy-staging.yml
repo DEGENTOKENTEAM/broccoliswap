@@ -7,6 +7,7 @@ on:
 jobs:
   deploy:
     runs-on: ubuntu-latest
+    environment: staging
     steps:
       - name: Checkout
         uses: actions/checkout@v1
@@ -32,6 +33,7 @@ jobs:
           NEXT_PUBLIC_WALLET_CONNECT_PROJECT_ID: ${{ vars.NEXT_PUBLIC_WALLET_CONNECT_PROJECT_ID }}
           NEXT_PUBLIC_INFURA_ID: ${{ vars.NEXT_PUBLIC_INFURA_ID }}
           NEXT_PUBLIC_BACKEND_ENDPOINT: ${{ vars.NEXT_PUBLIC_BACKEND_ENDPOINT }}
+          BITQUERY_API_KEY: ${{ secrets.BITQUERY_API_KEY }}
 
       - name: Configure AWS Credentials
         uses: aws-actions/configure-aws-credentials@v1

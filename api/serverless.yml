@@ -1,6 +1,8 @@
 service: broccoliswap
 frameworkVersion: '2 || 3'
 
+useDotEnv: true
+
 package:
   individually: true
 
@@ -12,7 +14,6 @@ custom:
   ddb:
     ohlc-table-name: ohlc
     connector-address-table-name: connectorAddress
-  # secrets: ${ssm:/aws/reference/secretsmanager/broccoliswap}
   corsAllowedOrigin:
     dev: http://localhost:3000
     staging: https://staging.broccoliswap.com
@@ -34,7 +35,7 @@ provider:
   runtime: nodejs18.x
 
   environment:
-    BITQUERY_API_KEY: none # ${self:custom.secrets.${opt:stage, 'dev'}-BITQUERY_API_KEY}
+    BITQUERY_API_KEY: ${env:BITQUERY_API_KEY}
     OHLC_TABLE_NAME: ${self:custom.ddb.ohlc-table-name}-${opt:stage, 'dev'}
     CONNECTOR_ADDRESS_TABLE_NAME: ${self:custom.ddb.connector-address-table-name}-${opt:stage, 'dev'}
     CORS_ALLOWED_ORIGIN: ${self:custom.corsAllowedOrigin.${opt:stage, self:provider.stage}}
