@@ -184,6 +184,12 @@ const MaybeSwapButton = (props:{
             //     return doSwap(tradeIterator + 1)
             // }
 
+            if (e instanceof RubicSdkError) {
+                setSwapError(e.message);
+                setIsSwapping(false);
+                return;
+            }
+
             setSwapError(e)
             setIsSwapping(false);
         }
@@ -238,7 +244,7 @@ const MaybeSwapButton = (props:{
                         "cursor-not-allowed"
                     )}
                 >
-                    Something went wrong. {swapError}
+                    Something went wrong.
                 </div>
                 <div className="bg-dark border-2 border-error p-3 rounded-xl text-light-200 flex flex-col gap-3">
                     <div>We could not execute your swap because of an error. Please refresh trade and try again.</div>
