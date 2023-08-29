@@ -94,10 +94,11 @@ export const TokenInput = (props: {
                             type="number"
                             ref={inputRef}
                             inputMode="decimal"
+                            lang="en"
                             placeholder="0.000"
                             onChange={e =>
                                 props.setInputAmount?.(
-                                    Math.max(0, parseFloat(e.target.value.replace(',', '.')))
+                                    Math.max(0, parseFloat(e.target.value))
                                 )
                             }
                         />
