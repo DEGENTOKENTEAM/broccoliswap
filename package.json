@@ -22,7 +22,7 @@
     "@wagmi/core": "^0.10.17",
     "allotment": "^1.18.1",
     "bignumber.js": "^9.1.1",
-    "connectkit": "^1.4.0",
+    "connectkit": "^1.5.2",
     "daisyui": "^2.51.5",
     "debounce": "^1.2.1",
     "deepmerge": "^4.3.1",
