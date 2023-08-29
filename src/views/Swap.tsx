@@ -217,7 +217,7 @@ export const SwapView = (props: {
 
         let amount = Math.floor(100000 * inputBalance * factor) / 100000
         if (tokenAddress === NULL_ADDRESS && factor === 1) {
-            amount = Math.max(0, amount - 0.05)
+            amount = Math.max(0, amount - 0.1)
         }
 
         setInputAmount(amount)
@@ -227,6 +227,8 @@ export const SwapView = (props: {
     const tokenTax = useMemo(() => {
         return (inputTokenSellTax || 0) + (outputTokenBuyTax || 0)
     }, [inputTokenSellTax, outputTokenBuyTax])
+
+    console.log(inputAmount)
 
     return (
         <>
@@ -276,7 +278,7 @@ export const SwapView = (props: {
                         {inputToken &&
                         address &&
                         inputBalance &&
-                        (inputBalance > 0.05 ||
+                        (inputBalance > 0.1 ||
                             inputToken.token.address !== NULL_ADDRESS) ? (
                             <div
                                 onClick={() =>
@@ -294,7 +296,7 @@ export const SwapView = (props: {
                         {inputToken &&
                         address &&
                         inputBalance &&
-                        (inputBalance > 0.05 ||
+                        (inputBalance > 0.1 ||
                             inputToken.token.address !== NULL_ADDRESS) ? (
                             <div
                                 onClick={() =>
