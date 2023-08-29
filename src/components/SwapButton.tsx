@@ -175,16 +175,16 @@ const MaybeSwapButton = (props:{
                 props.outputToken!
             );
         } catch (e: any) {
-            // if (e instanceof UserRejectError
-            //     || (e instanceof RubicSdkError && e.message.toLowerCase() === 'the transaction was cancelled')) {
-            //     setIsSwapping(false);
-            //     return;
-            // }
+            if (e instanceof UserRejectError
+                || (e instanceof RubicSdkError && e.message.toLowerCase() === 'the transaction was cancelled')) {
+                setIsSwapping(false);
+                return;
+            }
 
-            // // Try another trade if possible
-            // if (props.trades[tradeIterator + 1]) {
-            //     return doSwap(tradeIterator + 1)
-            // }
+            // Try another trade if possible
+            if (props.trades[tradeIterator + 1]) {
+                return doSwap(tradeIterator + 1)
+            }
 
             if (e instanceof RubicSdkError) {
                 setSwapError(e);
