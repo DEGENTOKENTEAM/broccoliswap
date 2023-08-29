@@ -19,6 +19,7 @@ import {
     useWaitForTransaction
 } from "wagmi";
 import { notify, reportError } from "../helpers/errorReporting";
+import { getErrorName } from "@/helpers/error";
 
 const buttonStyle = "w-full mt-10 px-3 py-3 rounded-xl my-3 text-lg flex items-center justify-center text-light-200 font-bold bg-dark border-activeblue border-2 uppercase transition-colors"
 
@@ -231,7 +232,7 @@ const MaybeSwapButton = (props:{
     if (swapError) {
         notify(swapError, (event) => {
             event.addMetadata('errorInfo', {
-                name: swapError.constructor.name,
+                name: getErrorName(swapError),
                 message: swapError instanceof RubicSdkError ? swapError.message : '',
                 object: JSON.stringify(swapError),
             });

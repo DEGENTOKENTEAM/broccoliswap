@@ -6,7 +6,6 @@ const nextConfig = {
   images: {
     unoptimized: true,
   },
-  productionBrowserSourceMaps: !!process.env.NEXT_PUBLIC_SOURCEMAPS,
   trailingSlash: true,
   reactStrictMode: true,
   // async redirects() {
