@@ -97,7 +97,7 @@ export const TokenInput = (props: {
                             placeholder="0.000"
                             onChange={e =>
                                 props.setInputAmount?.(
-                                    Math.max(0, parseFloat(e.target.value))
+                                    Math.max(0, parseFloat(e.target.value.replace(',', '.')))
                                 )
                             }
                         />

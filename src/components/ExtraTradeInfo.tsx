@@ -18,10 +18,6 @@ export const ExtraTradeInfo = (props: { trade?: OnChainTrade | CrossChainTrade |
                     <div className="flex-grow">Slippage</div>
                     <div>{(trade.slippageTolerance * 100).toFixed(2)}%</div>
                 </div>
-                <div className="flex w-full">
-                    <div className="flex-grow">Price impact</div>
-                    <div>{trade.priceImpact || 0}%</div>
-                </div>
             </div>
         )
     }
@@ -32,10 +28,6 @@ export const ExtraTradeInfo = (props: { trade?: OnChainTrade | CrossChainTrade |
             <div className="flex w-full">
                 <div className="flex-grow">Minimum received</div>
                 <div>{toPrecision(trade.toTokenAmountMin.toNumber(), 6)} {props.trade.to.symbol}</div>
-            </div>
-            <div className="flex w-full">
-                <div className="flex-grow">Price impact</div>
-                <div>{trade.getTradeInfo().priceImpact || 0}%</div>
             </div>
         </div>
     )
