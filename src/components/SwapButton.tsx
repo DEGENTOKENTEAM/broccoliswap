@@ -109,6 +109,7 @@ const MaybeSwapButton = (props:{
     const [approveTxHash, setApproveTxHash] = useState('')
     const [isSwapping, setIsSwapping] = useState(false)
     const [swapError, setSwapError] = useState<any>()
+    const [swapErrorMessage, setSwapErrorMessage] = useState<any>()
     const [buttonAction, setButtonAction] = useState<{ text: string, action: Function } | undefined>()
 
     const referenceTrade = props.trades[0];
@@ -185,7 +186,8 @@ const MaybeSwapButton = (props:{
             // }
 
             if (e instanceof RubicSdkError) {
-                setSwapError(e.message);
+                setSwapError(e);
+                setSwapErrorMessage(e.message);
                 setIsSwapping(false);
                 return;
             }
@@ -247,7 +249,7 @@ const MaybeSwapButton = (props:{
                     Something went wrong.
                 </div>
                 <div className="bg-dark border-2 border-error p-3 rounded-xl text-light-200 flex flex-col gap-3">
-                    <div>We could not execute your swap because of an error. Please refresh trade and try again.</div>
+                    {swapErrorMessage ? <div>{swapErrorMessage}</div> : <div>We could not execute your swap because of an error. Please refresh trade and try again.</div>}
                     
                     {tradeAmount < 5 && props.trades[0].from.blockchain !== props.trades[0].to.blockchain && <div>Most probably it failed because you try to bridge a very low amount ($${toPrecision(tradeAmount, 4)}). If you are bridging funds, please make sure the token value is at least $5.</div>}
                     
