@@ -32,6 +32,7 @@ jobs:
           NEXT_PUBLIC_WALLET_CONNECT_PROJECT_ID: ${{ vars.NEXT_PUBLIC_WALLET_CONNECT_PROJECT_ID }}
           NEXT_PUBLIC_INFURA_ID: ${{ vars.NEXT_PUBLIC_INFURA_ID }}
           NEXT_PUBLIC_BACKEND_ENDPOINT: ${{ vars.NEXT_PUBLIC_BACKEND_ENDPOINT }}
+          NEXT_PUBLIC_BUGSNAG_KEY: ${{ vars.NEXT_PUBLIC_BUGSNAG_KEY }}
 
       - name: Configure AWS Credentials
         uses: aws-actions/configure-aws-credentials@v1
