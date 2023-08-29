@@ -47,3 +47,9 @@ export const notify = (
         }
     } catch (e) { }
 };
+
+export const leaveBreadcrumb = (name: string, props: Record<string, string>) => {
+    if (isInitialized) {
+        Bugsnag.leaveBreadcrumb(name, props);
+    }
+};

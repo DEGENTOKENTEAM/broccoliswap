@@ -11,7 +11,7 @@ import { FaWallet } from 'react-icons/fa'
 import { LuSettings2 } from 'react-icons/lu'
 import { PiWarningBold } from 'react-icons/pi'
 import { BalanceAmount } from '@/components/BalanceAmount'
-import { useAccount } from 'wagmi'
+import { useAccount, useProvider, useSigner } from 'wagmi'
 import { SlippageSelector } from '@/components/SlippageSelector'
 import { getSDK, searchToken } from '@/helpers/rubic'
 import { SwapHistory } from '@/components/SwapHistory'
@@ -35,6 +35,10 @@ export const SwapView = (props: {
 
     const [inputTokenSellTax, setInputTokenSellTax] = useState<number>()
     const [outputTokenBuyTax, setOutputTokenBuyTax] = useState<number>()
+
+    const provider = useProvider();
+    const { data } = useSigner()
+
 
     const [slippage, setSlippage] = useState<number>()
 
@@ -131,7 +135,7 @@ export const SwapView = (props: {
             return;
         }
         (await getSDK()).updateWalletProviderCore(CHAIN_TYPE.EVM, {
-            core: window.ethereum!,
+            core: (data?.provider as any)?.provider,
             address,
         })
         forceRefresh(Math.random())
