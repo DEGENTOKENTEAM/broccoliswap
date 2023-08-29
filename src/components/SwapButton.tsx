@@ -221,15 +221,13 @@ const MaybeSwapButton = (props:{
     }, [props.trades, approveTxLoaded])
 
     if (swapError) {
-        try {
-            notify(swapError, (event) => {
-                event.addMetadata('errorInfo', {
-                    name: swapError.constructor.name,
-                    message: swapError instanceof RubicSdkError ? swapError.message : '',
-                    object: JSON.stringify(swapError),
-                });
-            })
-        } catch (e) { }
+        notify(swapError, (event) => {
+            event.addMetadata('errorInfo', {
+                name: swapError.constructor.name,
+                message: swapError instanceof RubicSdkError ? swapError.message : '',
+                object: JSON.stringify(swapError),
+            });
+        })
 
         const tradeAmount = props.trades?.[0]?.from?.tokenAmount?.toNumber() * parseFloat(props.inputToken?.token.usdPrice || '0');
         return (

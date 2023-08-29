@@ -33,15 +33,17 @@ export const notify = (
     error: NotifiableError,
     onError?: OnErrorCallback
 ) => {
-    console.log(error);
-    if (isInitialized) {
-        console.log('notify');
-        Bugsnag.notify(error, onError);
-    } else {
-        console.error(error);
-        if (onError) {
-            const fakeEvent = { addMetadata: console.error } as unknown as Event;
-            onError(fakeEvent, () => {});
+    try {
+        console.log(error);
+        if (isInitialized) {
+            console.log('notify');
+            Bugsnag.notify(error, onError);
+        } else {
+            console.error(error);
+            if (onError) {
+                const fakeEvent = { addMetadata: console.error } as unknown as Event;
+                onError(fakeEvent, () => {});
+            }
         }
-    }
+    } catch (e) { }
 };
