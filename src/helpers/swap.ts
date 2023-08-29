@@ -27,7 +27,6 @@ const calculateBestTrade = async (
                 toToken.address,
                 {
                     timeout: 10000,
-                    gasCalculation: 'disabled',
                     slippageTolerance: slippage / 100,
                     disableMultihops: false,
                     useProxy: true,
@@ -40,7 +39,6 @@ const calculateBestTrade = async (
                 toToken.address,
                 {
                     timeout: 10000,
-                    gasCalculation: 'disabled',
                     slippageTolerance: slippage / 100,
                     disableMultihops: false,
                     useProxy: false,
@@ -67,7 +65,6 @@ const calculateBestTrade = async (
             ) as OnChainTrade[]
 
         if (allTrades.length === 0) return 'No trades available'
-
         return allTrades
     }
 

@@ -17,6 +17,7 @@ export const TokenInput = (props: {
     setToken: (token: Token) => void;
     selectedChain?: Chain;
     setSelectedChain?: (chain?: Chain) => void;
+    otherToken?: Token;
 }) => {
     const [showSelector, setShowSelector] = useState(false);
 
@@ -91,7 +92,8 @@ export const TokenInput = (props: {
                     {props.setInputAmount ? (
                         <input
                             className="inputNumber ml-3 w-32 sm:w-full text-right font-bold text-white leading-5 text-2xl bg-dark ring-0 border-0 focus:outline-none -my-1.5"
-                            type="number"
+                            type="text"
+                            pattern="[0-9.,]+"
                             ref={inputRef}
                             inputMode="decimal"
                             lang="en"
@@ -138,6 +140,7 @@ export const TokenInput = (props: {
                 selectedChain={props.selectedChain}
                 setSelectedChain={props.setSelectedChain}
                 setToken={props.setToken}
+                otherToken={props.otherToken}
             />
         </>
     );

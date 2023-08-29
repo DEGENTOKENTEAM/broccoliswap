@@ -9,8 +9,7 @@ import { waitForTransaction } from "@wagmi/core";
 import { ConnectKitButton } from "connectkit";
 import Image from "next/image";
 import { useState } from "react";
-import { RxCaretDown } from "react-icons/rx";
-import { CrossChainTrade, OnChainTrade, UserRejectError } from "rubic-sdk";
+import { CrossChainTrade, OnChainTrade, UserRejectError, LowGasError, RubicSdkError } from "rubic-sdk";
 import {
     useAccount,
     useBalance,
@@ -19,6 +18,7 @@ import {
     useSwitchNetwork,
     useWaitForTransaction
 } from "wagmi";
+import { notify, reportError } from "../helpers/errorReporting";
 
 const buttonStyle = "w-full mt-10 px-3 py-3 rounded-xl my-3 text-lg flex items-center justify-center text-light-200 font-bold bg-dark border-activeblue border-2 uppercase transition-colors"
 
@@ -108,7 +108,7 @@ const MaybeSwapButton = (props:{
     
     const [approveTxHash, setApproveTxHash] = useState('')
     const [isSwapping, setIsSwapping] = useState(false)
-    const [swapError, setSwapError] = useState('')
+    const [swapError, setSwapError] = useState<any>()
     const [buttonAction, setButtonAction] = useState<{ text: string, action: Function } | undefined>()
 
     const referenceTrade = props.trades[0];
@@ -172,18 +172,19 @@ const MaybeSwapButton = (props:{
                 props.inputToken!,
                 props.outputToken!
             );
-        } catch (e) {
-            if (e instanceof UserRejectError) {
-                setIsSwapping(false);
-                return;
-            }
+        } catch (e: any) {
+            // if (e instanceof UserRejectError
+            //     || (e instanceof RubicSdkError && e.message.toLowerCase() === 'the transaction was cancelled')) {
+            //     setIsSwapping(false);
+            //     return;
+            // }
 
-            // Try another trade if possible
-            if (props.trades[tradeIterator + 1]) {
-                return doSwap(tradeIterator + 1)
-            }
+            // // Try another trade if possible
+            // if (props.trades[tradeIterator + 1]) {
+            //     return doSwap(tradeIterator + 1)
+            // }
 
-            setSwapError(JSON.stringify(e))
+            setSwapError(e)
             setIsSwapping(false);
         }
     }
@@ -198,7 +199,18 @@ const MaybeSwapButton = (props:{
         if (_needApprove) {
             return setButtonAction({
                 text: 'Approve',
-                action: () => referenceTrade.approve.bind(referenceTrade)({ onTransactionHash: hash => setTimeout(() => setApproveTxHash(hash), 2000) })
+                action: () => referenceTrade.approve.bind(referenceTrade)({ onTransactionHash: hash => {
+                    setTimeout(() => {
+                        if (hash) {
+                            setApproveTxHash(hash)
+                        } else {
+                            // Somehow it's not ready yet, wait longer and try again
+                            setTimeout(() => {
+                                setApproveTxHash(hash)
+                            }, 2000)
+                        }
+                    }, 2000)
+                }})
             })
         }
         
@@ -209,6 +221,14 @@ const MaybeSwapButton = (props:{
     }, [props.trades, approveTxLoaded])
 
     if (swapError) {
+        notify(swapError, (event) => {
+            event.addMetadata('errorInfo', {
+                name: swapError.constructor.name,
+                message: swapError instanceof RubicSdkError ? swapError.message : '',
+                object: JSON.stringify(swapError),
+            });
+        })
+
         const tradeAmount = props.trades?.[0]?.from?.tokenAmount?.toNumber() * parseFloat(props.inputToken?.token.usdPrice || '0');
         return (
             <>
@@ -218,7 +238,7 @@ const MaybeSwapButton = (props:{
                         "cursor-not-allowed"
                     )}
                 >
-                    Something went wrong.
+                    Something went wrong. {swapError}
                 </div>
                 <div className="bg-dark border-2 border-error p-3 rounded-xl text-light-200 flex flex-col gap-3">
                     <div>We could not execute your swap because of an error. Please refresh trade and try again.</div>

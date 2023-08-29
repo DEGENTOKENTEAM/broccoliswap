@@ -228,8 +228,6 @@ export const SwapView = (props: {
         return (inputTokenSellTax || 0) + (outputTokenBuyTax || 0)
     }, [inputTokenSellTax, outputTokenBuyTax])
 
-    console.log(inputAmount)
-
     return (
         <>
             <div className="flex flex-grow flex-col mt-24 sm:mt-20 mx-5 mb-5 gap-3">
@@ -320,6 +318,7 @@ export const SwapView = (props: {
                         setInputAmount={setInputAmount}
                         amount={inputAmount}
                         externalAmount={externallySetAmount}
+                        otherToken={outputToken}
                     />
 
                     <SwapTokens swapTokens={swapTokens} />
@@ -357,6 +356,7 @@ export const SwapView = (props: {
                         amount={(trades?.[0] as
                             | OnChainTrade
                             | CrossChainTrade)?.to?.tokenAmount?.toNumber()}
+                        otherToken={inputToken}
                     />
 
                     <SwapButton

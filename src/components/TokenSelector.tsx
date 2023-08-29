@@ -90,14 +90,23 @@ export const TokenSelector = (props: {
     selectedChain?: Chain;
     setSelectedChain?: (chain?: Chain) => void;
     setToken: (token: Token) => void;
+    otherToken?: Token
 }) => {
     const [tokens, setTokens] = useState<RubicToken[] | null>();
     const [searchFilter, setSearchFilter] = useState("");
 
     const { chain } = useNetwork();
 
+    const searchRef = useRef<HTMLInputElement>(null);
     const divRef = useRef<HTMLDivElement>(null);
     useOutsideClick([divRef], () => props.setShow?.(false));
+
+    useEffect(() => {
+        if (searchRef.current) {
+            searchRef.current.value = '';
+        }
+        setSearchFilter('');
+    }, [props.show])
 
     useEffect(() => {
         if (props.show) {
@@ -114,8 +123,16 @@ export const TokenSelector = (props: {
         }
 
         setTokens(null);
-        const tokens = await searchToken(props.selectedChain, searchFilter);
-        setTokens(tokens);
+        const tokens: RubicToken[] = await searchToken(props.selectedChain, searchFilter);
+
+        // Filter other token
+        setTokens(tokens.filter(token => {
+            if (props.otherToken && props.otherToken.chain === props.selectedChain && props.otherToken.token.address === token.address) {
+                return false;
+            }
+
+            return true;
+        }));
     }, [props.show, props.selectedChain, searchFilter]);
 
     const debouncedSearchFilter = debounce(setSearchFilter, 500);
@@ -178,6 +195,7 @@ export const TokenSelector = (props: {
                         </SubHeader>
                         <input
                             type="text"
+                            ref={searchRef}
                             placeholder="Search token name, symbol or address..."
                             className="bg-dark rounded border-2 border-activeblue focus:border-light-200 focus:outline-none w-full py-1 px-3 mb-3"
                             onChange={e =>
