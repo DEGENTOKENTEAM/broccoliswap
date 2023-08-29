@@ -6,7 +6,6 @@ import BugsnagPluginReact from '@bugsnag/plugin-react';
 let isInitialized = false;
 
 export const initialize = () => {
-    console.log(process.env.NEXT_PUBLIC_BUGSNAG_KEY)
     if (process.env.NEXT_PUBLIC_BUGSNAG_KEY) {
         Bugsnag.start({
             apiKey: process.env.NEXT_PUBLIC_BUGSNAG_KEY,
