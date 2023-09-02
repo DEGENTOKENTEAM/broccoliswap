@@ -60,7 +60,8 @@ export const chainsInfo = {
         honeyPotCheckerContract: '0xe7e07a2281f1e66e938ae7feefc69db181329f12',
         honeyPotCheckerRouter: '0x7a250d5630B4cF539739dF2C5dAcb4c659F2488D',
         honeyPotCheckerAddress: '0xc02aaa39b223fe8d0a0e5c4f27ead9083c756cc2',
-        rpc: 'https://eth.llamarpc.com'
+        rpc: 'https://eth.llamarpc.com',
+        nativeTokenSymbol: 'ETH'
     },
     [Chain.BSC]: {
         chain: Chain.BSC,
@@ -75,7 +76,8 @@ export const chainsInfo = {
         honeyPotCheckerContract: '0x385826FBd70DfBB0a7188eE790A36E1fe4f6fc34',
         honeyPotCheckerRouter: '0x10ed43c718714eb63d5aa57b78b54704e256024e',
         honeyPotCheckerAddress: '0xbb4cdb9cbd36b01bd1cbaebf2de08d9173bc095c',
-        rpc: 'https://bsc-dataseed.binance.org/'
+        rpc: 'https://bsc-dataseed.binance.org/',
+        nativeTokenSymbol: 'BNB'
     },
     [Chain.AVAX]: {
         chain: Chain.AVAX,
@@ -90,6 +92,7 @@ export const chainsInfo = {
         honeyPotCheckerContract: '0x2B30ddE904B22c0Bba6019543231c857e0Be1DfB',
         honeyPotCheckerRouter: '0x60aE616a2155Ee3d9A68541Ba4544862310933d4',
         honeyPotCheckerAddress: '0xb31f66aa3c1e785363f0875a1b74e27b85fd66c7',
-        rpc: 'https://avalanche-c-chain.publicnode.com'
+        rpc: 'https://avalanche-c-chain.publicnode.com',
+        nativeTokenSymbol: 'AVAX'
     },
 }

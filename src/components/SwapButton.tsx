@@ -175,9 +175,20 @@ const MaybeSwapButton = (props:{
                 props.outputToken!
             );
         } catch (e: any) {
+            console.log('===')
+            console.log(e)
+            console.log(e.constructor.name)
+            console.log(e.message)
             if (e instanceof UserRejectError
                 || (e instanceof RubicSdkError && e.message.toLowerCase() === 'the transaction was cancelled')) {
                 setIsSwapping(false);
+                return;
+            }
+
+            if (e?.message.includes('err: insufficient funds for gas * price + value:')) {
+                setIsSwapping(false);
+                setSwapError(e);
+                setSwapErrorMessage(`You do not have enough ${chainsInfo[props.inputToken!.chain].nativeTokenSymbol} to execute this trade`);
                 return;
             }
 
@@ -254,13 +265,6 @@ const MaybeSwapButton = (props:{
                 </div>
                 <div className="bg-dark border-2 border-error p-3 rounded-xl text-light-200 flex flex-col gap-3">
                     {swapErrorMessage ? <div>{swapErrorMessage}</div> : <div>We could not execute your swap because of an error. Please refresh trade and try again.</div>}
-                    
-                    {tradeAmount < 5 && props.trades[0].from.blockchain !== props.trades[0].to.blockchain && <div>Most probably it failed because you try to bridge a very low amount ($${toPrecision(tradeAmount, 4)}). If you are bridging funds, please make sure the token value is at least $5.</div>}
-                    
-                    {props.trades[0].from.blockchain !== props.trades[0].to.blockchain && (props?.inputTokenSellTax || 0) > 1 && 
-                        <div>It seems you are trying to bridge an input token that has a token tax. Currently there is an issue where this
-                        can fail. Please try again by first manually swapping to another token that has no tax (e.g. USDC, or the native token
-                        such as ETH, BNB or AVAX depending on what chain you are on), and then bridging that token.</div>}
                 </div>
             </>
         )

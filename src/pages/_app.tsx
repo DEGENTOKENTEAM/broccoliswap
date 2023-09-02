@@ -6,15 +6,14 @@ import { useEffect, useState } from 'react'
 import { WagmiConfig, configureChains, createConfig } from 'wagmi'
 import { publicProvider } from 'wagmi/providers/public'
 import { avalanche, bsc, mainnet } from 'wagmi/chains'
-import { providers } from 'ethers'
 import NonSSR from '@/components/NonSSR'
+import { infuraProvider } from 'wagmi/providers/infura'
 import { ConnectKitProvider, getDefaultConfig } from 'connectkit'
 import * as errorReporting from '../helpers/errorReporting';
-import { InjectedConnector } from '@wagmi/core'
 
-const { chains, publicClient } = configureChains(
+const { chains } = configureChains(
   [mainnet, avalanche, bsc],
-  [publicProvider()],
+  [infuraProvider({ apiKey: process.env.NEXT_PUBLIC_INFURA_ID! }), publicProvider()],
 )
 
 errorReporting.initialize();
