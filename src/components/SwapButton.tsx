@@ -202,6 +202,9 @@ const MaybeSwapButton = (props:{
         setButtonAction(undefined)
 
         const referenceTrade = props.trades[0];
+        if (!referenceTrade) {
+            return;
+        }
 
         const _needApprove = await referenceTrade.needApprove();
 

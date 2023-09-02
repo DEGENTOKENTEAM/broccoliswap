@@ -64,9 +64,9 @@ const TokenListItem = (props: {
                 </div>
                 <div className="text-xs leading-5">{token.name}</div>
             </div>
-            {balanceData?.value.gt(0) && <div className="flex flex-col gap-0 text-right">
-                <div className="text-light-200 text-lg leading-5">{toPrecision(parseFloat(balanceData?.formatted), 4)}</div>
-                <div className="text-sm">{props.token.usdPrice && `$${toPrecision(parseFloat(balanceData?.formatted) * parseFloat(props.token.usdPrice), 4)}`}</div>
+            {(balanceData?.value || 0) > 0 && <div className="flex flex-col gap-0 text-right">
+                <div className="text-light-200 text-lg leading-5">{toPrecision(parseFloat(balanceData?.formatted || ''), 4)}</div>
+                <div className="text-sm">{props.token.usdPrice && `$${toPrecision(parseFloat(balanceData?.formatted || '') * parseFloat(props.token.usdPrice), 4)}`}</div>
             </div>}
         </div>
     );

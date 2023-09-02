@@ -11,7 +11,7 @@ import { FaWallet } from 'react-icons/fa'
 import { LuSettings2 } from 'react-icons/lu'
 import { PiWarningBold } from 'react-icons/pi'
 import { BalanceAmount } from '@/components/BalanceAmount'
-import { useAccount, useProvider, useSigner } from 'wagmi'
+import { useAccount, useNetwork } from 'wagmi'
 import { SlippageSelector } from '@/components/SlippageSelector'
 import { getSDK, searchToken } from '@/helpers/rubic'
 import { SwapHistory } from '@/components/SwapHistory'
@@ -22,6 +22,8 @@ import { GoLinkExternal } from 'react-icons/go'
 import Link from 'next/link'
 import { ImCross } from 'react-icons/im'
 import { getTokenTaxes } from '@/helpers/tokenTax'
+import { useEthersSigner } from '@/hooks/useEthersSigner'
+import { useWeb3Signer } from '@/hooks/useWeb3Signer'
 
 export const SwapView = (props: {
     showRecentTrades?: boolean
@@ -36,8 +38,9 @@ export const SwapView = (props: {
     const [inputTokenSellTax, setInputTokenSellTax] = useState<number>()
     const [outputTokenBuyTax, setOutputTokenBuyTax] = useState<number>()
 
-    const provider = useProvider();
-    const { data } = useSigner()
+    const signer = useEthersSigner()
+    const { chain } = useNetwork();
+    const web3 = useWeb3Signer({ chainId: chain?.id });
 
 
     const [slippage, setSlippage] = useState<number>()
@@ -71,8 +74,8 @@ export const SwapView = (props: {
     }
 
     const addTokenToWallet = (token: Token) => {
+        // @ts-ignore
         window.ethereum?.request({
-            // @ts-ignore
             "method": "wallet_watchAsset",
             "params": {
                 // @ts-ignore
@@ -131,15 +134,16 @@ export const SwapView = (props: {
     }, [])
 
     useAsyncEffect(async () => {
-        if (!address || !inputChain) {
+        if (!address || !inputChain || !signer) {
             return;
         }
+
         (await getSDK()).updateWalletProviderCore(CHAIN_TYPE.EVM, {
-            core: (data?.provider as any)?.provider,
+            core: web3,
             address,
         })
         forceRefresh(Math.random())
-    }, [address, inputChain])
+    }, [address, inputChain, signer])
 
     useEffect(() => {
         setSlippage(undefined);
