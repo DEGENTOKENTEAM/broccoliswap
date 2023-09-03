@@ -175,10 +175,6 @@ const MaybeSwapButton = (props:{
                 props.outputToken!
             );
         } catch (e: any) {
-            console.log('===')
-            console.log(e)
-            console.log(e.constructor.name)
-            console.log(e.message)
             if (e instanceof UserRejectError
                 || (e instanceof RubicSdkError && e.message.toLowerCase() === 'the transaction was cancelled')) {
                 setIsSwapping(false);
