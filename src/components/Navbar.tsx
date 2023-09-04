@@ -12,7 +12,6 @@ import { getMostRecentTxHistoryItem } from "@/helpers/txHistory";
 import { toPrecision } from "@/helpers/number";
 import { TokenImage } from "./TokenImage";
 import { chainFromChainId } from "@/helpers/chain";
-import { useState } from "react";
 
 const navigation = [
     { name: "Trade", href: "/trade/trade" }
@@ -55,7 +54,6 @@ const ConnectedButton = () => {
 };
 
 export const Navbar = (props: { onClickRecentTrades?: () => void }) => {
-    const [iscleared,setiscleared] = useState('')
     return (
         <Disclosure as="nav" className="absolute top-0 w-full">
             {({ open }) => (
@@ -84,7 +82,6 @@ export const Navbar = (props: { onClickRecentTrades?: () => void }) => {
                                     />
                                 </div>
                             </div>
-                                <button onClick={(e) => { localStorage.clear();setiscleared('done') }}>CLEAR {iscleared}</button>
                             <div className="flex-shrink-0 items-center">
                                 <button
                                     onClick={() =>
