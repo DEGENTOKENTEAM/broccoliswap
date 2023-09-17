@@ -65,7 +65,11 @@ const calculateBestTrade = async (
             ) as OnChainTrade[]
 
         if (allTrades.length === 0) return 'No trades available'
-        return allTrades
+
+        // Filter trades where the min output amount is way too low
+        const minimumMinimumOutputAmount = allTrades[0].toTokenAmountMin.tokenAmount.toNumber() * 0.95;
+        const allValidTrades = allTrades.filter(trade => trade.toTokenAmountMin.tokenAmount.toNumber() >= minimumMinimumOutputAmount);
+        return allValidTrades
     }
 
     const [trades, tradesWithoutProxy] = await Promise.all([
@@ -115,7 +119,12 @@ const calculateBestTrade = async (
         .filter(trade => !trade.trade?.onChainTrade || !['PangolinTrade', 'JoeTrade'].includes(trade.trade?.onChainTrade.constructor.name))
     if (!bestTrades || bestTrades.length === 0) return 'No trades available'
 
-    return bestTrades.map(bestTrade => bestTrade.trade);
+    const allOnChainTrades = bestTrades.map(bestTrade => bestTrade.trade);
+
+    // Filter trades where the min output amount is way too low
+    const minimumMinimumOutputAmount = allOnChainTrades[0]!.toTokenAmountMin.toNumber() * 0.95;
+    const allValidTrades = allOnChainTrades.filter(trade => trade && trade.toTokenAmountMin.toNumber() >= minimumMinimumOutputAmount);
+    return allValidTrades;
 }
 
 let cancel: Function
