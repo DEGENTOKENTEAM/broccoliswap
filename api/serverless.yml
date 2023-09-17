@@ -1,6 +1,8 @@
 service: broccoliswap
 frameworkVersion: '2 || 3'
 
+useDotenv: true
+
 package:
   individually: true
 
@@ -34,6 +36,7 @@ provider:
 
   environment:
     BITQUERY_API_KEY: ${env:BITQUERY_API_KEY}
+    MIXPANEL_PROJECT_KEY: ${env:MIXPANEL_PROJECT_KEY}
     OHLC_TABLE_NAME: ${self:custom.ddb.ohlc-table-name}-${opt:stage, 'dev'}
     CONNECTOR_ADDRESS_TABLE_NAME: ${self:custom.ddb.connector-address-table-name}-${opt:stage, 'dev'}
     CORS_ALLOWED_ORIGIN: ${self:custom.corsAllowedOrigin.${opt:stage, self:provider.stage}}
@@ -86,6 +89,16 @@ functions:
               paths:
                 chain: true
                 tokenAddress: true
+
+  trade:
+    handler: trade/post.handler
+    memorySize: 1024
+    timeout: 29
+    events:
+      - http:
+          cors: true
+          path: /trade
+          method: post
 
   getBridgeTxInfo:
     handler: transactions/getBridgeTxInfo.handler

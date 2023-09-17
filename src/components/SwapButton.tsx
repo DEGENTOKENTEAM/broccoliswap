@@ -20,6 +20,7 @@ import {
 } from "wagmi";
 import { notify, reportError } from "../helpers/errorReporting";
 import { getErrorName } from "@/helpers/error";
+import { trackSwap } from "@/helpers/track";
 
 const buttonStyle = "w-full mt-10 px-3 py-3 rounded-xl my-3 text-lg flex items-center justify-center text-light-200 font-bold bg-dark border-activeblue border-2 uppercase transition-colors"
 
@@ -166,6 +167,21 @@ const MaybeSwapButton = (props:{
             }
 
             putHistory(data);
+
+            await trackSwap({
+                inputToken: currentTrade.from.symbol,
+                inputTokenAddress: currentTrade.from.address,
+                inputChain: currentTrade.from.blockchain,
+
+                outputToken: currentTrade.to.symbol,
+                outputTokenAddress: currentTrade.to.address,
+                outputChain: currentTrade.to.blockchain,
+
+                amountIn: currentTrade.from.tokenAmount.toNumber(),
+                amountInUsd: currentTrade.from.tokenAmount.toNumber() * parseFloat(props.inputToken?.token.usdPrice || '0'),
+                amountOut: currentTrade.to.tokenAmount.toNumber(),
+                amountOutUsd: currentTrade.to.tokenAmount.toNumber() * parseFloat(props.outputToken?.token.usdPrice || '0'),
+            })
 
             props.onSwapDone?.(
                 tx,

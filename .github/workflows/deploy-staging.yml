@@ -33,6 +33,7 @@ jobs:
           cd api && ../node_modules/serverless/bin/serverless.js deploy -s staging --force
         env:
           BITQUERY_API_KEY: ${{ secrets.BITQUERY_API_KEY }}
+          MIXPANEL_PROJECT_KEY: ${{ secrets.MIXPANEL_PROJECT_KEY }}
 
       - name: Build
         run: npm run build
