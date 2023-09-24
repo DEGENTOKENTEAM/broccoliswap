@@ -13,9 +13,14 @@ export const trackSwap = (data: {
     revenue: number;
     revenueInUsd: number;
 }) => {
+    const { firstTouchUTM, lastTouchUTM } = getUTMTags();
     return fetch(`${process.env.NEXT_PUBLIC_BACKEND_ENDPOINT}/track`, {
         method: 'post',
-        body: JSON.stringify({ name: 'Trade', data }),
+        body: JSON.stringify({ name: 'Trade', data: {
+            ...data,
+            ...firstTouchUTM,
+            ...lastTouchUTM,
+        } }),
     });
 };
 
