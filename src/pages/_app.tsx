@@ -10,6 +10,7 @@ import NonSSR from '@/components/NonSSR'
 import { infuraProvider } from 'wagmi/providers/infura'
 import { ConnectKitProvider, getDefaultConfig } from 'connectkit'
 import * as errorReporting from '../helpers/errorReporting';
+import { setUTMParameters, trackStartVisit } from '@/helpers/track'
 
 const { chains } = configureChains(
   [mainnet, avalanche, bsc],
@@ -32,6 +33,15 @@ console.log(config)
 
 export default function App({ Component, pageProps, router }: AppProps) {
   const [showRecentTrades, setShowRecentTrades] = useState(false);
+
+  useEffect(() => {
+    setUTMParameters(new URLSearchParams(window.location.search))
+    const visitStartTime = localStorage.getItem('visitStartTime');
+    if (!visitStartTime || parseInt(visitStartTime) < Date.now() - (30 * 60 * 1000)) {
+        localStorage.setItem('visitStartTime', Date.now().toString());
+        trackStartVisit();
+    }
+  }, []);
 
   return (
     <NonSSR>

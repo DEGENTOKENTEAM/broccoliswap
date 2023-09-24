@@ -169,6 +169,7 @@ const MaybeSwapButton = (props:{
             putHistory(data);
 
             await trackSwap({
+                address: address!,
                 inputToken: currentTrade.from.symbol,
                 inputTokenAddress: currentTrade.from.address,
                 inputChain: currentTrade.from.blockchain,
@@ -181,6 +182,13 @@ const MaybeSwapButton = (props:{
                 amountInUsd: currentTrade.from.tokenAmount.toNumber() * parseFloat(props.inputToken?.token.usdPrice || '0'),
                 amountOut: currentTrade.to.tokenAmount.toNumber(),
                 amountOutUsd: currentTrade.to.tokenAmount.toNumber() * parseFloat(props.outputToken?.token.usdPrice || '0'),
+
+                revenue: (currentTrade.feeInfo.rubicProxy?.platformFee?.percent || 0) > 0
+                    ? currentTrade.from.tokenAmount.toNumber() * 0.00125
+                    : 0,
+                revenueInUsd: (currentTrade.feeInfo.rubicProxy?.platformFee?.percent || 0) > 0
+                    ? currentTrade.from.tokenAmount.toNumber() * parseFloat(props.inputToken?.token.usdPrice || '0') * 0.00125
+                    : 0,
             })
 
             props.onSwapDone?.(

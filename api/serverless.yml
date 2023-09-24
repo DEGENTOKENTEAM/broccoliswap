@@ -90,14 +90,14 @@ functions:
                 chain: true
                 tokenAddress: true
 
-  trade:
-    handler: trade/post.handler
+  track:
+    handler: track/post.handler
     memorySize: 1024
     timeout: 29
     events:
       - http:
           cors: true
-          path: /trade
+          path: /track
           method: post
 
   getBridgeTxInfo:
