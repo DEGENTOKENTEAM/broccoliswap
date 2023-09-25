@@ -24,6 +24,7 @@ import { ImCross } from 'react-icons/im'
 import { getTokenTaxes } from '@/helpers/tokenTax'
 import { useEthersSigner } from '@/hooks/useEthersSigner'
 import { useWeb3Signer } from '@/hooks/useWeb3Signer'
+import FeedbackButton from '@/components/FeedbackButton'
 
 export const SwapView = (props: {
     showRecentTrades?: boolean
@@ -247,12 +248,13 @@ export const SwapView = (props: {
     return (
         <>
             <div className="flex flex-grow flex-col mt-24 sm:mt-20 mx-5 mb-5 gap-3">
-                <div className="flex h-8">
+                <div className="flex h-8 gap-2">
                     <RefreshButton
                         tradeLoading={tradeLoading}
                         interval={60}
                         refreshFn={() => forceRefresh(Math.random())}
                     />
+                    <FeedbackButton />
                     <div className="flex-grow"></div>
                     {slippage && <div
                         onClick={() => setShowSlippageSelector(true)}
