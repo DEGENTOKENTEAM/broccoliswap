@@ -56,6 +56,7 @@ export const SwapView = (props: {
     const [forceRefreshVar, forceRefresh] = useState(0)
 
     const [showSlippageSelector, setShowSlippageSelector] = useState(false)
+    const [maxExplainerVisible, setMaxExplainerVisible] = useState(false)
 
     const [inputBalance, setInputBalance] = useState<number>()
     const [externallySetAmount, setExternallySetAmount] = useState<number>(0)
@@ -226,6 +227,13 @@ export const SwapView = (props: {
         let amount = Math.floor(100000 * inputBalance * factor) / 100000
         if (tokenAddress === NULL_ADDRESS && factor === 1) {
             amount = Math.max(0, amount - 0.1)
+
+            // Max the explainer visible for 5 sec
+            if (!localStorage.getItem('maxExplainerShown')) {
+                setMaxExplainerVisible(true);
+                setTimeout(() => setMaxExplainerVisible(false), 5000);
+                localStorage.setItem('maxExplainerShown', 'yes')
+            }
         }
 
         setInputAmount(amount)
@@ -318,6 +326,9 @@ export const SwapView = (props: {
                             </div>
                         ) : null}
                     </div>
+                    {maxExplainerVisible && <div className="text-xs flex justify-end mt-1">
+                        We make sure at least 0.1 {inputToken?.token.symbol} is in your wallet for gas fees.
+                    </div>}
                     <TokenInput
                         selectedChain={inputChain}
                         setSelectedChain={setInputChain}

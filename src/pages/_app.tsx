@@ -29,8 +29,6 @@ const config = createConfig({
   }),
 })
 
-console.log(config)
-
 export default function App({ Component, pageProps, router }: AppProps) {
   const [showRecentTrades, setShowRecentTrades] = useState(false);
 
