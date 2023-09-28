@@ -17,7 +17,7 @@ custom:
   corsAllowedOrigin:
     dev: http://localhost:3000
     staging: https://staging.broccoliswap.com
-    production: https://www.broccoliswap.com
+    production: https://broccoliswap.com
   ohlcCacheAge:
     dev: 60
     staging: 60
