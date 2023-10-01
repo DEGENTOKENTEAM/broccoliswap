@@ -10,6 +10,7 @@ import { CHAIN_TYPE, CrossChainTrade, OnChainTrade } from 'rubic-sdk'
 import { FaWallet } from 'react-icons/fa'
 import { LuSettings2 } from 'react-icons/lu'
 import { PiWarningBold } from 'react-icons/pi'
+import { BsShareFill } from 'react-icons/bs'
 import { BalanceAmount } from '@/components/BalanceAmount'
 import { useAccount, useNetwork } from 'wagmi'
 import { SlippageSelector } from '@/components/SlippageSelector'
@@ -32,6 +33,7 @@ export const SwapView = (props: {
 }) => {
     const [inputToken, setInputToken] = useState<Token | undefined>()
     const [inputChain, setInputChain] = useState<Chain>()
+    const [shared, setShared] = useState(false);
     const [outputToken, setOutputToken] = useState<Token | undefined>()
     const [outputChain, setOutputChain] = useState<Chain>()
     const [inputAmount, setInputAmount] = useState<number>()
@@ -256,9 +258,21 @@ export const SwapView = (props: {
                     />
                     <FeedbackButton />
                     <div className="flex-grow"></div>
+                    {inputToken && outputToken && (
+                        <div
+                            onClick={() => {
+                                setShared(true);
+                                setTimeout(() => setShared(false), 3000);
+                                navigator.clipboard.writeText(`https://broccoliswap.com/?inputToken=${inputToken.token.symbol}&inputChain=${inputToken.chain}&outputToken=${outputToken.token.symbol}&outputChain=${outputToken.chain}&amount=${inputAmount}`);
+                            }}
+                            className="bg-darkblue transition-all px-2 py-0.5 rounded-full cursor-pointer border-2 border-activeblue hover:bg-activeblue flex gap-1 items-center text-sm">
+                            <BsShareFill />
+                            {shared && <span>Copied link</span>}
+                        </div>
+                    )}
                     {slippage && <div
                         onClick={() => setShowSlippageSelector(true)}
-                        className="bg-darkblue px-2 py-0.5 rounded-full cursor-pointer border-2 border-activeblue transition-colors hover:bg-activeblue flex gap-1 items-center text-sm"
+                        className="bg-darkblue px-2 py-0.5 rounded-full cursor-pointer border-2 border-activeblue transition-colors hover:bg-activeblue flex gap-1 items-center text-xs"
                     >
                         <LuSettings2 />
                         {slippage}%
