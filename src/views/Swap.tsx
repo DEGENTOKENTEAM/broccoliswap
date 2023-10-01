@@ -258,7 +258,7 @@ export const SwapView = (props: {
                     />
                     <FeedbackButton />
                     <div className="flex-grow"></div>
-                    {inputToken && outputToken && (
+                    {inputToken && outputToken && inputAmount && (
                         <div
                             onClick={() => {
                                 setShared(true);
