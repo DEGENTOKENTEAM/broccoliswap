@@ -265,7 +265,7 @@ export const SwapView = (props: {
                                 setTimeout(() => setShared(false), 3000);
                                 navigator.clipboard.writeText(`https://broccoliswap.com/?inputToken=${inputToken.token.symbol}&inputChain=${inputToken.chain}&outputToken=${outputToken.token.symbol}&outputChain=${outputToken.chain}&amount=${inputAmount}`);
                             }}
-                            className="bg-darkblue transition-all px-2 py-0.5 rounded-full cursor-pointer border-2 border-activeblue hover:bg-activeblue flex gap-1 items-center text-sm">
+                            className="bg-darkblue transition-all px-2 py-0.5 rounded-full cursor-pointer border-2 border-activeblue hover:bg-activeblue flex gap-1 items-center text-xs">
                             <BsShareFill />
                             {shared && <span>Copied link</span>}
                         </div>
