@@ -61,7 +61,7 @@ const calculateBestTrade = async (
         const allTrades = tradesToUse
             .filter(trade => !['PangolinTrade', 'JoeTrade'].includes(trade.constructor.name))
             .sort((a, b) =>
-                a.to.tokenAmount > b.to.tokenAmount ? -1 : 1
+                a.to.tokenAmount.toNumber() > b.to.tokenAmount.toNumber() ? -1 : 1
             ) as OnChainTrade[]
 
         if (allTrades.length === 0) return 'No trades available'
@@ -113,7 +113,7 @@ const calculateBestTrade = async (
     const bestTrades = tradesToUse
         .filter(trade => !!trade?.trade?.to)
         .sort((a, b) =>
-            a.trade!.to.tokenAmount > b.trade!.to.tokenAmount ? -1 : 1
+            a.trade!.to.tokenAmount.toNumber() > b.trade!.to.tokenAmount.toNumber() ? -1 : 1
         )
         // @ts-expect-error onChainTrade is not a prop but exists sometimes
         .filter(trade => !trade.trade?.onChainTrade || !['PangolinTrade', 'JoeTrade'].includes(trade.trade?.onChainTrade.constructor.name))
