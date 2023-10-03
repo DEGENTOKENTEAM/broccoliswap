@@ -51,11 +51,11 @@ const tradeStatusToButtonStatus = (
     
     const trade = trades[0];
 
-    if (trades === "No trades available") {
-        if (inputChain !== outputChain && inputAmountInUsd && inputAmountInUsd < 5) {
-            return { text: "Please bridge at least $5", disabled: true };
-        }
+    if (inputChain !== outputChain && inputAmountInUsd && inputAmountInUsd < 5) {
+        return { text: "Please bridge at least $5", disabled: true };
+    }
 
+    if (trades === "No trades available") {
         return { text: "No trades available", disabled: true };
     }
 
@@ -133,6 +133,7 @@ const MaybeSwapButton = (props:{
 
     const doSwap = async (tradeIterator = 0): Promise<void> => {
         const currentTrade = props.trades[tradeIterator];
+        console.log(currentTrade)
         setIsSwapping(true);
         try {
             const tx = await currentTrade.swap();

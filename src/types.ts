@@ -26,11 +26,11 @@ export type RubicToken = {
     symbol: string;
     blockchainNetwork: string;
     decimals: number;
-    image: string;
-    rank: number;
-    usedInIframe: boolean;
-    coingeckoId: string;
-    usdPrice: string;
+    image?: string;
+    rank?: number;
+    usedInIframe?: boolean;
+    coingeckoId?: string;
+    usdPrice?: string;
     token_security?: {
         has_info: boolean,
         trust_list: unknown,

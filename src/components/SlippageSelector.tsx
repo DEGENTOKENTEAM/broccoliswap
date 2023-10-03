@@ -50,7 +50,7 @@ export const SlippageSelector = (props: {
                 </div>
 
                 <div className="flex flex-col gap-5">
-                    <span>The {props.slippage}% slippage is determined automatically, here is the breakdown:</span>
+                    <span>The {props.slippage?.toFixed(2)}% slippage is determined automatically, here is the breakdown:</span>
                     <div className="grid grid-cols-4 gap-x-3 gap-y-1 w-1/2 mx-auto">
                         <div className="col-span-3">Input token sell tax:<div className="text-xs">*This includes LP fees</div></div>
                         <div className="text-right">{props.inputTokenSellTax}%</div>

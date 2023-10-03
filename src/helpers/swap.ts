@@ -31,6 +31,7 @@ const calculateBestTrade = async (
                     disableMultihops: false,
                     useProxy: true,
                     deadlineMinutes: 20,
+                    gasCalculation: 'rubicOptimisation',
                 }
             ),
             sdk.onChainManager.calculateTrade(
@@ -43,6 +44,7 @@ const calculateBestTrade = async (
                     disableMultihops: false,
                     useProxy: false,
                     deadlineMinutes: 20,
+                    gasCalculation: 'rubicOptimisation',
                 }
             ),
         ]);

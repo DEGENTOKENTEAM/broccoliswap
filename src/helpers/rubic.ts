@@ -1,4 +1,5 @@
 import { Chain, chainsInfo, rubicRPCEndpoints } from "@/types";
+import { fetchToken } from "wagmi/actions";
 import { Configuration, SDK } from "rubic-sdk";
 
 const config: Configuration = {
@@ -41,6 +42,23 @@ export const searchToken = async (network: Chain, filterTxt?: string) => {
     // If this is ETH and there is no filterTxt, Rubic comes up first, that's annoying
     if (network === Chain.ETH && !filterTxt) {
         return data.results.slice(1)
+    }
+
+    // If there are no results and the input is an address, try direct import
+    if (data.results.length === 0 && filterTxt?.startsWith('0x')) {
+        const token = await fetchToken({
+            address: filterTxt as `0x${string}`,
+        })
+
+        if (token) {
+            return [{
+                address: filterTxt,
+                name: token.name,
+                symbol: token.symbol,
+                blockchainNetwork: chainsInfo[network].rubicSdkChainName,
+                decimals: token.decimals,
+            }]
+        }
     }
 
     return data.results;

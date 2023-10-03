@@ -263,7 +263,7 @@ export const SwapView = (props: {
                             onClick={() => {
                                 setShared(true);
                                 setTimeout(() => setShared(false), 3000);
-                                navigator.clipboard.writeText(`https://broccoliswap.com/?inputToken=${inputToken.token.symbol}&inputChain=${inputToken.chain}&outputToken=${outputToken.token.symbol}&outputChain=${outputToken.chain}&amount=${inputAmount}`);
+                                navigator.clipboard.writeText(`https://broccoliswap.com/?inputToken=${inputToken.token.address}&inputChain=${inputToken.chain}&outputToken=${outputToken.token.address}&outputChain=${outputToken.chain}&amount=${inputAmount}`);
                             }}
                             className="bg-darkblue transition-all px-2 py-0.5 rounded-full cursor-pointer border-2 border-activeblue hover:bg-activeblue flex gap-1 items-center text-xs">
                             <BsShareFill />
@@ -275,7 +275,7 @@ export const SwapView = (props: {
                         className="bg-darkblue px-2 py-0.5 rounded-full cursor-pointer border-2 border-activeblue transition-colors hover:bg-activeblue flex gap-1 items-center text-xs"
                     >
                         <LuSettings2 />
-                        {slippage}%
+                        {slippage.toFixed(2)}%
                         {(slippage < tokenTax || slippage - tokenTax > 10) && (
                             <PiWarningBold className="text-warning" />
                         )}
