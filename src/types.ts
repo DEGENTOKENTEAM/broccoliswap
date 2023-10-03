@@ -30,7 +30,7 @@ export type RubicToken = {
     rank?: number;
     usedInIframe?: boolean;
     coingeckoId?: string;
-    usdPrice?: string;
+    usdPrice: string;
     token_security?: {
         has_info: boolean,
         trust_list: unknown,

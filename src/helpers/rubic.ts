@@ -57,6 +57,7 @@ export const searchToken = async (network: Chain, filterTxt?: string) => {
                 symbol: token.symbol,
                 blockchainNetwork: chainsInfo[network].rubicSdkChainName,
                 decimals: token.decimals,
+                usePrice: '0',
             }]
         }
     }
