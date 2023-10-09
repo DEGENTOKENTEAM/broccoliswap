@@ -21,6 +21,7 @@ import {
 import { notify, reportError } from "../helpers/errorReporting";
 import { getErrorName } from "@/helpers/error";
 import { trackSwap } from "@/helpers/track";
+import { getSDK } from "@/helpers/rubic";
 
 const buttonStyle = "w-full mt-10 px-3 py-3 rounded-xl my-3 text-lg flex items-center justify-center text-light-200 font-bold bg-dark border-activeblue border-2 uppercase transition-colors"
 
@@ -107,6 +108,8 @@ const MaybeSwapButton = (props:{
     inputTokenSellTax?: number
 }) => {
     const { address } = useAccount();
+
+    const sdk = getSDK();
     
     const [approveTxHash, setApproveTxHash] = useState('')
     const [isSwapping, setIsSwapping] = useState(false)
@@ -136,7 +139,9 @@ const MaybeSwapButton = (props:{
         console.log(currentTrade)
         setIsSwapping(true);
         try {
-            const tx = await currentTrade.swap();
+            const tx = await currentTrade.swap({
+                gasPriceOptions: await (await sdk).gasPriceApi.getGasPrice(blockchainNameToChain(currentTrade.from.blockchain)!.rubicSdkChainName)
+            });
             setIsSwapping(false);
 
             if (!currentTrade) {
