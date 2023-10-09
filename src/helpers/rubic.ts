@@ -48,6 +48,7 @@ export const searchToken = async (network: Chain, filterTxt?: string) => {
     if (data.results.length === 0 && filterTxt?.startsWith('0x')) {
         const token = await fetchToken({
             address: filterTxt as `0x${string}`,
+            chainId: chainsInfo[network].id
         })
 
         if (token) {
