@@ -49,22 +49,26 @@ const calculateBestTrade = async (
             ),
         ]);
 
-        const availableTrades = trades.filter(
-            // @ts-expect-error error type
-            (trade): trade is OnChainTrade => !trade?.error
-        )
-
-        const availableTradesWithoutProxy = tradesWithoutProxy.filter(
-            // @ts-expect-error error type
-            (trade): trade is OnChainTrade => !trade?.error
-        )
-
-        const tradesToUse = availableTrades.length > 0 ? availableTrades : availableTradesWithoutProxy;
-        const allTrades = tradesToUse
+        const availableTrades = trades
+            .filter(
+                // @ts-expect-error error type
+                (trade): trade is OnChainTrade => !trade?.error
+            )
             .filter(trade => !['PangolinTrade', 'JoeTrade'].includes(trade.constructor.name))
             .sort((a, b) =>
                 a.to.tokenAmount.toNumber() > b.to.tokenAmount.toNumber() ? -1 : 1
             ) as OnChainTrade[]
+
+        const availableTradesWithoutProxy = tradesWithoutProxy
+            .filter(
+                // @ts-expect-error error type
+                (trade): trade is OnChainTrade => !trade?.error
+            )
+            .sort((a, b) =>
+                a.to.tokenAmount.toNumber() > b.to.tokenAmount.toNumber() ? -1 : 1
+            ) as OnChainTrade[]
+
+        const allTrades = availableTrades.concat(availableTradesWithoutProxy)
 
         if (allTrades.length === 0) return 'No trades available'
 
@@ -105,23 +109,33 @@ const calculateBestTrade = async (
         ),
     ]);
 
-    const availableTradesWithoutProxy = tradesWithoutProxy.filter(
+    const availableTrades = trades
+        .filter(
             // @ts-expect-error error type
             (trade): trade is OnChainTrade => !trade?.error
         )
-
-    const tradesToUse = trades.length > 0 ? trades : availableTradesWithoutProxy;
-
-    const bestTrades = tradesToUse
         .filter(trade => !!trade?.trade?.to)
         .sort((a, b) =>
             a.trade!.to.tokenAmount.toNumber() > b.trade!.to.tokenAmount.toNumber() ? -1 : 1
         )
         // @ts-expect-error onChainTrade is not a prop but exists sometimes
         .filter(trade => !trade.trade?.onChainTrade || !['PangolinTrade', 'JoeTrade'].includes(trade.trade?.onChainTrade.constructor.name))
-    if (!bestTrades || bestTrades.length === 0) return 'No trades available'
 
-    const allOnChainTrades = bestTrades.map(bestTrade => bestTrade.trade);
+    const availableTradesWithoutProxy = tradesWithoutProxy
+        .filter(
+            // @ts-expect-error error type
+            (trade): trade is OnChainTrade => !trade?.error
+        )
+        .filter(trade => !!trade?.trade?.to)
+        .sort((a, b) =>
+            a.trade!.to.tokenAmount.toNumber() > b.trade!.to.tokenAmount.toNumber() ? -1 : 1
+        )
+
+    const tradesToUse = availableTrades.concat(availableTradesWithoutProxy);
+
+    if (!tradesToUse || tradesToUse.length === 0) return 'No trades available'
+
+    const allOnChainTrades = tradesToUse.map(tradeToUse => tradeToUse.trade);
 
     // Filter trades where the min output amount is way too low
     const minimumMinimumOutputAmount = allOnChainTrades[0]!.toTokenAmountMin.toNumber() * 0.95;
