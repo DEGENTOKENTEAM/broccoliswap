@@ -139,8 +139,9 @@ const MaybeSwapButton = (props:{
         console.log(currentTrade)
         setIsSwapping(true);
         try {
+            const gas = await (await sdk).gasPriceApi.getGasPrice(blockchainNameToChain(currentTrade.from.blockchain)!.rubicSdkChainName)
             const tx = await currentTrade.swap({
-                gasPriceOptions: await (await sdk).gasPriceApi.getGasPrice(blockchainNameToChain(currentTrade.from.blockchain)!.rubicSdkChainName)
+                gasPriceOptions: gas
             });
             setIsSwapping(false);
 

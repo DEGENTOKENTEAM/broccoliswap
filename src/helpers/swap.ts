@@ -54,7 +54,7 @@ const calculateBestTrade = async (
                 // @ts-expect-error error type
                 (trade): trade is OnChainTrade => !trade?.error
             )
-            .filter(trade => !['PangolinTrade', 'JoeTrade'].includes(trade.constructor.name))
+            .filter(trade => !['PangolinTrade', 'JoeTrade', 'XyDexTrade'].includes(trade.constructor.name))
             .sort((a, b) =>
                 a.to.tokenAmount.toNumber() > b.to.tokenAmount.toNumber() ? -1 : 1
             ) as OnChainTrade[]
@@ -64,6 +64,7 @@ const calculateBestTrade = async (
                 // @ts-expect-error error type
                 (trade): trade is OnChainTrade => !trade?.error
             )
+            .filter(trade => !['XyDexTrade'].includes(trade.constructor.name))
             .sort((a, b) =>
                 a.to.tokenAmount.toNumber() > b.to.tokenAmount.toNumber() ? -1 : 1
             ) as OnChainTrade[]
@@ -119,13 +120,14 @@ const calculateBestTrade = async (
             a.trade!.to.tokenAmount.toNumber() > b.trade!.to.tokenAmount.toNumber() ? -1 : 1
         )
         // @ts-expect-error onChainTrade is not a prop but exists sometimes
-        .filter(trade => !trade.trade?.onChainTrade || !['PangolinTrade', 'JoeTrade'].includes(trade.trade?.onChainTrade.constructor.name))
+        .filter(trade => !trade.trade?.onChainTrade || !['PangolinTrade', 'JoeTrade', 'XyDexTrade'].includes(trade.trade?.onChainTrade.constructor.name))
 
     const availableTradesWithoutProxy = tradesWithoutProxy
         .filter(
             // @ts-expect-error error type
             (trade): trade is OnChainTrade => !trade?.error
         )
+        .filter(trade => !['XyDexTrade'].includes(trade.constructor.name))
         .filter(trade => !!trade?.trade?.to)
         .sort((a, b) =>
             a.trade!.to.tokenAmount.toNumber() > b.trade!.to.tokenAmount.toNumber() ? -1 : 1
