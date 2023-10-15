@@ -39,8 +39,8 @@ export const searchToken = async (network: Chain, filterTxt?: string) => {
     );
     const data = await result.json();
 
-    // If this is ETH and there is no filterTxt, Rubic comes up first, that's annoying
-    if (network === Chain.ETH && !filterTxt) {
+    // If this is ETH or ARB and there is no filterTxt, Rubic comes up first, that's annoying
+    if ([Chain.ETH, Chain.ARBITRUM].includes(network) && !filterTxt) {
         return data.results.slice(1)
     }
 

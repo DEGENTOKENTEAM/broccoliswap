@@ -45,21 +45,22 @@ const TokenListItem = (props: {
         >
             <TokenImage src={token.image} symbol={token.symbol} />
             <div className="flex flex-col flex-grow">
-                <div className="flex items-center gap-3">
+                <div className="flex items-center gap-4">
                     <div className="leading-5 text-light-200">{token.symbol}</div>
                     {!token.address.startsWith("0x0000") && (
-                        <Link
-                            href={`${
-                                chainsInfo[props.selectedChain].explorer
-                            }token/${token.address}`}
-                            target="_blank"
-                            onClick={e => e.stopPropagation()}
-                        >
-                            <div className="text-xs bg-dark py-0.5 px-1.5 rounded flex items-center gap-1">
-                                {token.address.slice(0, 5)}...{" "}
-                                <BiLinkExternal />
-                            </div>
-                        </Link>
+                        <div className="text-xs bg-dark py-0.5 px-1.5 rounded">
+                            <Link
+                                href={`${
+                                    chainsInfo[props.selectedChain].explorer
+                                }token/${token.address}`}
+                                target="_blank"
+                                onClick={e => e.stopPropagation()}
+                                className="flex items-center gap-1"
+                            >
+                                    {token.address.slice(0, 5)}...{" "}
+                                    <BiLinkExternal />
+                            </Link>
+                        </div>
                     )}
                 </div>
                 <div className="text-xs leading-5">{token.name}</div>

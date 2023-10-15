@@ -53,7 +53,8 @@ export const TokenInput = (props: {
                                     size={24}
                                 />
 
-                                {props.token.token.address !== NULL_ADDRESS && (
+                                {/* Arb should always show the chain logo as the native is also ETH */}
+                                {(props.token.token.address !== NULL_ADDRESS || props.token.chain === Chain.ARBITRUM) && (
                                     <div className="absolute left-2 top-2">
                                         <TokenImage
                                             src={`/chains/${

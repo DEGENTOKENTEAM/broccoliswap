@@ -4,6 +4,7 @@ export enum Chain {
     ETH = 'ETH',
     BSC = 'BSC',
     AVAX = 'AVAX',
+    ARBITRUM = 'ARBITRUM',
 }
 
 export const NULL_ADDRESS = '0x0000000000000000000000000000000000000000'
@@ -17,6 +18,9 @@ export const rubicRPCEndpoints = {
     },
     [BLOCKCHAIN_NAME.AVALANCHE]: {
         rpcList: ['https://avalanche-c-chain.publicnode.com']
+    },
+    [BLOCKCHAIN_NAME.ARBITRUM]: {
+        rpcList: ['https://arb1.arbitrum.io/rpc']
     }
 }
 
@@ -94,5 +98,21 @@ export const chainsInfo = {
         honeyPotCheckerAddress: '0xb31f66aa3c1e785363f0875a1b74e27b85fd66c7',
         rpc: 'https://avalanche-c-chain.publicnode.com',
         nativeTokenSymbol: 'AVAX'
+    },
+    [Chain.ARBITRUM]: {
+        chain: Chain.ARBITRUM,
+        id: 42161,
+        name: 'Arbitrum',
+        symbol: 'arb',
+        logo: 'arbitrum.svg',
+        rubicName: 'arbitrum',
+        explorer: 'https://arbiscan.io/',
+        rubicSdkChainName: BLOCKCHAIN_NAME.ARBITRUM,
+        bitqueryChainName: 'arbitrum',
+        honeyPotCheckerContract: '0x0aa2037E40a78A169B5214418D66377ab828cb23',
+        honeyPotCheckerRouter: '0xa669e7a0d4b3e4fa48af2de86bd4cd7126be4e13',
+        honeyPotCheckerAddress: '0x82af49447d8a07e3bd95bd0d56f35241523fbab1',
+        rpc: 'https://arb1.arbitrum.io/rpc',
+        nativeTokenSymbol: 'ETH'
     },
 }

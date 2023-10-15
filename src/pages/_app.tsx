@@ -5,7 +5,7 @@ import type { AppProps } from 'next/app'
 import { useEffect, useState } from 'react'
 import { WagmiConfig, configureChains, createConfig } from 'wagmi'
 import { publicProvider } from 'wagmi/providers/public'
-import { avalanche, bsc, mainnet } from 'wagmi/chains'
+import { avalanche, bsc, mainnet, arbitrum } from 'wagmi/chains'
 import NonSSR from '@/components/NonSSR'
 import { infuraProvider } from 'wagmi/providers/infura'
 import { ConnectKitProvider, getDefaultConfig } from 'connectkit'
@@ -13,7 +13,7 @@ import * as errorReporting from '../helpers/errorReporting';
 import { setUTMParameters, trackStartVisit } from '@/helpers/track'
 
 const { chains } = configureChains(
-  [mainnet, avalanche, bsc],
+  [mainnet, avalanche, bsc, arbitrum],
   [infuraProvider({ apiKey: process.env.NEXT_PUBLIC_INFURA_ID! }), publicProvider()],
 )
 
