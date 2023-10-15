@@ -2,6 +2,7 @@
 const nextConfig = {
   transpilePackages: [
      "rubic-sdk",
+     "@layerzerolabs/scan-client"
   ],
   images: {
     unoptimized: true,
