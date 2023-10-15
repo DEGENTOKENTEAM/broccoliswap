@@ -100,6 +100,16 @@ const getBridgeTransferTokenStatus = async (
     )
     const bridgeTxStatus = await response.json()
 
+    if (bridgeTxStatus?.result === 'unknown') {
+        return {
+            status: 'success',
+            toAddress: address,
+            toAmount: swap.toAmount,
+            toSymbol: swap.toSymbol,
+            toTokenAddress: swap.toAddress,
+        }
+    }
+
     // Update the swap record
     const status = {
         status:

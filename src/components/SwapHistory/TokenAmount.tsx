@@ -19,7 +19,8 @@ export const TokenAmount = (props: {
                         size={24}
                     />
 
-                    {props.address !== NULL_ADDRESS && (
+                        {/* Arb should always show the chain logo as the native is also ETH */}
+                        {(props.address !== NULL_ADDRESS || props.chain === Chain.ARBITRUM) && (
                         <div className="absolute left-2 top-2">
                             <TokenImage
                                 src={`/chains/${chainsInfo[props.chain].logo}`}

@@ -21,18 +21,28 @@ export const handler = async (
         )
     }
 
-    const result: any = await getBridgeTxInfo(
-        body.address,
-        body.toChain,
-        body.hash
-    )
-
-    return createReturn(
-        200,
-        JSON.stringify({
-            status: 'success',
-            info: result.data.ethereum.transfers[0],
-        }),
-        parseInt(process.env.TRANSACTIONS_CACHE_AGE!)
-    )
+    try {
+        const result: any = await getBridgeTxInfo(
+            body.address,
+            body.toChain,
+            body.hash
+        )
+        return createReturn(
+            200,
+            JSON.stringify({
+                status: 'success',
+                info: result.data.ethereum.transfers[0],
+            }),
+            parseInt(process.env.TRANSACTIONS_CACHE_AGE!)
+        )
+    } catch (e) {
+        return createReturn(
+            200,
+            JSON.stringify({
+                status: 'success',
+                result: 'unknown'
+            }),
+            parseInt(process.env.TRANSACTIONS_CACHE_AGE!)
+        )
+    }
 }
