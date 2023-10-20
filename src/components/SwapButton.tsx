@@ -141,7 +141,7 @@ const MaybeSwapButton = (props:{
         try {
             const gas = await getGas(blockchainNameToChain(currentTrade.from.blockchain)!.chain)
             const tx = await currentTrade.swap({
-                gasPriceOptions: parseInt(gas.gasPrice || gas.baseFee || '0') > 0 ? gas : undefined
+                gasPriceOptions: parseInt(gas.gasPrice || gas.baseFee || '0') > 0 ? gas : undefined,
             });
             setIsSwapping(false);
 
@@ -242,26 +242,6 @@ const MaybeSwapButton = (props:{
         const referenceTrade = props.trades[0];
         if (!referenceTrade) {
             return;
-        }
-
-        const _needApprove = await referenceTrade.needApprove();
-
-        if (_needApprove) {
-            return setButtonAction({
-                text: 'Approve',
-                action: () => referenceTrade.approve.bind(referenceTrade)({ onTransactionHash: hash => {
-                    setTimeout(() => {
-                        if (hash) {
-                            setApproveTxHash(hash)
-                        } else {
-                            // Somehow it's not ready yet, wait longer and try again
-                            setTimeout(() => {
-                                setApproveTxHash(hash)
-                            }, 2000)
-                        }
-                    }, 2000)
-                }})
-            })
         }
         
         setButtonAction({

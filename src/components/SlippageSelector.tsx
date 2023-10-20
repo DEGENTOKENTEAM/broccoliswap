@@ -56,6 +56,10 @@ export const SlippageSelector = (props: {
                         <div className="text-right">{props.inputTokenSellTax}%</div>
                         <div className="col-span-3">Output token buy tax:<div className="text-xs">*This includes LP fees</div></div>
                         <div className="text-right">{props.outputTokenBuyTax}%</div>
+                        {(props.inputTokenSellTax || 0) + (props.inputTokenSellTax || 0) > 6 && <>
+                            <div className="col-span-3">High token tax:</div>
+                            <div className="text-right">1%</div>
+                        </>}
                         {props.isBridge && <><div className="col-span-3">Bridge swap:</div><div className="text-right">4%</div></>}
                         {!props.isBridge && <><div className="col-span-3">On-chain swap:</div><div className="text-right">1%</div></>}
                     </div>

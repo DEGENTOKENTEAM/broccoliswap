@@ -201,6 +201,11 @@ export const SwapView = (props: {
         let tradeSlippage = slippage;
         if (!tradeSlippage) {
             tradeSlippage = (_inputTokenSellTax + _outputTokenBuyTax + (inputToken.chain  === outputToken.chain ? 1 : 4));
+
+            if (_inputTokenSellTax + _outputTokenBuyTax > 6) {
+                tradeSlippage += 1;
+            }
+            
             setSlippage(tradeSlippage)
         }
 
