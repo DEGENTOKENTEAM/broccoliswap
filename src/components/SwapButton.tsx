@@ -22,6 +22,7 @@ import { notify, reportError } from "../helpers/errorReporting";
 import { getErrorName } from "@/helpers/error";
 import { trackSwap } from "@/helpers/track";
 import { getSDK } from "@/helpers/rubic";
+import { getGas } from "@/helpers/gas";
 
 const buttonStyle = "w-full mt-10 px-3 py-3 rounded-xl my-3 text-lg flex items-center justify-center text-light-200 font-bold bg-dark border-activeblue border-2 uppercase transition-colors"
 
@@ -136,13 +137,11 @@ const MaybeSwapButton = (props:{
 
     const doSwap = async (tradeIterator = 0): Promise<void> => {
         const currentTrade = props.trades[tradeIterator];
-        console.log(currentTrade)
         setIsSwapping(true);
         try {
-            const gas = await (await sdk).gasPriceApi.getGasPrice(blockchainNameToChain(currentTrade.from.blockchain)!.rubicSdkChainName)
-            console.log(gas)
+            const gas = await getGas(blockchainNameToChain(currentTrade.from.blockchain)!.chain)
             const tx = await currentTrade.swap({
-                gasPriceOptions: parseInt(gas.baseFee || '0') > 0 ? gas : undefined
+                gasPriceOptions: parseInt(gas.gasPrice || '0') > 0 ? gas : undefined
             });
             setIsSwapping(false);
 
