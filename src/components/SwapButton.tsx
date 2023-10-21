@@ -102,7 +102,6 @@ const SwitchNetworkButton = (props: { targetChainId?: number }) => {
 };
 
 const MaybeSwapButton = (props:{
-    updateTemp: Function,
     trades: OnChainTrade[] | CrossChainTrade[],
     onSwapDone?: (tx: string, swapInputChain: Chain, swapOutputChain: Chain, swapInputToken: Token, swapOutputToken: Token) => void ,
     inputToken?: Token,
@@ -117,6 +116,7 @@ const MaybeSwapButton = (props:{
     const [isSwapping, setIsSwapping] = useState(false)
     const [swapError, setSwapError] = useState<any>()
     const [swapErrorMessage, setSwapErrorMessage] = useState<any>()
+    const [showRefreshButton, setShowRefreshButton] = useState(false);
     const [buttonAction, setButtonAction] = useState<{ text: string, action: Function } | undefined>()
 
     const referenceTrade = props.trades[0];
@@ -141,8 +141,6 @@ const MaybeSwapButton = (props:{
         setIsSwapping(true);
         try {
             const gas = await getGas(blockchainNameToChain(currentTrade.from.blockchain)!.chain)
-            props.updateTemp(JSON.stringify(gas))
-            props.updateTemp(JSON.stringify(currentTrade))
             const tx = await currentTrade.swap({
                 gasPriceOptions: parseInt(gas.gasPrice || gas.baseFee || '0') > 0 ? gas : undefined,
             });
@@ -229,6 +227,25 @@ const MaybeSwapButton = (props:{
                 return doSwap(tradeIterator + 1)
             }
 
+            if (e?.message.includes('Not allowed') || e?.message.toLowerCase().includes('anti mev')) {
+                setIsSwapping(false);
+                setSwapError(e);
+                if (props.inputToken && props.inputToken.chain !== props.outputToken?.chain) {
+                    setSwapErrorMessage(`The input token does not support our contract to sell. Please first swap to ${chainsInfo[props.inputToken.chain].symbol} and then bridge.`);
+                } else {
+                    setSwapErrorMessage(`The input token does not support our contract to sell. Please try to swap directly using the DEX where the liquidity is hosted.`);
+                }
+                return;
+            }
+
+            if (e?.message.includes('matching key. keychain')) {
+                setIsSwapping(false);
+                setSwapError(e);
+                setSwapErrorMessage(`Your wallet connection with broccoliswap isn't working correctly. Please click on the button below to reset and refresh`);
+                setShowRefreshButton(true);
+                return;
+            }
+
             if (e instanceof RubicSdkError) {
                 setSwapError(e);
                 setSwapErrorMessage(e.message);
@@ -254,6 +271,28 @@ const MaybeSwapButton = (props:{
             action: doSwap
         })
     }, [props.trades, approveTxLoaded])
+
+    if (showRefreshButton) {
+        return (
+            <>
+                <div
+                    className={classNames(
+                        buttonStyle,
+                        "hover:bg-activeblue cursor-pointer",
+                    )}
+                    onClick={() => {
+                        localStorage.clear();
+                        window.location.assign(`?inputChain=${props.inputToken?.chain}&inputToken=${props.inputToken?.token.address}&outputChain=${props.outputToken?.chain}&outputToken=${props.outputToken?.token.address}&amount=${props.trades?.[0]?.from?.tokenAmount?.toNumber()}`)
+                    }}
+                >
+                    Reload app
+                </div>
+                <div className="bg-dark border-2 border-error p-3 rounded-xl text-light-200 flex flex-col gap-3">
+                    {swapErrorMessage ? <div>{swapErrorMessage}</div> : <div>We could not execute your swap because of an error. Please refresh trade and try again.</div>}
+                </div>
+            </>
+        )
+    }
 
     if (swapError) {
         notify(swapError, (event) => {
@@ -349,7 +388,6 @@ const MaybeSwapButton = (props:{
 }
 
 export const SwapButton = (props: {
-    updateTemp: Function
     tradeLoading: boolean;
     trades?: Awaited<Awaited<ReturnType<typeof calculateSwap>>['trade']>;
     onSwapDone?: (tx: string, swapInputChain: Chain, swapOutputChain: Chain, swapInputToken: Token, swapOutputToken: Token) => void;
@@ -412,7 +450,6 @@ export const SwapButton = (props: {
     if (buttonStatus.trades) {
         return (
             <MaybeSwapButton
-            updateTemp={props.updateTemp}
                 inputToken={props.inputToken}
                 outputToken={props.outputToken}
                 trades={buttonStatus.trades}
