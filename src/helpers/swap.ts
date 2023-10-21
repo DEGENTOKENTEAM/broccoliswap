@@ -55,6 +55,7 @@ const calculateBestTrade = async (
                 (trade): trade is OnChainTrade => !trade?.error
             )
             .filter(trade => !['PangolinTrade', 'JoeTrade', 'XyDexTrade'].includes(trade.constructor.name))
+            .filter(trade => trade?.type !== 'XY_DEX')
             .sort((a, b) =>
                 a.to.tokenAmount.toNumber() > b.to.tokenAmount.toNumber() ? -1 : 1
             ) as OnChainTrade[]
