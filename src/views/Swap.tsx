@@ -493,7 +493,7 @@ export const SwapView = (props: {
                 </div>
                 
                 <ExtraTradeInfo trade={trades?.[0]} />
-                {temp}
+                <div className="w-full break-all">{temp}</div>
             </div>
 
             <SlippageSelector
