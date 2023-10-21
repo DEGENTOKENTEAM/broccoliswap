@@ -102,6 +102,7 @@ const SwitchNetworkButton = (props: { targetChainId?: number }) => {
 };
 
 const MaybeSwapButton = (props:{
+    updateTemp: Function,
     trades: OnChainTrade[] | CrossChainTrade[],
     onSwapDone?: (tx: string, swapInputChain: Chain, swapOutputChain: Chain, swapInputToken: Token, swapOutputToken: Token) => void ,
     inputToken?: Token,
@@ -140,9 +141,8 @@ const MaybeSwapButton = (props:{
         setIsSwapping(true);
         try {
             const gas = await getGas(blockchainNameToChain(currentTrade.from.blockchain)!.chain)
-            setSwapError(`Log: ${JSON.stringify(gas)}`)
-            setSwapErrorMessage(`Log: ${JSON.stringify(gas)}`)
-            return;
+            props.updateTemp(JSON.stringify(gas))
+            props.updateTemp(JSON.stringify(currentTrade))
             const tx = await currentTrade.swap({
                 gasPriceOptions: parseInt(gas.gasPrice || gas.baseFee || '0') > 0 ? gas : undefined,
             });
@@ -214,6 +214,8 @@ const MaybeSwapButton = (props:{
                 setIsSwapping(false);
                 return;
             }
+
+            console.log('message::::', e.message)
 
             if (e?.message.includes('err: insufficient funds for gas * price + value:')) {
                 setIsSwapping(false);
@@ -347,6 +349,7 @@ const MaybeSwapButton = (props:{
 }
 
 export const SwapButton = (props: {
+    updateTemp: Function
     tradeLoading: boolean;
     trades?: Awaited<Awaited<ReturnType<typeof calculateSwap>>['trade']>;
     onSwapDone?: (tx: string, swapInputChain: Chain, swapOutputChain: Chain, swapInputToken: Token, swapOutputToken: Token) => void;
@@ -409,6 +412,7 @@ export const SwapButton = (props: {
     if (buttonStatus.trades) {
         return (
             <MaybeSwapButton
+            updateTemp={props.updateTemp}
                 inputToken={props.inputToken}
                 outputToken={props.outputToken}
                 trades={buttonStatus.trades}

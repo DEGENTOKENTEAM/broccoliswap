@@ -41,6 +41,11 @@ export const SwapView = (props: {
     const [inputTokenSellTax, setInputTokenSellTax] = useState<number>()
     const [outputTokenBuyTax, setOutputTokenBuyTax] = useState<number>()
 
+    const [temp, setTemp] = useState('');
+    const updateTemp = (text: string)=>{
+        setTemp(_t => `${_t} | ${text}`)
+    }
+
     const signer = useEthersSigner()
     const { chain } = useNetwork();
     const web3 = useWeb3Signer({ chainId: chain?.id });
@@ -400,6 +405,7 @@ export const SwapView = (props: {
                     />
 
                     <SwapButton
+                    updateTemp={updateTemp}
                         tradeLoading={tradeLoading}
                         trades={trades}
                         onSwapDone={(
@@ -487,6 +493,7 @@ export const SwapView = (props: {
                 </div>
                 
                 <ExtraTradeInfo trade={trades?.[0]} />
+                {temp}
             </div>
 
             <SlippageSelector
