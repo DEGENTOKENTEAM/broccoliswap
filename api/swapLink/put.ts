@@ -10,31 +10,40 @@ export const handler = async (
 
     let iterator = 0;
     let exists = false;
+    let skip = false
     do {
         const existingLink = await getSwapLink(iterator === 0 ? origLink : `${origLink}-${iterator}`);
 
-        if (existingLink
-            && existingLink.inputToken === inputToken
-            && existingLink.inputChain === inputChain
-            && existingLink.outputToken === outputToken
-            && existingLink.outputChain === outputChain
-            && existingLink.amount === amount
-        ) {
-            exists = true;
-            iterator += 1;
+        if (existingLink) {
+            // If it is the same we don't have to iterate up, but can just return the same
+            if (
+                existingLink.inputToken === inputToken
+                && existingLink.inputChain === inputChain
+                && existingLink.outputToken === outputToken
+                && existingLink.outputChain === outputChain
+                && existingLink.amount === amount
+            ) {
+                exists = false;
+                skip = true;
+            } else {
+                exists = true;
+                iterator += 1;
+            }
         } else {
             exists = false;
         }
     } while (exists);
 
-    await putLink({
-        inputToken,
-        inputChain,
-        outputToken,
-        outputChain,
-        amount,
-        link: iterator === 0 ? origLink : `${origLink}-${iterator}`
-    });
+    if (!skip) {
+        await putLink({
+            inputToken,
+            inputChain,
+            outputToken,
+            outputChain,
+            amount,
+            link: iterator === 0 ? origLink : `${origLink}-${iterator}`
+        });
+    }
 
     return createReturn(
         200,
