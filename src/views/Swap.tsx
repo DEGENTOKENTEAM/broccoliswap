@@ -26,6 +26,7 @@ import { getTokenTaxes } from '@/helpers/tokenTax'
 import { useEthersSigner } from '@/hooks/useEthersSigner'
 import { useWeb3Signer } from '@/hooks/useWeb3Signer'
 import FeedbackButton from '@/components/FeedbackButton'
+import { Spinner } from '@/components/Spinner'
 
 export const SwapView = (props: {
     showRecentTrades?: boolean
@@ -34,6 +35,7 @@ export const SwapView = (props: {
     const [inputToken, setInputToken] = useState<Token | undefined>()
     const [inputChain, setInputChain] = useState<Chain>()
     const [shared, setShared] = useState(false);
+    const [shareLoading, setShareLoading] = useState(false);
     const [outputToken, setOutputToken] = useState<Token | undefined>()
     const [outputChain, setOutputChain] = useState<Chain>()
     const [inputAmount, setInputAmount] = useState<number>()
@@ -96,6 +98,22 @@ export const SwapView = (props: {
 
     useAsyncEffect(async () => {
         const qs = new URLSearchParams(window.location.search)
+
+        if (qs.get('swap')) {
+            const response = await fetch(`${process.env.NEXT_PUBLIC_BACKEND_ENDPOINT}/swapLink/${qs.get('swap')}`);
+            const { link: result } = await response.json();
+            setInputChain(result.inputChain)
+            setOutputChain(result.outputChain)
+            const [inputToken, outputToken] = await Promise.all([
+                searchToken(result.inputChain, result.inputToken),
+                searchToken(result.outputChain, result.outputToken),
+            ])
+            setInputToken({ token: inputToken[0], chain: result.inputChain })
+            setOutputToken({ token: outputToken[0], chain: result.outputChain })
+            setInputAmount(parseFloat(result.amount!))
+            setExternallySetAmount(parseFloat(result.amount!))
+        }
+
         if (qs.get('inputChain')) {
             const inputChain =
                 Chain[qs.get('inputChain')?.toUpperCase() as keyof typeof Chain]
@@ -248,6 +266,28 @@ export const SwapView = (props: {
         setExternallySetAmount(amount)
     }
 
+    const share = async () => {
+        setShareLoading(true);
+        const link = `${inputAmount}-${inputToken?.token.symbol}-to-${outputToken?.token.symbol}`;
+        const response = await fetch(`${process.env.NEXT_PUBLIC_BACKEND_ENDPOINT}/swapLink`, {
+            method: 'post',
+            body: JSON.stringify({
+                inputToken: inputToken?.token.address,
+                inputChain: inputToken?.chain,
+                outputToken: outputToken?.token.address,
+                outputChain: outputToken?.chain,
+                amount: inputAmount,
+                link
+            }),
+        });
+        const result = await response.json();
+        
+        setShareLoading(false);
+        setShared(true);
+        setTimeout(() => setShared(false), 3000);
+        navigator.clipboard.writeText(`https://broccoliswap.com/?swap=${result.link}`);
+    }
+
     const tokenTax = useMemo(() => {
         return (inputTokenSellTax || 0) + (outputTokenBuyTax || 0)
     }, [inputTokenSellTax, outputTokenBuyTax])
@@ -265,13 +305,9 @@ export const SwapView = (props: {
                     <div className="flex-grow"></div>
                     {inputToken && outputToken && inputAmount && (
                         <div
-                            onClick={() => {
-                                setShared(true);
-                                setTimeout(() => setShared(false), 3000);
-                                navigator.clipboard.writeText(`https://broccoliswap.com/?inputToken=${inputToken.token.address}&inputChain=${inputToken.chain}&outputToken=${outputToken.token.address}&outputChain=${outputToken.chain}&amount=${inputAmount}`);
-                            }}
+                            onClick={() => share()}
                             className="bg-darkblue transition-all px-2 py-0.5 rounded-full cursor-pointer border-2 border-activeblue hover:bg-activeblue flex gap-1 items-center text-xs">
-                            <BsShareFill />
+                            {shareLoading ? <Spinner /> : <BsShareFill />}
                             {shared && <span>Copied link</span>}
                         </div>
                     )}
