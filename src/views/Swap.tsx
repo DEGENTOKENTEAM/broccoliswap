@@ -27,52 +27,7 @@ import { useEthersSigner } from '@/hooks/useEthersSigner'
 import { useWeb3Signer } from '@/hooks/useWeb3Signer'
 import FeedbackButton from '@/components/FeedbackButton'
 import { Spinner } from '@/components/Spinner'
-
-function copy(text: string) {
-    return new Promise((resolve, reject) => {
-        if (typeof navigator !== "undefined" && typeof navigator.clipboard !== "undefined" && typeof navigator.permissions !== "undefined") {
-            const type = "text/plain";
-            const blob = new Blob([text], { type });
-            const data = [new ClipboardItem({ [type]: blob })];
-            // @ts-ignore
-            navigator.permissions.query({ name: "clipboard-write" }).then((permission) => {
-                if (permission.state === "granted" || permission.state === "prompt") {
-                    navigator.clipboard.write(data).then(resolve, reject).catch(reject);
-                }
-                else {
-                    reject(new Error("Permission not granted!"));
-                }
-            });
-        }
-        else if (document.queryCommandSupported && document.queryCommandSupported("copy")) {
-            var textarea = document.createElement("textarea");
-            textarea.textContent = text;
-            textarea.style.position = "fixed";
-            textarea.style.width = '2em';
-            textarea.style.height = '2em';
-            textarea.style.padding = '0';
-            textarea.style.border = 'none';
-            textarea.style.outline = 'none';
-            textarea.style.boxShadow = 'none';
-            textarea.style.background = 'transparent';
-            document.body.appendChild(textarea);
-            textarea.focus();
-            textarea.select();
-            try {
-                document.execCommand("copy");
-                document.body.removeChild(textarea);
-                resolve(true);
-            }
-            catch (e) {
-                document.body.removeChild(textarea);
-                reject(e);
-            }
-        }
-        else {
-            reject(new Error("None of copying methods are supported by this browser!"));
-        }
-    });    
-}
+import { notify } from '@/helpers/errorReporting'
 
 export const SwapView = (props: {
     showRecentTrades?: boolean
@@ -312,26 +267,39 @@ export const SwapView = (props: {
         setExternallySetAmount(amount)
     }
 
-    const share = async () => {
-        setShareLoading(true);
-        const link = `${inputAmount}-${inputToken?.token.symbol}-to-${outputToken?.token.symbol}`;
-        const response = await fetch(`${process.env.NEXT_PUBLIC_BACKEND_ENDPOINT}/swapLink`, {
-            method: 'post',
-            body: JSON.stringify({
-                inputToken: inputToken?.token.address,
-                inputChain: inputToken?.chain,
-                outputToken: outputToken?.token.address,
-                outputChain: outputToken?.chain,
-                amount: inputAmount,
-                link
-            }),
-        });
-        const result = await response.json();
-        
-        setShareLoading(false);
-        setShared(true);
-        setTimeout(() => setShared(false), 3000);
-        await copy(`https://broccoliswap.com/?swap=${result.link}`);
+    const share = () => {
+        if(typeof ClipboardItem && navigator.clipboard.write) {
+            // NOTE: Safari locks down the clipboard API to only work when triggered
+            //   by a direct user interaction. You can't use it async in a promise.
+            //   But! You can wrap the promise in a ClipboardItem, and give that to
+            //   the clipboard API.
+            //   Found this on https://developer.apple.com/forums/thread/691873
+            const link = `${inputAmount}-${inputToken?.token.symbol}-to-${outputToken?.token.symbol}`;
+            const text = new ClipboardItem({
+                "text/plain": fetch(`${process.env.NEXT_PUBLIC_BACKEND_ENDPOINT}/swapLink`, {
+                    method: 'post',
+                    body: JSON.stringify({
+                        inputToken: inputToken?.token.address,
+                        inputChain: inputToken?.chain,
+                        outputToken: outputToken?.token.address,
+                        outputChain: outputToken?.chain,
+                        amount: inputAmount,
+                        link
+                    }),
+                })
+                .then(response => response.json())
+                .then(result => {
+                    setShareLoading(false);
+                    setShared(true);
+                    setTimeout(() => setShared(false), 3000);
+                    return new Blob([`https://broccoliswap.com/?swap=${result.link}` as string], { type: "text/plain" })
+                })
+            })
+            setShareLoading(true);
+            navigator.clipboard.write([text])
+        } else {
+            notify('Clipboard called with no clipboard access. Implement second API call and click')
+        }
     }
 
     const tokenTax = useMemo(() => {
