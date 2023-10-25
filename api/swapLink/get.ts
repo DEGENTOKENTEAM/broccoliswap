@@ -14,5 +14,10 @@ export const handler = async (
 
     const link: any = await getSwapLink(body.link);
 
-    return createReturn(200, JSON.stringify({ status: "success", link }), parseInt(process.env.SWAP_LINK_CACHE_AGE!))
+    // If no link is found, return success but without cache
+    if (link) {
+        return createReturn(200, JSON.stringify({ status: "success", link }), parseInt(process.env.SWAP_LINK_CACHE_AGE!))
+    }
+
+    return createReturn(200, JSON.stringify({ status: "success", link }), 0)
 }
