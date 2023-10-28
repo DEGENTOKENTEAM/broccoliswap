@@ -319,7 +319,7 @@ export const SwapView = (props: {
             <div className="flex flex-grow flex-col mt-24 sm:mt-20 mx-5 mb-5 gap-3 justify-center">
                 <div className={classNames("flex flex-col-reverse sm:flex-row justify-center", showChart && 'sm:h-[calc(100vh-350px)] sm:min-h-[400px]')}>
                     {showChart && <div className="rounded-lg bg-dark mt-11 sm:pr-5 sm:-mr-5 flex-grow h-[400px] sm:h-auto">
-                        <iframe className="rounded-l-lg" src="https://www.dextools.io/widget-chart/en/avalanche/pe-light/0xbcabb94006400ed84c3699728d6ecbaa06665c89?theme=dark&chartType=1&chartResolution=30&headerColor=#020618&tvPlatformColor=#020618&tvPaneColor=#020618" style={{ width: '100%', height: '100%' }} />
+                        <iframe className="rounded-l-lg" src="https://www.dextools.io/widget-chart/en/avalanche/pe-light/0xbcabb94006400ed84c3699728d6ecbaa06665c89?theme=dark&chartType=1&chartResolution=30&headerColor=020618&tvPlatformColor=020618&tvPaneColor=020618" style={{ width: '100%', height: '100%' }} />
                     </div>}
                     <div className="flex flex-col gap-3 h-full">
                         <div className="flex h-8 gap-2">

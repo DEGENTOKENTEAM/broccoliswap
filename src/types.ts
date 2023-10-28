@@ -65,7 +65,8 @@ export const chainsInfo = {
         honeyPotCheckerRouter: '0x7a250d5630B4cF539739dF2C5dAcb4c659F2488D',
         honeyPotCheckerAddress: '0xc02aaa39b223fe8d0a0e5c4f27ead9083c756cc2',
         rpc: 'https://ethereum.publicnode.com',
-        nativeTokenSymbol: 'ETH'
+        nativeTokenSymbol: 'ETH',
+        dextoolsChartWidgetChainName: 'ether',
     },
     [Chain.BSC]: {
         chain: Chain.BSC,
@@ -81,7 +82,8 @@ export const chainsInfo = {
         honeyPotCheckerRouter: '0x10ed43c718714eb63d5aa57b78b54704e256024e',
         honeyPotCheckerAddress: '0xbb4cdb9cbd36b01bd1cbaebf2de08d9173bc095c',
         rpc: 'https://bsc-dataseed.binance.org/',
-        nativeTokenSymbol: 'BNB'
+        nativeTokenSymbol: 'BNB',
+        dextoolsChartWidgetChainName: 'bnb',
     },
     [Chain.AVAX]: {
         chain: Chain.AVAX,
@@ -97,7 +99,8 @@ export const chainsInfo = {
         honeyPotCheckerRouter: '0x60aE616a2155Ee3d9A68541Ba4544862310933d4',
         honeyPotCheckerAddress: '0xb31f66aa3c1e785363f0875a1b74e27b85fd66c7',
         rpc: 'https://avalanche-c-chain.publicnode.com',
-        nativeTokenSymbol: 'AVAX'
+        nativeTokenSymbol: 'AVAX',
+        dextoolsChartWidgetChainName: 'avalanche',
     },
     [Chain.ARBITRUM]: {
         chain: Chain.ARBITRUM,
@@ -113,6 +116,7 @@ export const chainsInfo = {
         honeyPotCheckerRouter: '0xa669e7a0d4b3e4fa48af2de86bd4cd7126be4e13',
         honeyPotCheckerAddress: '0x82af49447d8a07e3bd95bd0d56f35241523fbab1',
         rpc: 'https://arb1.arbitrum.io/rpc',
-        nativeTokenSymbol: 'ETH'
+        nativeTokenSymbol: 'ETH',
+        dextoolsChartWidgetChainName: 'arbitrum',
     },
 }
