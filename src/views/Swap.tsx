@@ -487,12 +487,12 @@ export const SwapView = (props: {
                     )}
 
                     {/* @ts-ignore */}
-                    {trades?.[0].getTradeInfo()?.priceImpact && trades?.[0].getTradeInfo()?.priceImpact > 5 && (
+                    {trades?.[0].getTradeInfo()?.priceImpact && trades?.[0].getTradeInfo()?.priceImpact > 5 ? (
                         <div className="bg-dark border-2 border-warning p-3 rounded-xl text-center text-light-200 my-3 font-bold">
                             The price impact of this swap is high. Please evaluate your swap
                             and only proceed with caution.
                         </div>
-                    )}
+                    ) : ''}
 
                     {swapSuccessTx && (
                         <div className="bg-dark border-2 border-success p-3 rounded-xl text-light-200 my-3">

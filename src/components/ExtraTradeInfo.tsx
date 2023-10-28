@@ -21,10 +21,10 @@ export const ExtraTradeInfo = (props: { trade?: OnChainTrade | CrossChainTrade |
                     <div className="flex-grow">Slippage</div>
                     <div>{(trade.slippageTolerance * 100).toFixed(2)}%</div>
                 </div>
-                {info.priceImpact && info.priceImpact > 0 && <div className="flex w-full">
+                {info.priceImpact && info.priceImpact > 0 ? <div className="flex w-full">
                     <div className="flex-grow">Price impact</div>
                     <div className={classNames(info.priceImpact > 5 && 'text-red-700 font-bold')}>{info.priceImpact.toFixed(2)}%</div>
-                </div>}
+                </div> : ''}
             </div>
         )
     }
