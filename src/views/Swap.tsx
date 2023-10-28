@@ -28,11 +28,13 @@ import { useWeb3Signer } from '@/hooks/useWeb3Signer'
 import FeedbackButton from '@/components/FeedbackButton'
 import { Spinner } from '@/components/Spinner'
 import { notify } from '@/helpers/errorReporting'
+import { classNames } from '@/helpers/classNames'
 
 export const SwapView = (props: {
     showRecentTrades?: boolean
     setShowRecentTrades?: (show: boolean) => void
 }) => {
+    const [showChart, setShowChart] = useState(false);
     const [inputToken, setInputToken] = useState<Token | undefined>()
     const [inputChain, setInputChain] = useState<Chain>()
     const [shared, setShared] = useState(false);
@@ -99,6 +101,10 @@ export const SwapView = (props: {
 
     useAsyncEffect(async () => {
         const qs = new URLSearchParams(window.location.search)
+
+        if (qs.get('chart')) {
+            setShowChart(true);
+        }
 
         if (qs.get('swap')) {
             const response = await fetch(`${process.env.NEXT_PUBLIC_BACKEND_ENDPOINT}/swapLink/${qs.get('swap')}`);
@@ -310,240 +316,247 @@ export const SwapView = (props: {
 
     return (
         <>
-            <div className="flex flex-grow flex-col mt-24 sm:mt-20 mx-5 mb-5 gap-3">
-                <div className="flex h-8 gap-2">
-                    <RefreshButton
-                        tradeLoading={tradeLoading}
-                        interval={60}
-                        refreshFn={() => forceRefresh(Math.random())}
-                    />
-                    <FeedbackButton />
-                    <div className="flex-grow"></div>
-                    {inputToken && outputToken && inputAmount && (
-                        <div
-                            onClick={() => share()}
-                            className="bg-darkblue transition-all px-2 py-0.5 rounded-full cursor-pointer border-2 border-activeblue hover:bg-activeblue flex gap-1 items-center text-xs">
-                            {shareLoading ? <Spinner /> : <BsShareFill />}
-                            {shared && <span>Copied link</span>}
-                        </div>
-                    )}
-                    {slippage && <div
-                        onClick={() => setShowSlippageSelector(true)}
-                        className="bg-darkblue px-2 py-0.5 rounded-full cursor-pointer border-2 border-activeblue transition-colors hover:bg-activeblue flex gap-1 items-center text-xs"
-                    >
-                        <LuSettings2 />
-                        {slippage.toFixed(2)}%
-                        {(slippage < tokenTax || slippage - tokenTax > 10) && (
-                            <PiWarningBold className="text-warning" />
-                        )}
+            <div className="flex flex-grow flex-col mt-24 sm:mt-20 mx-5 mb-5 gap-3 justify-center">
+                <div className={classNames("flex flex-col-reverse sm:flex-row justify-center", showChart && 'sm:h-[calc(100vh-350px)] sm:min-h-[400px]')}>
+                    {showChart && <div className="bg-dark mt-11 sm:-mr-5 flex-grow h-[400px] sm:h-auto">
+                        <iframe src="https://www.dextools.io/widget-chart/en/avalanche/pe-light/0xbcabb94006400ed84c3699728d6ecbaa06665c89?theme=dark&chartType=1&chartResolution=30" style={{ width: '100%', height: '100%' }} />
                     </div>}
-                </div>
-                <div className="bg-darkblue border-activeblue border-2 p-5 rounded-xl w-full">
-                    <div className="flex items-end gap-1">
-                        <div className="flex-grow">You pay</div>
-                        {address && inputToken && (
-                            <div className="flex items-center gap-1 text-xs">
-                                <FaWallet />{' '}
-                                {inputToken && (
-                                    <>
-                                        <BalanceAmount
-                                            refreshProp={forceRefreshVar}
-                                            setInputBalance={setInputBalance}
-                                            precision={4}
-                                            tokenAddress={
-                                                inputToken.token.address
-                                            }
-                                            chainId={
-                                                chainsInfo[inputToken.chain].id
-                                            }
-                                        />
-                                        {inputToken.token.symbol}
-                                    </>
-                                )}
-                            </div>
-                        )}
-                        {inputToken &&
-                        address &&
-                        inputBalance &&
-                        (inputBalance > 0.1 ||
-                            inputToken.token.address !== NULL_ADDRESS) ? (
-                            <div
-                                onClick={() =>
-                                    setInputFromBalance(
-                                        0.5,
-                                        chainsInfo[inputToken.chain].id,
-                                        inputToken.token.address
-                                    )
-                                }
-                                className="text-xs px-2 bg-darkblue rounded-full border border-activeblue cursor-pointer hover:bg-activeblue transition-colors"
-                            >
-                                HALF
-                            </div>
-                        ) : null}
-                        {inputToken &&
-                        address &&
-                        inputBalance &&
-                        (inputBalance > 0.1 ||
-                            inputToken.token.address !== NULL_ADDRESS) ? (
-                            <div
-                                onClick={() =>
-                                    setInputFromBalance(
-                                        1,
-                                        chainsInfo[inputToken.chain].id,
-                                        inputToken.token.address
-                                    )
-                                }
-                                className="text-xs px-2 bg-darkblue rounded-full border border-activeblue cursor-pointer hover:bg-activeblue transition-colors"
-                            >
-                                MAX
-                            </div>
-                        ) : null}
-                    </div>
-                    {maxExplainerVisible && <div className="text-xs flex justify-end mt-1">
-                        We make sure at least 0.1 {inputToken?.token.symbol} is in your wallet for gas fees.
-                    </div>}
-                    <TokenInput
-                        selectedChain={inputChain}
-                        setSelectedChain={setInputChain}
-                        token={inputToken}
-                        setToken={setInputToken}
-                        setInputAmount={setInputAmount}
-                        amount={inputAmount}
-                        externalAmount={externallySetAmount}
-                        otherToken={outputToken}
-                    />
-
-                    <SwapTokens swapTokens={swapTokens} />
-
-                    <div className="flex items-end">
-                        <div className="flex-grow">To receive</div>
-                        {address && outputToken && (
-                            <div className="flex items-center gap-1 text-xs">
-                                <FaWallet />{' '}
-                                {outputToken && (
-                                    <>
-                                        <BalanceAmount
-                                            refreshProp={forceRefreshVar}
-                                            precision={4}
-                                            tokenAddress={
-                                                outputToken.token.address
-                                            }
-                                            chainId={
-                                                chainsInfo[outputToken.chain].id
-                                            }
-                                        />
-                                        {outputToken.token.symbol}
-                                    </>
-                                )}
-                            </div>
-                        )}
-                    </div>
-                    <TokenInput
-                        selectedChain={outputChain}
-                        setSelectedChain={setOutputChain}
-                        token={outputToken}
-                        setToken={setOutputToken}
-                        isOtherToken
-                        tradeLoading={tradeLoading}
-                        amount={(trades?.[0] as
-                            | OnChainTrade
-                            | CrossChainTrade)?.to?.tokenAmount?.toNumber()}
-                        otherToken={inputToken}
-                    />
-
-                    <SwapButton
-                        tradeLoading={tradeLoading}
-                        trades={trades}
-                        onSwapDone={(
-                            tx: string,
-                            swapInputChain: Chain,
-                            swapOutputChain: Chain,
-                            swapInputToken: Token,
-                            swapOutputToken: Token
-                        ) => {
-                            setSwapSuccessTx({
-                                tx,
-                                inputChain: swapInputChain,
-                                outputChain: swapOutputChain,
-                                inputToken: swapInputToken,
-                                outputToken: swapOutputToken,
-                            })
-                            forceRefresh(Math.random())
-                        }}
-                        inputToken={inputToken}
-                        outputToken={outputToken}
-                        inputTokenSellTax={inputTokenSellTax}
-                        inputAmountInUsd={(inputAmount && inputToken) ? inputAmount * parseFloat(inputToken.token.usdPrice) : undefined}
-                    />
-
-                    {slippage && slippage < tokenTax && (
-                        <div className="bg-dark border-2 border-warning p-3 rounded-xl text-center text-light-200 my-3 font-bold">
-                            The slippage you have selected is less than what you
-                            will need for token taxes. This means the
-                            transaction will most likely fail. Please make sure
-                            the slippage includes all token taxes (which is{' '}
-                            {tokenTax}%).
-                        </div>
-                    )}
-
-                    {/* @ts-ignore */}
-                    {trades?.[0].getTradeInfo()?.priceImpact && trades?.[0].getTradeInfo()?.priceImpact > 5 ? (
-                        <div className="bg-dark border-2 border-warning p-3 rounded-xl text-center text-light-200 my-3 font-bold">
-                            The price impact of this swap is high. Please evaluate your swap
-                            and only proceed with caution.
-                        </div>
-                    ) : ''}
-
-                    {swapSuccessTx && (
-                        <div className="bg-dark border-2 border-success p-3 rounded-xl text-light-200 my-3">
-                            <div className="flex mb-3 items-center justify-center">
-                                <div className="flex-grow">
-                                    Swap successful!
-                                </div>
-                                <ImCross
-                                    className="cursor-pointer hover:text-activeblue transition-colors"
-                                    onClick={() => setSwapSuccessTx(undefined)}
-                                />
-                            </div>
-                            <Link
-                                target="_blank"
-                                href={`${
-                                    chainsInfo[
-                                        swapSuccessTx?.inputChain !==
-                                        swapSuccessTx?.outputChain
-                                            ? swapSuccessTx?.inputChain
-                                            : swapSuccessTx?.outputChain
-                                    ].explorer
-                                }tx/${swapSuccessTx.tx}`}
-                                className="hover:underline bg-broccoli p-3 rounded-xl text-white mt-2 cursor-pointer border-success border-2 hover:bg-success font-bold transition-colors block text-center"
-                            >
-                                View on explorer{' '}
-                                <GoLinkExternal className="inline" />
-                            </Link>
-
-                            {swapSuccessTx?.inputChain !==
-                                swapSuccessTx?.outputChain && (
+                    <div className="flex flex-col gap-3 h-full">
+                        <div className="flex h-8 gap-2">
+                            <RefreshButton
+                                tradeLoading={tradeLoading}
+                                interval={60}
+                                refreshFn={() => forceRefresh(Math.random())}
+                            />
+                            <FeedbackButton />
+                            <div className="flex-grow"></div>
+                            {inputToken && outputToken && inputAmount && (
                                 <div
-                                    onClick={() =>
-                                        props.setShowRecentTrades?.(true)
-                                    }
-                                    className="hover:underline bg-broccoli p-3 rounded-xl text-white mt-2 cursor-pointer border-success border-2 hover:bg-success font-bold transition-colors block text-center"
-                                >
-                                    View Bridge Status
+                                    onClick={() => share()}
+                                    className="bg-darkblue transition-all px-2 py-0.5 rounded-full cursor-pointer border-2 border-activeblue hover:bg-activeblue flex gap-1 items-center text-xs">
+                                    {shareLoading ? <Spinner /> : <BsShareFill />}
+                                    {shared && <span>Copied link</span>}
+                                </div>
+                            )}
+                            {slippage && <div
+                                onClick={() => setShowSlippageSelector(true)}
+                                className="bg-darkblue px-2 py-0.5 rounded-full cursor-pointer border-2 border-activeblue transition-colors hover:bg-activeblue flex gap-1 items-center text-xs"
+                            >
+                                <LuSettings2 />
+                                {slippage.toFixed(2)}%
+                                {(slippage < tokenTax || slippage - tokenTax > 10) && (
+                                    <PiWarningBold className="text-warning" />
+                                )}
+                            </div>}
+                        </div>
+                        <div className="bg-darkblue border-activeblue border-2 p-5 rounded-xl w-full h-full">
+                            <div className="flex items-end gap-1">
+                                <div className="flex-grow">You pay</div>
+                                {address && inputToken && (
+                                    <div className="flex items-center gap-1 text-xs">
+                                        <FaWallet />{' '}
+                                        {inputToken && (
+                                            <>
+                                                <BalanceAmount
+                                                    refreshProp={forceRefreshVar}
+                                                    setInputBalance={setInputBalance}
+                                                    precision={4}
+                                                    tokenAddress={
+                                                        inputToken.token.address
+                                                    }
+                                                    chainId={
+                                                        chainsInfo[inputToken.chain].id
+                                                    }
+                                                />
+                                                {inputToken.token.symbol}
+                                            </>
+                                        )}
+                                    </div>
+                                )}
+                                {inputToken &&
+                                address &&
+                                inputBalance &&
+                                (inputBalance > 0.1 ||
+                                    inputToken.token.address !== NULL_ADDRESS) ? (
+                                    <div
+                                        onClick={() =>
+                                            setInputFromBalance(
+                                                0.5,
+                                                chainsInfo[inputToken.chain].id,
+                                                inputToken.token.address
+                                            )
+                                        }
+                                        className="text-xs px-2 bg-darkblue rounded-full border border-activeblue cursor-pointer hover:bg-activeblue transition-colors"
+                                    >
+                                        HALF
+                                    </div>
+                                ) : null}
+                                {inputToken &&
+                                address &&
+                                inputBalance &&
+                                (inputBalance > 0.1 ||
+                                    inputToken.token.address !== NULL_ADDRESS) ? (
+                                    <div
+                                        onClick={() =>
+                                            setInputFromBalance(
+                                                1,
+                                                chainsInfo[inputToken.chain].id,
+                                                inputToken.token.address
+                                            )
+                                        }
+                                        className="text-xs px-2 bg-darkblue rounded-full border border-activeblue cursor-pointer hover:bg-activeblue transition-colors"
+                                    >
+                                        MAX
+                                    </div>
+                                ) : null}
+                            </div>
+                            {maxExplainerVisible && <div className="text-xs flex justify-end mt-1">
+                                We make sure at least 0.1 {inputToken?.token.symbol} is in your wallet for gas fees.
+                            </div>}
+                            <TokenInput
+                                selectedChain={inputChain}
+                                setSelectedChain={setInputChain}
+                                token={inputToken}
+                                setToken={setInputToken}
+                                setInputAmount={setInputAmount}
+                                amount={inputAmount}
+                                externalAmount={externallySetAmount}
+                                otherToken={outputToken}
+                            />
+
+                            <SwapTokens swapTokens={swapTokens} />
+
+                            <div className="flex items-end">
+                                <div className="flex-grow">To receive</div>
+                                {address && outputToken && (
+                                    <div className="flex items-center gap-1 text-xs">
+                                        <FaWallet />{' '}
+                                        {outputToken && (
+                                            <>
+                                                <BalanceAmount
+                                                    refreshProp={forceRefreshVar}
+                                                    precision={4}
+                                                    tokenAddress={
+                                                        outputToken.token.address
+                                                    }
+                                                    chainId={
+                                                        chainsInfo[outputToken.chain].id
+                                                    }
+                                                />
+                                                {outputToken.token.symbol}
+                                            </>
+                                        )}
+                                    </div>
+                                )}
+                            </div>
+                            <TokenInput
+                                selectedChain={outputChain}
+                                setSelectedChain={setOutputChain}
+                                token={outputToken}
+                                setToken={setOutputToken}
+                                isOtherToken
+                                tradeLoading={tradeLoading}
+                                amount={(trades?.[0] as
+                                    | OnChainTrade
+                                    | CrossChainTrade)?.to?.tokenAmount?.toNumber()}
+                                otherToken={inputToken}
+                            />
+
+                            <SwapButton
+                                tradeLoading={tradeLoading}
+                                trades={trades}
+                                onSwapDone={(
+                                    tx: string,
+                                    swapInputChain: Chain,
+                                    swapOutputChain: Chain,
+                                    swapInputToken: Token,
+                                    swapOutputToken: Token
+                                ) => {
+                                    setSwapSuccessTx({
+                                        tx,
+                                        inputChain: swapInputChain,
+                                        outputChain: swapOutputChain,
+                                        inputToken: swapInputToken,
+                                        outputToken: swapOutputToken,
+                                    })
+                                    forceRefresh(Math.random())
+                                }}
+                                inputToken={inputToken}
+                                outputToken={outputToken}
+                                inputTokenSellTax={inputTokenSellTax}
+                                inputAmountInUsd={(inputAmount && inputToken) ? inputAmount * parseFloat(inputToken.token.usdPrice) : undefined}
+                            />
+
+                            {slippage && slippage < tokenTax && (
+                                <div className="bg-dark border-2 border-warning p-3 rounded-xl text-center text-light-200 my-3 font-bold">
+                                    The slippage you have selected is less than what you
+                                    will need for token taxes. This means the
+                                    transaction will most likely fail. Please make sure
+                                    the slippage includes all token taxes (which is{' '}
+                                    {tokenTax}%).
                                 </div>
                             )}
 
-                            {swapSuccessTx?.inputChain === swapSuccessTx?.outputChain
-                                && swapSuccessTx.outputToken.token.address !== NULL_ADDRESS
-                                && <button
-                                onClick={() => addTokenToWallet(swapSuccessTx.outputToken)}
-                                className="flex items-center w-full gap-1 justify-end text-success underline hover:no-underline mt-3"
-                            >
-                                Add output token to wallet
-                                <GoLinkExternal className="inline" />
-                            </button>}
+                            {/* @ts-ignore */}
+                            {trades?.[0].getTradeInfo()?.priceImpact && trades?.[0].getTradeInfo()?.priceImpact > 5 ? (
+                                <div className="bg-dark border-2 border-warning p-3 rounded-xl text-center text-light-200 my-3 font-bold">
+                                    The price impact of this swap is high. Please evaluate your swap
+                                    and only proceed with caution.
+                                </div>
+                            ) : ''}
+
+                            {swapSuccessTx && (
+                                <div className="bg-dark border-2 border-success p-3 rounded-xl text-light-200 my-3">
+                                    <div className="flex mb-3 items-center justify-center">
+                                        <div className="flex-grow">
+                                            Swap successful!
+                                        </div>
+                                        <ImCross
+                                            className="cursor-pointer hover:text-activeblue transition-colors"
+                                            onClick={() => setSwapSuccessTx(undefined)}
+                                        />
+                                    </div>
+                                    <Link
+                                        target="_blank"
+                                        href={`${
+                                            chainsInfo[
+                                                swapSuccessTx?.inputChain !==
+                                                swapSuccessTx?.outputChain
+                                                    ? swapSuccessTx?.inputChain
+                                                    : swapSuccessTx?.outputChain
+                                            ].explorer
+                                        }tx/${swapSuccessTx.tx}`}
+                                        className="hover:underline bg-broccoli p-3 rounded-xl text-white mt-2 cursor-pointer border-success border-2 hover:bg-success font-bold transition-colors block text-center"
+                                    >
+                                        View on explorer{' '}
+                                        <GoLinkExternal className="inline" />
+                                    </Link>
+
+                                    {swapSuccessTx?.inputChain !==
+                                        swapSuccessTx?.outputChain && (
+                                        <div
+                                            onClick={() =>
+                                                props.setShowRecentTrades?.(true)
+                                            }
+                                            className="hover:underline bg-broccoli p-3 rounded-xl text-white mt-2 cursor-pointer border-success border-2 hover:bg-success font-bold transition-colors block text-center"
+                                        >
+                                            View Bridge Status
+                                        </div>
+                                    )}
+
+                                    {swapSuccessTx?.inputChain === swapSuccessTx?.outputChain
+                                        && swapSuccessTx.outputToken.token.address !== NULL_ADDRESS
+                                        && <button
+                                        onClick={() => addTokenToWallet(swapSuccessTx.outputToken)}
+                                        className="flex items-center w-full gap-1 justify-end text-success underline hover:no-underline mt-3"
+                                    >
+                                        Add output token to wallet
+                                        <GoLinkExternal className="inline" />
+                                    </button>}
+                                </div>
+                            )}
                         </div>
-                    )}
+                    </div>
                 </div>
                 
                 <ExtraTradeInfo trade={trades?.[0]} />

@@ -6,7 +6,6 @@ import "allotment/dist/style.css";
 import NonSSR from '@/components/NonSSR';
 import { Token } from '@/types';
 
-
 export default function Home(props: { activeToken: Token, showRecentTrades?: boolean, setShowRecentTrades?: (show: boolean) => void }) {
   const [ready, setReady] = useState(false)
 
@@ -25,8 +24,8 @@ export default function Home(props: { activeToken: Token, showRecentTrades?: boo
         <link rel="icon" href="/logo.png" />
       </Head>
       <NonSSR>
-        <div className="w-full max-w-2xl mx-auto my-10 flex justify-center items-center">
-          <SwapView  showRecentTrades={props.showRecentTrades} setShowRecentTrades={props.setShowRecentTrades}  />
+        <div className="w-full mx-auto my-10 flex justify-center items-center">
+          <SwapView showRecentTrades={props.showRecentTrades} setShowRecentTrades={props.setShowRecentTrades}  />
         </div>
       </NonSSR>
     </>

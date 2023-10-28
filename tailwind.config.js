@@ -35,6 +35,10 @@ module.exports = {
             borderRadius: {
                 '4xl': '2rem',
             },
+            screens: {
+                tall: { raw: '(min-height: 650px)' },
+                xtall: { raw: '(min-height: 900px)' },
+            },
             fontFamily: {
                 sans: ['montserrat', ...defaultTheme.fontFamily.sans],
                 display: ['montserrat', ...defaultTheme.fontFamily.sans],

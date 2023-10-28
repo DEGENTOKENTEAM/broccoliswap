@@ -73,7 +73,7 @@ const DGNXPrice = () => {
 
 export const BottomBar = () => {
     return (
-        <div className="sm:bottom-0 lg:fixed text-center mb-10 sm:text-right sm:right-0 sm:mr-10">
+        <div className="sm:bottom-0 xtall:lg:fixed text-center mb-10 sm:text-right sm:right-0 sm:mr-10">
             <Header className="text-xl">Powered By</Header>
             <Link href="https://dgnx.finance" target="_blank">
                 <Header className="mb-5">
