@@ -14,7 +14,7 @@ export const rubicRPCEndpoints = {
         rpcList: ['https://bsc-dataseed.binance.org/']
     },
     [BLOCKCHAIN_NAME.ETHEREUM]: {
-        rpcList: ['https://eth.llamarpc.com']
+        rpcList: ['https://ethereum.publicnode.com', 'https://eth.llamarpc.com']
     },
     [BLOCKCHAIN_NAME.AVALANCHE]: {
         rpcList: ['https://avalanche-c-chain.publicnode.com']
@@ -64,7 +64,7 @@ export const chainsInfo = {
         honeyPotCheckerContract: '0xe7e07a2281f1e66e938ae7feefc69db181329f12',
         honeyPotCheckerRouter: '0x7a250d5630B4cF539739dF2C5dAcb4c659F2488D',
         honeyPotCheckerAddress: '0xc02aaa39b223fe8d0a0e5c4f27ead9083c756cc2',
-        rpc: 'https://eth.llamarpc.com',
+        rpc: 'https://ethereum.publicnode.com',
         nativeTokenSymbol: 'ETH'
     },
     [Chain.BSC]: {

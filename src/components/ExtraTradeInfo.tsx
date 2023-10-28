@@ -1,3 +1,4 @@
+import { classNames } from "@/helpers/classNames";
 import { toPrecision } from "@/helpers/number";
 import { CrossChainTrade, OnChainTrade } from "rubic-sdk";
 
@@ -5,6 +6,8 @@ export const ExtraTradeInfo = (props: { trade?: OnChainTrade | CrossChainTrade |
     if (!props.trade || typeof props.trade === 'string') {
         return null;
     }
+
+    const info = props.trade.getTradeInfo();
 
     if (props.trade.from.blockchain === props.trade.to.blockchain) {
         const trade = props.trade as OnChainTrade;
@@ -18,6 +21,10 @@ export const ExtraTradeInfo = (props: { trade?: OnChainTrade | CrossChainTrade |
                     <div className="flex-grow">Slippage</div>
                     <div>{(trade.slippageTolerance * 100).toFixed(2)}%</div>
                 </div>
+                {info.priceImpact && info.priceImpact > 0 && <div className="flex w-full">
+                    <div className="flex-grow">Price impact</div>
+                    <div className={classNames(info.priceImpact > 5 && 'text-red-700 font-bold')}>{info.priceImpact.toFixed(2)}%</div>
+                </div>}
             </div>
         )
     }
@@ -29,6 +36,10 @@ export const ExtraTradeInfo = (props: { trade?: OnChainTrade | CrossChainTrade |
                 <div className="flex-grow">Minimum received</div>
                 <div>{toPrecision(trade.toTokenAmountMin.toNumber(), 6)} {props.trade.to.symbol}</div>
             </div>
+            {info.priceImpact && info.priceImpact > 0 && <div className="flex w-full">
+                <div className="flex-grow">Price impact</div>
+                <div className={classNames(info.priceImpact > 5 && 'text-red-700 font-bold')}>{info.priceImpact.toFixed(2)}%</div>
+            </div>}
         </div>
     )
 }

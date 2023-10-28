@@ -274,7 +274,9 @@ export const SwapView = (props: {
             //   But! You can wrap the promise in a ClipboardItem, and give that to
             //   the clipboard API.
             //   Found this on https://developer.apple.com/forums/thread/691873
-            const link = `${inputAmount}-${inputToken?.token.symbol}-to-${outputToken?.token.symbol}`;
+            const inputSymbol = encodeURIComponent(inputToken?.token.symbol || '') === inputToken?.token.symbol ? inputToken?.token.symbol : inputToken?.token.address;
+            const outputSymbol = encodeURIComponent(outputToken?.token.symbol || '') === outputToken?.token.symbol ? outputToken?.token.symbol : outputToken?.token.address;
+            const link = `${inputAmount}-${inputSymbol}-to-${outputSymbol}`;
             const text = new ClipboardItem({
                 "text/plain": fetch(`${process.env.NEXT_PUBLIC_BACKEND_ENDPOINT}/swapLink`, {
                     method: 'post',
@@ -481,6 +483,14 @@ export const SwapView = (props: {
                             transaction will most likely fail. Please make sure
                             the slippage includes all token taxes (which is{' '}
                             {tokenTax}%).
+                        </div>
+                    )}
+
+                    {/* @ts-ignore */}
+                    {trades?.[0].getTradeInfo()?.priceImpact && trades?.[0].getTradeInfo()?.priceImpact > 5 && (
+                        <div className="bg-dark border-2 border-warning p-3 rounded-xl text-center text-light-200 my-3 font-bold">
+                            The price impact of this swap is high. Please evaluate your swap
+                            and only proceed with caution.
                         </div>
                     )}
 

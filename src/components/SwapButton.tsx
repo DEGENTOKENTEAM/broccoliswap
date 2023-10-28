@@ -222,6 +222,13 @@ const MaybeSwapButton = (props:{
                 return;
             }
 
+            if (e?.message.toLowerString().includes('no working rpc')) {
+                setIsSwapping(false);
+                setSwapError(e);
+                setSwapErrorMessage(`Your RPC is rate limited. Please wait around a minute, refresh and try again`);
+                return;
+            }
+
             // Try another trade if possible
             if (props.trades[tradeIterator + 1]) {
                 return doSwap(tradeIterator + 1)
