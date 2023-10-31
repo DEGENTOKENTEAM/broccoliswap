@@ -34,7 +34,7 @@ export const SwapView = (props: {
     showRecentTrades?: boolean
     setShowRecentTrades?: (show: boolean) => void
 }) => {
-    const [showChart, setShowChart] = useState(false);
+    const [proMode, setProMode] = useState(false);
     const [inputToken, setInputToken] = useState<Token | undefined>()
     const [inputChain, setInputChain] = useState<Chain>()
     const [shared, setShared] = useState(false);
@@ -102,8 +102,8 @@ export const SwapView = (props: {
     useAsyncEffect(async () => {
         const qs = new URLSearchParams(window.location.search)
 
-        if (qs.get('chart')) {
-            setShowChart(true);
+        if (qs.get('pro')) {
+            setProMode(true);
         }
 
         if (qs.get('swap')) {
@@ -317,9 +317,29 @@ export const SwapView = (props: {
     return (
         <>
             <div className="flex flex-grow flex-col mt-24 sm:mt-20 mx-5 mb-5 gap-3 justify-center">
-                <div className={classNames("flex flex-col-reverse sm:flex-row justify-center", showChart && 'sm:h-[calc(100vh-350px)] sm:min-h-[400px]')}>
-                    {showChart && <div className="rounded-lg bg-dark mt-11 sm:pr-5 sm:-mr-5 flex-grow h-[400px] sm:h-auto">
-                        <iframe className="rounded-l-lg" src="https://www.dextools.io/widget-chart/en/avalanche/pe-light/0xbcabb94006400ed84c3699728d6ecbaa06665c89?theme=dark&chartType=1&chartResolution=30&headerColor=020618&tvPlatformColor=020618&tvPaneColor=020618" style={{ width: '100%', height: '100%' }} />
+                <div className={classNames("flex flex-col-reverse sm:flex-row-reverse justify-center", proMode && '')}>
+                    {proMode && (<div className="flex flex-col h-full w-full sm:w-96 mt-11 gap-5">
+                        <div className=" bg-darkblue border-activeblue border-2 p-5 rounded-xl">
+                            DGNX info<br />
+                            Contract address<br />
+                            Socials<br />
+                            Etc
+                        </div>
+                        <div className=" bg-darkblue border-activeblue border-2 p-5 rounded-xl">
+                            DGNX info<br />
+                            Contract address<br />
+                            Socials<br />
+                            Contract address<br />
+                            Socials<br />
+                            Contract address<br />
+                            Socials<br />
+                            Contract address<br />
+                            Socials<br />
+                            Etc
+                        </div>
+                    </div>)}
+                    {proMode && <div className="relative rounded-lg -z-10 bg-dark mt-11 sm:mx-5 flex-grow h-[400px] sm:h-[calc(100vh-350px)] sm:min-h-[400px]">
+                        {/* <iframe className="" src="https://www.dextools.io/widget-chart/en/avalanche/pe-light/0xbcabb94006400ed84c3699728d6ecbaa06665c89?theme=dark&chartType=1&chartResolution=30&headerColor=020618&tvPlatformColor=020618&tvPaneColor=020618" style={{ width: '100%', height: '100%' }} /> */}
                     </div>}
                     <div className="flex flex-col gap-3 h-full">
                         <div className="flex h-8 gap-2">
@@ -556,10 +576,10 @@ export const SwapView = (props: {
                                 </div>
                             )}
                         </div>
+                        <ExtraTradeInfo trade={trades?.[0]} />
                     </div>
                 </div>
                 
-                <ExtraTradeInfo trade={trades?.[0]} />
             </div>
 
             <SlippageSelector
