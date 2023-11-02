@@ -6,6 +6,7 @@ import { RxCaretDown } from "react-icons/rx";
 import { TokenSelector } from "./TokenSelector";
 import { TokenImage } from "./TokenImage";
 import { toPrecision } from "@/helpers/number";
+import { TokenImageWithChain } from "./TokenImageWithChain";
 
 export const TokenInput = (props: {
     isOtherToken?: boolean;
@@ -47,25 +48,7 @@ export const TokenInput = (props: {
                     {props.token ? (
                         <div className="flex items-center gap-1">
                             <div className="relative">
-                                <TokenImage
-                                    src={props.token.token.image}
-                                    symbol={props.token.token.symbol}
-                                    size={24}
-                                />
-
-                                {/* Arb should always show the chain logo as the native is also ETH */}
-                                {(props.token.token.address !== NULL_ADDRESS || props.token.chain === Chain.ARBITRUM) && (
-                                    <div className="absolute left-2 top-2">
-                                        <TokenImage
-                                            src={`/chains/${
-                                                chainsInfo[props.token.chain]
-                                                    .logo
-                                            }`}
-                                            symbol={props.token.token.symbol}
-                                            size={14}
-                                        />
-                                    </div>
-                                )}
+                                <TokenImageWithChain token={props.token} />
                             </div>
                             <div className="flex items-end">
                                 {props.token.token.symbol}
