@@ -15,6 +15,7 @@ import { toPrecision } from "@/helpers/number";
 import useDisableScroll from "@/hooks/useDisableScroll";
 import { SubHeader } from "./SubHeader";
 import { chainFromChainId } from "@/helpers/chain";
+import { subAddress } from "@/helpers/address";
 
 const TokenListItem = (props: {
     token: RubicToken;
@@ -57,7 +58,7 @@ const TokenListItem = (props: {
                                 onClick={e => e.stopPropagation()}
                                 className="flex items-center gap-1"
                             >
-                                    {token.address.slice(0, 5)}...{" "}
+                                    {subAddress(token.address)}{" "}
                                     <BiLinkExternal />
                             </Link>
                         </div>
