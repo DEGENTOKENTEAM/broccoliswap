@@ -31,6 +31,7 @@ import { notify } from '@/helpers/errorReporting'
 import { classNames } from '@/helpers/classNames'
 import { TokenInfoHeader } from '@/components/Pro/TokenInfoHeader'
 import { TokenInfo } from '@/components/Pro/TokenInfo'
+import { TwitterEmbed } from '@/components/Pro/TwitterEmbed'
 
 export const SwapView = (props: {
     showRecentTrades?: boolean
@@ -329,22 +330,13 @@ export const SwapView = (props: {
                 <div className={classNames("flex flex-col-reverse lg:flex-row-reverse justify-center", proMode && 'gap-5')}>
                     {proMode && (<div className="flex flex-col h-full w-full lg:w-96 lg:mt-11 gap-5">
                         {reprToken && <TokenInfo token={reprToken} />}
-                        {/* <div className=" bg-darkblue border-activeblue border-2 p-5 rounded-xl">
-                            Audit info<br />
-                            Contract address<br />
-                            Socials<br />
-                            Contract address<br />
-                            Socials<br />
-                            Contract address<br />
-                            Socials<br />
-                            Contract address<br />
-                            Socials<br />
-                            Etc
-                        </div> */}
+                        {/* <div className=" bg-darkblue border-activeblue border-2 p-5 rounded-xl"> */}
+                            <TwitterEmbed screenName={'degenecosystem'} />
+                        {/* </div> */}
                     </div>)}
                     {proMode && reprToken && <div className="flex flex-col flex-grow gap-5 lg:mt-11 h-[400px] lg:h-[calc(100vh-350px)] lg:min-h-[400px]">
                         <TokenInfoHeader token={reprToken} />
-                        <div className="relative rounded-lg -z-10 bg-dark flex-grow">
+                        <div className="relative rounded-lg bg-dark flex-grow">
                             <iframe className="rounded-lg" src="https://www.dextools.io/widget-chart/en/avalanche/pe-light/0xbcabb94006400ed84c3699728d6ecbaa06665c89?theme=dark&chartType=1&chartResolution=30&headerColor=020618&tvPlatformColor=020618&tvPaneColor=020618" style={{ width: '100%', height: '100%' }} />
                         </div>
                     </div>}

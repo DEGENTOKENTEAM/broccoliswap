@@ -37,7 +37,7 @@ module.exports = {
             },
             screens: {
                 tall: { raw: '(min-height: 650px)' },
-                xtall: { raw: '(min-height: 900px)' },
+                xtall: { raw: '(min-height: 10000px)' },
             },
             fontFamily: {
                 sans: ['montserrat', ...defaultTheme.fontFamily.sans],
