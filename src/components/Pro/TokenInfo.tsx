@@ -240,12 +240,17 @@ export const TokenInfo = (props: { token: Token }) => {
                 <div className="font-bold">TX Count</div>
                 <div className="">{toPrecision(info.metrics.txCount, 0)}</div>
 
-                <div className="font-bold">Liquidity</div>
-                <div className="">${toPrecision(usdLiquidity, 4)}</div>
-                <div />
-                <div className="">{toPrecision(tokenLiquidity, 4)} {pairs[0].data.token.symbol}</div>
-                <div />
-                <div className="">{toPrecision(tokenRefLiquidity, 4)} {pairs[0].data.tokenRef.symbol}</div>
+                <div className="font-bold">
+                  Liquidity<br />
+                  <span className="text-xs font-normal">
+                    {pairs.length === 5 ? 'Top 5 pairs' : `From ${pairs.length} pairs`}
+                  </span>
+                </div>
+                <div className="">
+                    ${toPrecision(usdLiquidity, 4)}<br />
+                    {toPrecision(tokenLiquidity, 4)} {pairs[0].data.token.symbol}<br />
+                    {toPrecision(tokenRefLiquidity, 4)} {pairs[0].data.tokenRef.symbol}
+                </div>
 
                 <div className="col-span-2 font-bold text-xl">Token taxes</div>
                 {tokenTax && <>

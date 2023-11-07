@@ -222,10 +222,10 @@ const MaybeSwapButton = (props:{
                 return;
             }
 
-            if (e?.message.toLowerCase().includes('no working rpc')) {
+            if (e?.message.toLowerCase().includes('no working rpc') || e?.message.toLowerCase().includes('provider is not ready')) {
                 setIsSwapping(false);
                 setSwapError(e);
-                setSwapErrorMessage(`Your RPC is rate limited. Please wait around a minute, refresh and try again`);
+                setSwapErrorMessage(`Your RPC is not loaded or rate limited. Please wait around a minute, refresh and try again`);
                 return;
             }
 

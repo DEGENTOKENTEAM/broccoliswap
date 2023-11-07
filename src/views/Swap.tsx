@@ -251,8 +251,9 @@ export const SwapView = (props: {
             inputToken,
             outputToken,
             inputAmount,
+            _inputTokenSellTax,
             tradeSlippage,
-            setTradeLoading
+            setTradeLoading,
         )
 
         setTrades(_trades)
@@ -337,7 +338,7 @@ export const SwapView = (props: {
                     {proMode && reprToken && <div className="flex flex-col flex-grow gap-5 lg:mt-11 h-[400px] lg:h-[calc(100vh-350px)] lg:min-h-[400px]">
                         <TokenInfoHeader token={reprToken} />
                         <div className="relative rounded-lg bg-dark flex-grow">
-                            <iframe className="rounded-lg" src="https://www.dextools.io/widget-chart/en/avalanche/pe-light/0xbcabb94006400ed84c3699728d6ecbaa06665c89?theme=dark&chartType=1&chartResolution=30&headerColor=020618&tvPlatformColor=020618&tvPaneColor=020618" style={{ width: '100%', height: '100%' }} />
+                            <iframe className="rounded-lg" src="https://www.dextools.io/widget-chart/en/avalanche/pe-light/0xbcabb94006400ed84c3699728d6ecbaa06665c89?theme=dark&chartType=1&chartResolution=1d&headerColor=020618&tvPlatformColor=020618&tvPaneColor=020618" style={{ width: '100%', height: '100%' }} />
                         </div>
                     </div>}
                     <div className="flex flex-col gap-3 h-full">

@@ -1,19 +1,31 @@
 import { Token, chainsInfo } from '@/types'
 import { debounce } from './debounce'
-import { BlockchainName, CROSS_CHAIN_TRADE_TYPE, CrossChainTradeType, OnChainTrade } from 'rubic-sdk'
+import { CROSS_CHAIN_TRADE_TYPE, CrossChainTradeType, OnChainTrade } from 'rubic-sdk'
 import { getSDK } from './rubic'
-import { GoPlusTokenReponse, getTokenSecurity } from './goPlus'
 import { DGNX_ADDRESS, addressHasDisburserRewards } from './dgnx'
 
 const calculateBestTrade = async (
     slippage: number,
-    fromToken: { blockchain: BlockchainName; address: string },
+    inputToken: Token,
     fromAmount: number,
-    toToken: { blockchain: BlockchainName; address: string },
+    inputTokenSellTax: number,
+    outputToken: Token,
     connectedAddress?: string
 ) => {
+    const fromToken = {
+        blockchain: chainsInfo[inputToken.chain].rubicSdkChainName,
+        address: inputToken.token.address,
+    }
+
+    const toToken = {
+        blockchain: chainsInfo[outputToken.chain].rubicSdkChainName,
+        address: outputToken.token.address,
+    }
+
     // Check if we need to disable proxy for legacy disburser DGNX holders
-    let disabledProxy = false;
+    // Also disable if the sell tex >0.5. That implies a token with a tax
+    // and Rubic doesn't like that.
+    let disabledProxy = inputTokenSellTax > 0.5;
     if (connectedAddress && toToken.address === DGNX_ADDRESS && toToken.blockchain === 'AVALANCHE') {
         disabledProxy = await addressHasDisburserRewards(connectedAddress)
     }
@@ -71,12 +83,13 @@ const calculateBestTrade = async (
             ) as OnChainTrade[]
 
         const allTrades = availableTrades.concat(availableTradesWithoutProxy)
-
+        
         if (allTrades.length === 0) return 'No trades available'
-
+        
         // Filter trades where the min output amount is way too low
         const minimumMinimumOutputAmount = allTrades[0].toTokenAmountMin.tokenAmount.toNumber() * 0.95;
         const allValidTrades = allTrades.filter(trade => trade.toTokenAmountMin.tokenAmount.toNumber() >= minimumMinimumOutputAmount);
+        console.log(allValidTrades)
         return allValidTrades
     }
 
@@ -152,6 +165,7 @@ const calculate = async (
     inputToken: Token,
     outputToken: Token,
     inputAmount: number,
+    inputTokenSellTax: number,
     slippage: number,
     setTradeLoading: (loading: boolean) => void,
     callback: Function
@@ -167,15 +181,10 @@ const calculate = async (
     const trade = await Promise.race([
         calculateBestTrade(
             slippage,
-            {
-                blockchain: chainsInfo[inputToken.chain].rubicSdkChainName,
-                address: inputToken.token.address,
-            },
+            inputToken,
             inputAmount,
-            {
-                blockchain: chainsInfo[outputToken.chain].rubicSdkChainName,
-                address: outputToken.token.address,
-            },
+            inputTokenSellTax,
+            outputToken,
             connectedAddress
         ),
         cancelPromise,
@@ -196,6 +205,7 @@ export const calculateSwap = (
     inputToken: Token,
     outputToken: Token,
     inputAmount: number,
+    inputTokenSellTax: number,
     slippage: number,
     setTradeLoading: (loading: boolean) => void
 ): Promise<{
@@ -208,6 +218,7 @@ export const calculateSwap = (
             inputToken,
             outputToken,
             inputAmount,
+            inputTokenSellTax,
             slippage,
             setTradeLoading,
             resolve

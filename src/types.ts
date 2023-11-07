@@ -92,7 +92,7 @@ export const chainsInfo = {
         symbol: 'avax',
         logo: 'avalanche.svg',
         rubicName: 'avalanche',
-        explorer: 'https://snowtrace.io/',
+        explorer: 'https://avascan.info/blockchain/c/',
         rubicSdkChainName: BLOCKCHAIN_NAME.AVALANCHE,
         bitqueryChainName: 'avalanche',
         honeyPotCheckerContract: '0x2B30ddE904B22c0Bba6019543231c857e0Be1DfB',

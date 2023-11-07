@@ -1,13 +1,57 @@
-import { Token } from "@/types";
+import { Token, chainsInfo } from "@/types";
 import { TokenImage } from "../TokenImage";
 import { TokenImageWithChain } from "../TokenImageWithChain";
 import { BsShareFill } from "react-icons/bs";
 import { toPrecision } from "@/helpers/number";
 import { FaDiscord, FaGithub, FaGlobe, FaInstagram, FaMedium, FaReddit, FaTelegram, FaTiktok, FaYoutube } from "react-icons/fa";
 import { FaXTwitter } from "react-icons/fa6";
-import React from "react";
+import React, { useMemo } from "react";
 import { linkSync } from "fs";
 import { IconType } from "react-icons";
+import { BiTrendingDown, BiTrendingUp } from "react-icons/bi";
+import { classNames } from "@/helpers/classNames";
+
+const reprPair = {
+  "statusCode": 200,
+  "data": {
+    "creationBlock": 19485712,
+    "team": {
+      "wallet": "0xbf86bcaf4d396c9927c0b55d9789ecc406309e3b"
+    },
+    "dextScore": {
+      "total": 99
+    },
+    "metrics": {
+      "liquidity": 168662.98688627259,
+      "reserve": 339041.1371993715,
+      "reserveRef": 7029.228605322847
+    },
+    "token": {
+      "name": "DegenX",
+      "symbol": "DGNX",
+      "address": "0x51e48670098173025c477d9aa3f0eff7bf9f7812"
+    },
+    "tokenRef": {
+      "name": "Wrapped AVAX",
+      "symbol": "WAVAX",
+      "address": "0xb31f66aa3c1e785363f0875a1b74e27b85fd66c7"
+    },
+    "price": 0.2479937115911987,
+    "price24h": {
+      "volume": 705.0206130323024,
+      "swaps": 5,
+      "price": 0.2310452870766112,
+      "priceChain": 0.021027496374519627,
+      "buys": 0,
+      "sells": 5,
+      "buysVolume": 0,
+      "sellsVolume": 705.0206130323024
+    },
+    "chain": "avalanche",
+    "exchange": "traderjoe",
+    "address": "0xbcabb94006400ed84c3699728d6ecbaa06665c89"
+  }
+}
 
 const tokenInfo = {
   "statusCode": 200,
@@ -109,6 +153,10 @@ const SocialLink = (props: { children: any; link: string }) => {
 }
 
 export const TokenInfoHeader = (props: { token: Token }) => {
+    const percentageChange = useMemo(() => {
+        return reprPair.data.price / reprPair.data.price24h.price;
+    }, [reprPair, props.token])
+
     return (
         <div className=" bg-darkblue border-activeblue border-2 p-5 rounded-xl">
             <div className="flex xl:items-center gap-2 flex-col xl:flex-row">
@@ -118,8 +166,17 @@ export const TokenInfoHeader = (props: { token: Token }) => {
                     <div className="bg-dark text-xs rounded-full p-2 border-2 border-activeblue cursor-pointer hover:bg-activeblue">
                         <BsShareFill />
                     </div>
-                    <div className="xl:hidden flex-grow flex justify-end font-bold">
-                        ${toPrecision(info.reprPair.price, 5)}
+                    <div className="xl:hidden flex-grow flex items-start justify-end font-bold">
+                        <div className="flex flex-col">
+                            ${toPrecision(info.reprPair.price, 5)}
+                            <span className="font-normal text-sm">{toPrecision(reprPair.data.price24h.priceChain, 4)} {chainsInfo[props.token.chain].symbol}</span>
+                        </div>
+                        <div className="flex items-center gap-1">
+                            <div className={classNames("font-bold", percentageChange > 1 ? 'text-green-500' : 'text-red-500')}>
+                                {percentageChange > 1 ? <BiTrendingUp /> : <BiTrendingDown />}
+                            </div>
+                            <div className={classNames("font-bold", percentageChange > 1 ? 'text-green-500' : 'text-red-500')}>{(percentageChange).toFixed(2)}%</div>
+                        </div>
                     </div>
                 </div>
 
@@ -135,8 +192,17 @@ export const TokenInfoHeader = (props: { token: Token }) => {
                     {info.links.medium && (<SocialLink link={info.links.medium}><FaMedium /></SocialLink>)}
                     {info.links.youtube && (<SocialLink link={info.links.youtube}><FaYoutube /></SocialLink>)}
                 </div>
-                <div className="font-bold text-lg hidden xl:block">
-                    ${toPrecision(info.reprPair.price, 5)}
+                <div className="font-bold text-lg hidden xl:flex items-start gap-1">
+                    <div className="flex flex-col">
+                        ${toPrecision(info.reprPair.price, 5)}
+                        <span className="font-normal text-sm">{toPrecision(reprPair.data.price24h.priceChain, 4)} {chainsInfo[props.token.chain].symbol}</span>
+                    </div>
+                    <div className="flex items-center gap-1">
+                        <div className={classNames("font-bold", percentageChange > 1 ? 'text-green-500' : 'text-red-500')}>
+                            {percentageChange > 1 ? <BiTrendingUp /> : <BiTrendingDown />}
+                        </div>
+                        <div className={classNames("font-bold", percentageChange > 1 ? 'text-green-500' : 'text-red-500')}>{(percentageChange).toFixed(2)}%</div>
+                    </div>
                 </div>
             </div>
         </div>
