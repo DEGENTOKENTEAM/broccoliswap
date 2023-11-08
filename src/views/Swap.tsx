@@ -325,6 +325,16 @@ export const SwapView = (props: {
         return (inputTokenSellTax || 0) + (outputTokenBuyTax || 0)
     }, [inputTokenSellTax, outputTokenBuyTax])
 
+    const priceImpact = useMemo(() => {
+        if (!trades || typeof trades === 'string') {
+            return 0;
+        }
+
+        const _priceImpact = trades?.[0]?.getTradeInfo()?.priceImpact;
+        return _priceImpact ?? 0;
+    }, [trades])
+    
+console.log('zxc',trades)
     return (
         <>
             <div className="flex flex-grow flex-col mt-24 sm:mt-20 mx-5 mb-5 gap-3 justify-center">
@@ -517,8 +527,7 @@ export const SwapView = (props: {
                                 </div>
                             )}
 
-                            {/* @ts-ignore */}
-                            {trades?.[0].getTradeInfo()?.priceImpact && trades?.[0].getTradeInfo()?.priceImpact > 5 ? (
+                            {priceImpact > 5 ? (
                                 <div className="bg-dark border-2 border-warning p-3 rounded-xl text-center text-light-200 my-3 font-bold">
                                     The price impact of this swap is high. Please evaluate your swap
                                     and only proceed with caution.
