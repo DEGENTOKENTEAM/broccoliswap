@@ -48,6 +48,7 @@ jobs:
         env:
           BITQUERY_API_KEY: ${{ secrets.BITQUERY_API_KEY }}
           MIXPANEL_PROJECT_KEY: ${{ secrets.MIXPANEL_PROJECT_KEY }}
+          DEXTOOLS_API_KEY: ${{ secrets.DEXTOOLS_API_KEY }}
 
       - name: Deploy static site to S3 bucket
         run: aws s3 sync ./out/ s3://broccoliswap.com/ --delete

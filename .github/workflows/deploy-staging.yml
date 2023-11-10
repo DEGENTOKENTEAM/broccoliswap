@@ -34,6 +34,7 @@ jobs:
         env:
           BITQUERY_API_KEY: ${{ secrets.BITQUERY_API_KEY }}
           MIXPANEL_PROJECT_KEY: ${{ secrets.MIXPANEL_PROJECT_KEY }}
+          DEXTOOLS_API_KEY: ${{ secrets.DEXTOOLS_API_KEY }}
 
       - name: Build
         run: npm run build
