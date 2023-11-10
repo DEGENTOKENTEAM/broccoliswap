@@ -19,6 +19,7 @@ export const TokenInput = (props: {
     selectedChain?: Chain;
     setSelectedChain?: (chain?: Chain) => void;
     otherToken?: Token;
+    disabled?: boolean
 }) => {
     const [showSelector, setShowSelector] = useState(false);
 
@@ -42,8 +43,11 @@ export const TokenInput = (props: {
                 )}
             >
                 <div
-                    onClick={() => setShowSelector(true)}
-                    className="bg-darkblue border border-activeblue relative rounded-xl flex items-center justify-center px-3 py-1 font-bold gap-1 text-white cursor-pointer hover:bg-activeblue transition-colors"
+                    onClick={() => !props.disabled && setShowSelector(true)}
+                    className={classNames(
+                        " flex items-center justify-center px-3 py-1 font-bold gap-1 text-white transition-colors",
+                        !props.disabled && 'cursor-pointer hover:bg-activeblue bg-darkblue border border-activeblue relative rounded-xl'
+                    )}
                 >
                     {props.token ? (
                         <div className="flex items-center gap-1">
@@ -53,9 +57,9 @@ export const TokenInput = (props: {
                             <div className="flex items-end">
                                 {props.token.token.symbol}
                             </div>
-                            <div>
+                            {!props.disabled && <div>
                                 <RxCaretDown />
-                            </div>
+                            </div>}
                         </div>
                     ) : (
                         <div className="flex items-center gap-1">

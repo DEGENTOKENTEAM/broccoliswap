@@ -32,13 +32,19 @@ import { classNames } from '@/helpers/classNames'
 import { TokenInfoHeader } from '@/components/Pro/TokenInfoHeader'
 import { TokenInfo } from '@/components/Pro/TokenInfo'
 import { TwitterEmbed } from '@/components/Pro/TwitterEmbed'
+import { Info, Pair } from '@/components/Pro/types'
 
 export const SwapView = (props: {
     showRecentTrades?: boolean
     setShowRecentTrades?: (show: boolean) => void
+    proMode: boolean;
+    reprToken: Token;
+    setReprToken: (x: Token) => void;
 }) => {
-    const [proMode, setProMode] = useState(false);
-    const [reprToken, setReprToken] = useState<Token | undefined>()
+    const { reprToken, setReprToken } = props;
+    const [reprTokenInfo, setReprTokenInfo] = useState<Info | undefined>()
+    const [reprTokenPairs, setReprTokenPairs] = useState<Pair[] | undefined>()
+
     const [inputToken, setInputToken] = useState<Token | undefined>()
     const [inputChain, setInputChain] = useState<Chain>()
     const [shared, setShared] = useState(false);
@@ -103,18 +109,43 @@ export const SwapView = (props: {
         });
     }
 
-    useEffect(() => {
+    useAsyncEffect(async () => {
+        let _reprToken: Token | undefined = props.reprToken;
         if (!reprToken) {
-            setReprToken(inputToken || outputToken)
+            _reprToken = inputToken || outputToken;
         }
-    }, [inputToken, outputToken]);
+
+        if (!_reprToken) {
+            return;
+        }
+
+        const tokenAddress = _reprToken.token.address === NULL_ADDRESS ? '0x0' : _reprToken.token.address;
+        const tokenResponse = await fetch(`${process.env.NEXT_PUBLIC_BACKEND_ENDPOINT}/dextools/token/${chainsInfo[_reprToken.chain].dextoolsSlug}/${tokenAddress}`);
+        const tokenResult: { result: Info } = await tokenResponse.json();
+        setReprTokenInfo(tokenResult.result);
+        
+        const pairs = tokenResult.result.data.pairs.length > 0 ? tokenResult.result.data.pairs.slice(0, 5) : [{ address: tokenResult.result.data.reprPair.id.pair }];
+        const pairResponses = await Promise.all(pairs.map(pair =>
+            fetch(`${process.env.NEXT_PUBLIC_BACKEND_ENDPOINT}/dextools/pair/${chainsInfo[_reprToken!.chain].dextoolsSlug}/${pair.address}`)
+        ));
+        const pairResult: { result: Pair }[] = await Promise.all(pairResponses.map((pairResponse) => pairResponse.json()));
+        setReprTokenPairs(pairResult.map(({ result }) => result));
+        
+        console.log(tokenResult,pairResult)
+
+        if (!reprToken) {
+            props.setReprToken(_reprToken);
+        }
+    }, [inputToken, outputToken, reprToken]);
+
+    useEffect(() => {
+        setInputToken(undefined);
+        setOutputToken(reprToken);
+        setReprToken(reprToken);
+    }, [reprToken, setReprToken])
 
     useAsyncEffect(async () => {
         const qs = new URLSearchParams(window.location.search)
-
-        if (qs.get('pro')) {
-            setProMode(true);
-        }
 
         if (qs.get('swap')) {
             const response = await fetch(`${process.env.NEXT_PUBLIC_BACKEND_ENDPOINT}/swapLink/${qs.get('swap')}`);
@@ -334,21 +365,28 @@ export const SwapView = (props: {
         return _priceImpact ?? 0;
     }, [trades])
     
-console.log('zxc',trades)
+    const screenName = useMemo(() => {
+        const link = reprTokenInfo?.data?.links.twitter.split('/');
+        if (!link) {
+            return undefined;
+        }
+        return link[link.length - 1];
+    }, [reprTokenInfo]);
+
     return (
         <>
-            <div className="flex flex-grow flex-col mt-24 sm:mt-20 mx-5 mb-5 gap-3 justify-center">
-                <div className={classNames("flex flex-col-reverse lg:flex-row-reverse justify-center", proMode && 'gap-5')}>
-                    {proMode && (<div className="flex flex-col h-full w-full lg:w-96 lg:mt-11 gap-5">
-                        {reprToken && <TokenInfo token={reprToken} />}
+            <div className="flex flex-grow flex-col mt-36 sm:mt-20 mx-5 mb-5 gap-3 justify-center">
+                <div className={classNames("flex flex-col-reverse lg:flex-row-reverse justify-center", props.proMode && 'gap-5')}>
+                    {props.proMode && (<div className="flex flex-col h-full w-full lg:w-96 lg:mt-11 gap-5 order-first lg:order-none">
+                        {reprToken && reprTokenInfo && reprTokenPairs && <TokenInfo token={reprToken} pairs={reprTokenPairs} info={reprTokenInfo} />}
                         {/* <div className=" bg-darkblue border-activeblue border-2 p-5 rounded-xl"> */}
-                            <TwitterEmbed screenName={'degenecosystem'} />
+                            <TwitterEmbed screenName={screenName} />
                         {/* </div> */}
                     </div>)}
-                    {proMode && reprToken && <div className="flex flex-col flex-grow gap-5 lg:mt-11 h-[400px] lg:h-[calc(100vh-350px)] lg:min-h-[400px]">
-                        <TokenInfoHeader token={reprToken} />
+                    {props.proMode && reprToken && reprTokenInfo && reprTokenPairs && <div className="flex flex-col flex-grow gap-5 lg:mt-11 h-[400px] lg:h-[calc(100vh-350px)] lg:min-h-[400px] order-last lg:order-none">
+                        <TokenInfoHeader token={reprToken} reprPair={reprTokenPairs.find((pair) => pair.data.address === reprTokenInfo.data.reprPair.id.pair)} info={reprTokenInfo} />
                         <div className="relative rounded-lg bg-dark flex-grow">
-                            <iframe className="rounded-lg" src="https://www.dextools.io/widget-chart/en/avalanche/pe-light/0xbcabb94006400ed84c3699728d6ecbaa06665c89?theme=dark&chartType=1&chartResolution=1d&headerColor=020618&tvPlatformColor=020618&tvPaneColor=020618" style={{ width: '100%', height: '100%' }} />
+                            <iframe className="rounded-lg" src={`https://www.dextools.io/widget-chart/en/${chainsInfo[reprToken.chain].dextoolsSlug}/pe-light/${reprTokenInfo.data.reprPair.id.pair}?theme=dark&chartType=1&chartResolution=1d&headerColor=020618&tvPlatformColor=020618&tvPaneColor=020618`} style={{ width: '100%', height: '100%' }} />
                         </div>
                     </div>}
                     <div className="flex flex-col gap-3 h-full">
@@ -452,6 +490,7 @@ console.log('zxc',trades)
                                 amount={inputAmount}
                                 externalAmount={externallySetAmount}
                                 otherToken={outputToken}
+                                disabled={inputToken && reprToken && inputToken.chain === reprToken?.chain && inputToken?.token.address === reprToken.token.address}
                             />
 
                             <SwapTokens swapTokens={swapTokens} />
@@ -490,6 +529,7 @@ console.log('zxc',trades)
                                     | OnChainTrade
                                     | CrossChainTrade)?.to?.tokenAmount?.toNumber()}
                                 otherToken={inputToken}
+                                disabled={outputToken && reprToken && outputToken.chain === reprToken?.chain && outputToken?.token.address === reprToken.token.address}
                             />
 
                             <SwapButton

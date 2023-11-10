@@ -12,6 +12,10 @@ import { getMostRecentTxHistoryItem } from "@/helpers/txHistory";
 import { toPrecision } from "@/helpers/number";
 import { TokenImage } from "./TokenImage";
 import { chainFromChainId } from "@/helpers/chain";
+import { BiSearch } from "react-icons/bi";
+import { TokenSelector } from "./TokenSelector";
+import { useState } from "react";
+import { Chain, Token } from "@/types";
 
 const navigation = [
     { name: "Trade", href: "/trade/trade" }
@@ -53,7 +57,10 @@ const ConnectedButton = () => {
     );
 };
 
-export const Navbar = (props: { onClickRecentTrades?: () => void }) => {
+export const Navbar = (props: { onClickRecentTrades?: () => void; proMode: boolean; setToken: (x: Token) => void }) => {
+    const [showSelector, setShowSelector] = useState(false);
+    const [selectedChain, setSelectedChain] = useState<Chain>();
+
     return (
         <Disclosure as="nav" className="absolute top-0 w-full">
             {({ open }) => (
@@ -82,6 +89,14 @@ export const Navbar = (props: { onClickRecentTrades?: () => void }) => {
                                     />
                                 </div>
                             </div>
+                            {props.proMode && <div className="hidden lg:flex flex-grow items-start justify-start">
+                                <div
+                                    className="bg-dark border-2 cursor-pointer border-activeblue px-3 py-2 flex gap-1 items-center rounded-full text-light-200 hover:bg-activeblue transition-colors"
+                                    onClick={() => setShowSelector(true)}
+                                >
+                                    <BiSearch /> Select Token
+                                </div>
+                            </div>}
                             <div className="flex-shrink-0 items-center">
                                 <button
                                     onClick={() =>
@@ -120,6 +135,21 @@ export const Navbar = (props: { onClickRecentTrades?: () => void }) => {
                             </ConnectKitButton.Custom>
                         </div>
                     </div>
+                    {props.proMode && <div className="flex lg:hidden flex-grow items-start justify-center w-full">
+                        <div
+                            className="bg-dark border-2 cursor-pointer border-activeblue px-3 py-2 flex gap-1 items-center rounded-full text-light-200 hover:bg-activeblue transition-colors"
+                            onClick={() => setShowSelector(true)}
+                        >
+                            <BiSearch /> Select Token
+                        </div>
+                    </div>}
+                    <TokenSelector
+                        show={showSelector}
+                        setShow={setShowSelector}
+                        selectedChain={selectedChain}
+                        setSelectedChain={setSelectedChain}
+                        setToken={props.setToken}
+                    />
                 </>
             )}
         </Disclosure>

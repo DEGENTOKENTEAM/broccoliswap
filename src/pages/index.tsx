@@ -6,7 +6,14 @@ import "allotment/dist/style.css";
 import NonSSR from '@/components/NonSSR';
 import { Token } from '@/types';
 
-export default function Home(props: { activeToken: Token, showRecentTrades?: boolean, setShowRecentTrades?: (show: boolean) => void }) {
+export default function Home(props: {
+  activeToken: Token;
+  showRecentTrades?: boolean;
+  setShowRecentTrades?: (show: boolean) => void;
+  proMode: boolean;
+  reprToken: Token;
+  setReprToken: (x: Token) => void;
+}) {
   const [ready, setReady] = useState(false)
 
   useEffect(() => setReady(true), [])
@@ -25,7 +32,13 @@ export default function Home(props: { activeToken: Token, showRecentTrades?: boo
       </Head>
       <NonSSR>
         <div className="w-full mx-auto my-10 flex justify-center items-center">
-          <SwapView showRecentTrades={props.showRecentTrades} setShowRecentTrades={props.setShowRecentTrades}  />
+          <SwapView
+            showRecentTrades={props.showRecentTrades}
+            setShowRecentTrades={props.setShowRecentTrades}
+            proMode={props.proMode}
+            reprToken={props.reprToken}
+            setReprToken={props.setReprToken}
+          />
         </div>
       </NonSSR>
     </>

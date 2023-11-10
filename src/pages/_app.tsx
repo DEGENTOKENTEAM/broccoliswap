@@ -11,6 +11,7 @@ import { infuraProvider } from 'wagmi/providers/infura'
 import { ConnectKitProvider, getDefaultConfig } from 'connectkit'
 import * as errorReporting from '../helpers/errorReporting';
 import { setUTMParameters, trackStartVisit } from '@/helpers/track'
+import { Token } from '@/types'
 
 const { chains } = configureChains(
   [mainnet, avalanche, bsc, arbitrum],
@@ -31,6 +32,8 @@ const config = createConfig({
 
 export default function App({ Component, pageProps, router }: AppProps) {
   const [showRecentTrades, setShowRecentTrades] = useState(false);
+  const [proMode, setProMode] = useState(false);
+  const [reprToken, setReprToken] = useState<Token | undefined>()
 
   useEffect(() => {
     setUTMParameters(new URLSearchParams(window.location.search))
@@ -38,6 +41,11 @@ export default function App({ Component, pageProps, router }: AppProps) {
     if (!visitStartTime || parseInt(visitStartTime) < Date.now() - (30 * 60 * 1000)) {
         localStorage.setItem('visitStartTime', Date.now().toString());
         trackStartVisit();
+    }
+
+    const qs = new URLSearchParams(window.location.search)
+    if (qs.get('pro')) {
+        setProMode(true);
     }
   }, []);
 
@@ -48,8 +56,15 @@ export default function App({ Component, pageProps, router }: AppProps) {
         <WagmiConfig config={config}>
           <ConnectKitProvider options={{initialChainId:0}}>
           <main className=" ">
-            <Navbar onClickRecentTrades={() => setShowRecentTrades(true)} />
-            <Component {...pageProps} showRecentTrades={showRecentTrades} setShowRecentTrades={setShowRecentTrades} />
+            <Navbar onClickRecentTrades={() => setShowRecentTrades(true)} proMode={proMode} setToken={setReprToken} />
+            <Component
+              {...pageProps}
+              showRecentTrades={showRecentTrades}
+              setShowRecentTrades={setShowRecentTrades}
+              proMode={proMode}
+              reprToken={reprToken}
+              setReprToken={setReprToken}
+            />
             <BottomBar />
           </main>
           </ConnectKitProvider>

@@ -42,6 +42,7 @@ provider:
   environment:
     BITQUERY_API_KEY: ${env:BITQUERY_API_KEY}
     MIXPANEL_PROJECT_KEY: ${env:MIXPANEL_PROJECT_KEY}
+    DEXTOOLS_API_KEY: ${env:DEXTOOLS_API_KEY}
     OHLC_TABLE_NAME: ${self:custom.ddb.ohlc-table-name}-${opt:stage, 'dev'}
     SWAP_LINK_TABLE_NAME: ${self:custom.ddb.swap-link-table-name}-${opt:stage, 'dev'}
     CONNECTOR_ADDRESS_TABLE_NAME: ${self:custom.ddb.connector-address-table-name}-${opt:stage, 'dev'}
@@ -147,6 +148,36 @@ functions:
                 address: true
                 toChain: true
                 hash: true
+
+  dexToolsPair:
+    handler: dextools/pair.handler
+    memorySize: 1024
+    timeout: 29
+    events:
+      - http:
+          cors: true
+          path: /dextools/pair/{chain}/{address}
+          method: get
+          request:
+            parameters:
+              paths:
+                chain: true
+                address: true
+
+  dexToolsToken:
+    handler: dextools/token.handler
+    memorySize: 1024
+    timeout: 29
+    events:
+      - http:
+          cors: true
+          path: /dextools/token/{chain}/{address}
+          method: get
+          request:
+            parameters:
+              paths:
+                chain: true
+                address: true
 
 resources:
   Resources:

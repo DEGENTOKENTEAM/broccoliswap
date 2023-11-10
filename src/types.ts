@@ -67,6 +67,7 @@ export const chainsInfo = {
         rpc: 'https://ethereum.publicnode.com',
         nativeTokenSymbol: 'ETH',
         dextoolsChartWidgetChainName: 'ether',
+        dextoolsSlug: 'ether',
     },
     [Chain.BSC]: {
         chain: Chain.BSC,
@@ -84,6 +85,7 @@ export const chainsInfo = {
         rpc: 'https://bsc-dataseed.binance.org/',
         nativeTokenSymbol: 'BNB',
         dextoolsChartWidgetChainName: 'bnb',
+        dextoolsSlug: 'bsc',
     },
     [Chain.AVAX]: {
         chain: Chain.AVAX,
@@ -101,6 +103,7 @@ export const chainsInfo = {
         rpc: 'https://avalanche-c-chain.publicnode.com',
         nativeTokenSymbol: 'AVAX',
         dextoolsChartWidgetChainName: 'avalanche',
+        dextoolsSlug: 'avalanche',
     },
     [Chain.ARBITRUM]: {
         chain: Chain.ARBITRUM,
@@ -118,5 +121,6 @@ export const chainsInfo = {
         rpc: 'https://arb1.arbitrum.io/rpc',
         nativeTokenSymbol: 'ETH',
         dextoolsChartWidgetChainName: 'arbitrum',
+        dextoolsSlug: 'arbitrum',
     },
 }
