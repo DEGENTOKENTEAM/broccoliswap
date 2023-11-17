@@ -11,6 +11,7 @@ export default function Home(props: {
   showRecentTrades?: boolean;
   setShowRecentTrades?: (show: boolean) => void;
   proMode: boolean;
+  setProMode: (x: boolean) => void;
   reprToken: Token;
   setReprToken: (x: Token) => void;
 }) {
@@ -36,6 +37,7 @@ export default function Home(props: {
             showRecentTrades={props.showRecentTrades}
             setShowRecentTrades={props.setShowRecentTrades}
             proMode={props.proMode}
+            setProMode={props.setProMode}
             reprToken={props.reprToken}
             setReprToken={props.setReprToken}
           />

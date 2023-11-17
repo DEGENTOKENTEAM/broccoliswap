@@ -38,6 +38,7 @@ export const SwapView = (props: {
     showRecentTrades?: boolean
     setShowRecentTrades?: (show: boolean) => void
     proMode: boolean;
+    setProMode: (x: boolean) => void;
     reprToken: Token;
     setReprToken: (x: Token) => void;
 }) => {
@@ -154,16 +155,25 @@ export const SwapView = (props: {
         if (qs.get('swap')) {
             const response = await fetch(`${process.env.NEXT_PUBLIC_BACKEND_ENDPOINT}/swapLink/${qs.get('swap')}`);
             const { link: result } = await response.json();
-            setInputChain(result.inputChain)
-            setOutputChain(result.outputChain)
-            const [inputToken, outputToken] = await Promise.all([
-                searchToken(result.inputChain, result.inputToken),
-                searchToken(result.outputChain, result.outputToken),
-            ])
-            setInputToken({ token: inputToken[0], chain: result.inputChain })
-            setOutputToken({ token: outputToken[0], chain: result.outputChain })
-            setInputAmount(parseFloat(result.amount!))
-            setExternallySetAmount(parseFloat(result.amount!))
+
+            if (result.pro) {
+                setInputChain(result.inputChain)
+                const inputToken = await searchToken(result.inputChain, result.inputToken);
+                setInputToken({ token: inputToken[0], chain: result.inputChain })
+                props.setProMode(true);
+
+            } else {
+                setInputChain(result.inputChain)
+                setOutputChain(result.outputChain)
+                const [inputToken, outputToken] = await Promise.all([
+                    searchToken(result.inputChain, result.inputToken),
+                    searchToken(result.outputChain, result.outputToken),
+                ])
+                setInputToken({ token: inputToken[0], chain: result.inputChain })
+                setOutputToken({ token: outputToken[0], chain: result.outputChain })
+                setInputAmount(parseFloat(result.amount!))
+                setExternallySetAmount(parseFloat(result.amount!))
+            }
         }
 
         if (qs.get('inputChain')) {

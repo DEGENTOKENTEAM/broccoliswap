@@ -42,14 +42,23 @@ export const handler = async (
     } while (exists);
 
     if (!skip) {
-        await putLink({
-            inputToken,
-            inputChain,
-            outputToken,
-            outputChain,
-            amount,
-            link: iterator === 0 ? origLink : `${origLink}-${iterator}`
-        });
+        if (pro) {
+            await putLink({
+                inputToken,
+                inputChain,
+                link: iterator === 0 ? origLink : `${origLink}-${iterator}`,
+                pro,
+            });
+        } else {
+            await putLink({
+                inputToken,
+                inputChain,
+                outputToken,
+                outputChain,
+                amount,
+                link: iterator === 0 ? origLink : `${origLink}-${iterator}`,
+            });
+        }
     }
 
     return createReturn(

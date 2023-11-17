@@ -62,6 +62,7 @@ export default function App({ Component, pageProps, router }: AppProps) {
               showRecentTrades={showRecentTrades}
               setShowRecentTrades={setShowRecentTrades}
               proMode={proMode}
+              setProMode={setProMode}
               reprToken={reprToken}
               setReprToken={setReprToken}
             />

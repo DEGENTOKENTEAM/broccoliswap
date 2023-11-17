@@ -74,7 +74,7 @@ export const TokenInfoHeader = (props: { token: Token; reprPair?: Pair, info: In
                     <h2 className="font-bold text-xl">{props.token.token.symbol}</h2>
                     <div
                         onClick={() => sharePro()}
-                        className="bg-dark text-xs rounded-full p-2 border-2 border-activeblue cursor-pointer hover:bg-activeblue"
+                        className="bg-dark flex gap-1 items-center text-xs rounded-full p-2 border-2 border-activeblue cursor-pointer hover:bg-activeblue"
                     >
                         {shareLoading ? <Spinner /> : <BsShareFill />}
                         {shared && <span>Copied link</span>}
