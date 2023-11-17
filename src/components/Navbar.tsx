@@ -149,6 +149,7 @@ export const Navbar = (props: { onClickRecentTrades?: () => void; proMode: boole
                         selectedChain={selectedChain}
                         setSelectedChain={setSelectedChain}
                         setToken={props.setToken}
+                        noNative
                     />
                 </>
             )}

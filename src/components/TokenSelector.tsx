@@ -93,6 +93,7 @@ export const TokenSelector = (props: {
     setSelectedChain?: (chain?: Chain) => void;
     setToken: (token: Token) => void;
     otherToken?: Token
+    noNative?: boolean;
 }) => {
     const [tokens, setTokens] = useState<RubicToken[] | null>();
     const [searchFilter, setSearchFilter] = useState("");
@@ -125,7 +126,7 @@ export const TokenSelector = (props: {
         }
 
         setTokens(null);
-        const tokens: RubicToken[] = await searchToken(props.selectedChain, searchFilter);
+        const tokens: RubicToken[] = await searchToken(props.selectedChain, searchFilter, props.noNative);
 
         // Filter other token
         setTokens(tokens.filter(token => {

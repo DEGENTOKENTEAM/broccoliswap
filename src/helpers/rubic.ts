@@ -1,4 +1,4 @@
-import { Chain, chainsInfo, rubicRPCEndpoints } from "@/types";
+import { Chain, NULL_ADDRESS, chainsInfo, rubicRPCEndpoints } from "@/types";
 import { fetchToken } from "wagmi/actions";
 import { Configuration, SDK } from "rubic-sdk";
 
@@ -13,7 +13,7 @@ const config: Configuration = {
 };
 const sdk = SDK.createSDK(config);
 
-export const searchToken = async (network: Chain, filterTxt?: string) => {
+export const searchToken = async (network: Chain, filterTxt?: string, noNative?: boolean) => {
     // if filter is an address, search on that instead
     let filter = '';
     if (filterTxt?.startsWith('0x') && filterTxt.length >= 32) {
@@ -30,14 +30,23 @@ export const searchToken = async (network: Chain, filterTxt?: string) => {
         ])
         const dgnx = await results[0].json();
         const rest = await results[1].json();
-        const data = [...dgnx.results, ...rest.results]
+        let data = [...dgnx.results, ...rest.results]
+        if (noNative) {
+            console.log(data)
+            data = data.filter((x: any) => x.address !== NULL_ADDRESS);
+        }
         return data;
     }
 
     const result = await fetch(
         `https://tokens.rubic.exchange/api/v1/tokens?networks=${chainsInfo[network].rubicName}&pageSize=10${filter}`
     );
-    const data = await result.json();
+    let data = await result.json();
+
+    if (noNative) {
+        console.log(data)
+        data = data.filter((x: any) => x.address !== NULL_ADDRESS);
+    }
 
     // If this is ETH or ARB and there is no filterTxt, Rubic comes up first, that's annoying
     if ([Chain.ETH, Chain.ARBITRUM].includes(network) && !filterTxt) {
