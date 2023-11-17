@@ -7,6 +7,14 @@ import Link from "next/link";
 import { useMemo, useState } from "react";
 import { BiLinkExternal } from "react-icons/bi";
 import { Info, Pair } from "./types";
+import { FaGlobe, FaDiscord, FaTelegram, FaTiktok, FaInstagram, FaGithub, FaReddit, FaMedium, FaYoutube } from "react-icons/fa";
+import { FaXTwitter } from "react-icons/fa6";
+
+const SocialLink = (props: { children: any; link: string }) => {
+    return (
+        <a className="bg-dark rounded-full p-2 border-2 border-activeblue cursor-pointer hover:bg-activeblue" href={props.link} target="_blank" rel="noreferrer">{props.children}</a>
+    )
+}
 
 export const TokenInfo = (props: { token: Token; info: Info, pairs: Pair[] }) => {
     const { info, pairs } = props;
@@ -85,7 +93,18 @@ export const TokenInfo = (props: { token: Token; info: Info, pairs: Pair[] }) =>
                     <div className="font-bold">Sell tax<br /><span className="text-xs font-normal">*Includes DEX fee</span></div>
                     <div className="">{tokenTax.sellTax}%</div>
                 </>}
-                
+            </div>
+            <div className="flex xl:justify-center text-xl gap-1 flex-wrap mt-5">
+                {info.data.links.website && (<SocialLink link={info.data.links.website}><FaGlobe /></SocialLink>)}
+                {info.data.links.discord && (<SocialLink link={info.data.links.discord}><FaDiscord /></SocialLink>)}
+                {info.data.links.telegram && (<SocialLink link={info.data.links.telegram}><FaTelegram /></SocialLink>)}
+                {info.data.links.twitter && (<SocialLink link={info.data.links.twitter}><FaXTwitter /></SocialLink>)}
+                {info.data.links.tiktok && (<SocialLink link={info.data.links.tiktok}><FaTiktok /></SocialLink>)}
+                {info.data.links.instagram && (<SocialLink link={info.data.links.instagram}><FaInstagram /></SocialLink>)}
+                {info.data.links.github && (<SocialLink link={info.data.links.github}><FaGithub /></SocialLink>)}
+                {info.data.links.reddit && (<SocialLink link={info.data.links.reddit}><FaReddit /></SocialLink>)}
+                {info.data.links.medium && (<SocialLink link={info.data.links.medium}><FaMedium /></SocialLink>)}
+                {info.data.links.youtube && (<SocialLink link={info.data.links.youtube}><FaYoutube /></SocialLink>)}
             </div>
         </div>
     )

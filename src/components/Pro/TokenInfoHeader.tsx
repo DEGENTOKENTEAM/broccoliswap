@@ -14,12 +14,6 @@ import { Info, Pair } from "./types";
 import { notify } from "@/helpers/errorReporting";
 import { Spinner } from "../Spinner";
 
-const SocialLink = (props: { children: any; link: string }) => {
-    return (
-        <a className="bg-dark rounded-full p-2 border-2 border-activeblue cursor-pointer hover:bg-activeblue" href={props.link} target="_blank" rel="noreferrer">{props.children}</a>
-    )
-}
-
 export const TokenInfoHeader = (props: { token: Token; reprPair?: Pair, info: Info }) => {
     const { reprPair, info } = props;
     const [shared, setShared] = useState(false);
@@ -92,19 +86,7 @@ export const TokenInfoHeader = (props: { token: Token; reprPair?: Pair, info: In
                         </div>
                     </div>
                 </div>
-
-                <div className="flex-grow flex xl:justify-center text-xl gap-1">
-                    {info.data.links.website && (<SocialLink link={info.data.links.website}><FaGlobe /></SocialLink>)}
-                    {info.data.links.discord && (<SocialLink link={info.data.links.discord}><FaDiscord /></SocialLink>)}
-                    {info.data.links.telegram && (<SocialLink link={info.data.links.telegram}><FaTelegram /></SocialLink>)}
-                    {info.data.links.twitter && (<SocialLink link={info.data.links.twitter}><FaXTwitter /></SocialLink>)}
-                    {info.data.links.tiktok && (<SocialLink link={info.data.links.tiktok}><FaTiktok /></SocialLink>)}
-                    {info.data.links.instagram && (<SocialLink link={info.data.links.instagram}><FaInstagram /></SocialLink>)}
-                    {info.data.links.github && (<SocialLink link={info.data.links.github}><FaGithub /></SocialLink>)}
-                    {info.data.links.reddit && (<SocialLink link={info.data.links.reddit}><FaReddit /></SocialLink>)}
-                    {info.data.links.medium && (<SocialLink link={info.data.links.medium}><FaMedium /></SocialLink>)}
-                    {info.data.links.youtube && (<SocialLink link={info.data.links.youtube}><FaYoutube /></SocialLink>)}
-                </div>
+                <div className="flex-grow flex xl:justify-center text-xl gap-1" />
                 <div className="font-bold text-lg hidden xl:flex items-start gap-1">
                     {reprPair && reprPair.data?.price24h?.priceChain && <div className="flex flex-col">
                         ${toPrecision(info.data.reprPair.price, 5)}
