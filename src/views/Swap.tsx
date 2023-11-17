@@ -110,6 +110,10 @@ export const SwapView = (props: {
     }
 
     useAsyncEffect(async () => {
+        if (!props.proMode) {
+            return;
+        }
+
         let _reprToken: Token | undefined = props.reprToken;
         if (!reprToken) {
             _reprToken = inputToken || outputToken;
@@ -136,7 +140,7 @@ export const SwapView = (props: {
         if (!reprToken) {
             props.setReprToken(_reprToken);
         }
-    }, [inputToken, outputToken, reprToken]);
+    }, [inputToken, outputToken, reprToken, props.proMode]);
 
     useEffect(() => {
         setInputToken(undefined);
@@ -386,7 +390,7 @@ export const SwapView = (props: {
                     {props.proMode && reprToken && reprTokenInfo && reprTokenPairs && <div className="flex flex-col flex-grow gap-5 lg:mt-11 h-[400px] lg:h-[calc(100vh-350px)] lg:min-h-[400px] order-last lg:order-none">
                         <TokenInfoHeader token={reprToken} reprPair={reprTokenPairs.find((pair) => pair.data.address === reprTokenInfo.data.reprPair.id.pair)} info={reprTokenInfo} />
                         <div className="relative rounded-lg bg-dark flex-grow">
-                            <iframe className="rounded-lg" src={`https://www.dextools.io/widget-chart/en/${chainsInfo[reprToken.chain].dextoolsSlug}/pe-light/${reprTokenInfo.data.reprPair.id.pair}?theme=dark&chartType=1&chartResolution=1d&headerColor=020618&tvPlatformColor=020618&tvPaneColor=020618`} style={{ width: '100%', height: '100%' }} />
+                            <iframe className="rounded-lg" src={`https://www.dextools.io/widget-chart/en/${chainsInfo[reprToken.chain].dextoolsSlug}/pe-light/${reprTokenInfo.data.reprPair.id.pair}?theme=dark&chartType=1&chartResolution=1d&headerColor=002314&tvPlatformColor=002314&tvPaneColor=002314`} style={{ width: '100%', height: '100%' }} />
                         </div>
                     </div>}
                     <div className="flex flex-col gap-3 h-full">
@@ -490,7 +494,7 @@ export const SwapView = (props: {
                                 amount={inputAmount}
                                 externalAmount={externallySetAmount}
                                 otherToken={outputToken}
-                                disabled={inputToken && reprToken && inputToken.chain === reprToken?.chain && inputToken?.token.address === reprToken.token.address}
+                                disabled={props.proMode && inputToken && reprToken && inputToken.chain === reprToken?.chain && inputToken?.token.address === reprToken.token.address}
                             />
 
                             <SwapTokens swapTokens={swapTokens} />
@@ -529,7 +533,7 @@ export const SwapView = (props: {
                                     | OnChainTrade
                                     | CrossChainTrade)?.to?.tokenAmount?.toNumber()}
                                 otherToken={inputToken}
-                                disabled={outputToken && reprToken && outputToken.chain === reprToken?.chain && outputToken?.token.address === reprToken.token.address}
+                                disabled={props.proMode && outputToken && reprToken && outputToken.chain === reprToken?.chain && outputToken?.token.address === reprToken.token.address}
                             />
 
                             <SwapButton

@@ -1,6 +1,6 @@
 import { Token, chainsInfo } from '@/types'
 import { debounce } from './debounce'
-import { CROSS_CHAIN_TRADE_TYPE, CrossChainTradeType, OnChainTrade } from 'rubic-sdk'
+import { BLOCKCHAIN_NAME, CROSS_CHAIN_TRADE_TYPE, CrossChainTradeType, OnChainTrade } from 'rubic-sdk'
 import { getSDK } from './rubic'
 import { DGNX_ADDRESS, addressHasDisburserRewards } from './dgnx'
 
@@ -25,9 +25,11 @@ const calculateBestTrade = async (
     // Check if we need to disable proxy for legacy disburser DGNX holders
     // Also disable if the sell tex >0.5. That implies a token with a tax
     // and Rubic doesn't like that.
-    let disabledProxy = inputTokenSellTax > 0.5;
+    let disabledProxy = false;
+    let isDisburserAddress = false;
     if (connectedAddress && toToken.address === DGNX_ADDRESS && toToken.blockchain === 'AVALANCHE') {
-        disabledProxy = await addressHasDisburserRewards(connectedAddress)
+        isDisburserAddress = await addressHasDisburserRewards(connectedAddress)
+        disabledProxy = isDisburserAddress || inputTokenSellTax > 0.5
     }
 
     const sdk = await getSDK()
@@ -78,14 +80,21 @@ const calculateBestTrade = async (
                 (trade): trade is OnChainTrade => !trade?.error
             )
             .filter(trade => !['XyDexTrade'].includes(trade.constructor.name))
+            .filter(trade => {
+            if (!isDisburserAddress || trade.from.blockchain !== BLOCKCHAIN_NAME.AVALANCHE || trade.from.address !== DGNX_ADDRESS) {
+                    return trade;
+                }
+
+                return ['PangolinTrade', 'JoeTrade'].includes(trade.constructor.name)
+            })
             .sort((a, b) =>
                 a.to.tokenAmount.toNumber() > b.to.tokenAmount.toNumber() ? -1 : 1
             ) as OnChainTrade[]
 
-        const allTrades = availableTrades.concat(availableTradesWithoutProxy)
-        
+        const allTrades = availableTrades.concat(availableTradesWithoutProxy);
+
         if (allTrades.length === 0) return 'No trades available'
-        
+
         // Filter trades where the min output amount is way too low
         const minimumMinimumOutputAmount = allTrades[0].toTokenAmountMin.tokenAmount.toNumber() * 0.95;
         const allValidTrades = allTrades.filter(trade => trade.toTokenAmountMin.tokenAmount.toNumber() >= minimumMinimumOutputAmount);
@@ -142,6 +151,13 @@ const calculateBestTrade = async (
             (trade): trade is OnChainTrade => !trade?.error
         )
         .filter(trade => !['XyDexTrade'].includes(trade.constructor.name))
+        .filter(trade => {
+            if (!isDisburserAddress || trade.trade?.from.blockchain !== BLOCKCHAIN_NAME.AVALANCHE || trade.trade?.from.address !== DGNX_ADDRESS) {
+                return trade;
+            }
+
+            return ['PangolinTrade', 'JoeTrade'].includes(trade.constructor.name)
+        })
         .filter(trade => !!trade?.trade?.to)
         .sort((a, b) =>
             a.trade!.to.tokenAmount.toNumber() > b.trade!.to.tokenAmount.toNumber() ? -1 : 1
