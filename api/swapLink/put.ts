@@ -25,7 +25,7 @@ export const handler = async (
                     && existingLink.outputChain === outputChain
                     && existingLink.amount === amount
                 ) || (
-                    !pro
+                    pro
                     && existingLink.inputToken === inputToken
                     && existingLink.inputChain === inputChain
                 )
