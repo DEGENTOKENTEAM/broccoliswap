@@ -6,7 +6,7 @@ export const handler = async (
     event: APIGatewayProxyEvent
 ): Promise<APIGatewayProxyResult> => {
     console.log(event.body)
-    const { inputToken, inputChain, outputToken, outputChain, amount, link: origLink } = JSON.parse(event.body!);
+    const { inputToken, inputChain, outputToken, outputChain, amount, link: origLink, pro } = JSON.parse(event.body!);
 
     let iterator = 0;
     let exists = false;
@@ -17,11 +17,18 @@ export const handler = async (
         if (existingLink) {
             // If it is the same we don't have to iterate up, but can just return the same
             if (
-                existingLink.inputToken === inputToken
-                && existingLink.inputChain === inputChain
-                && existingLink.outputToken === outputToken
-                && existingLink.outputChain === outputChain
-                && existingLink.amount === amount
+                (
+                    !pro
+                    && existingLink.inputToken === inputToken
+                    && existingLink.inputChain === inputChain
+                    && existingLink.outputToken === outputToken
+                    && existingLink.outputChain === outputChain
+                    && existingLink.amount === amount
+                ) || (
+                    !pro
+                    && existingLink.inputToken === inputToken
+                    && existingLink.inputChain === inputChain
+                )
             ) {
                 exists = false;
                 skip = true;
