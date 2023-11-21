@@ -80,13 +80,6 @@ const calculateBestTrade = async (
                 (trade): trade is OnChainTrade => !trade?.error
             )
             .filter(trade => !['XyDexTrade'].includes(trade.constructor.name))
-            .filter(trade => {
-            if (!isDisburserAddress || trade.from.blockchain !== BLOCKCHAIN_NAME.AVALANCHE || trade.from.address !== DGNX_ADDRESS) {
-                    return trade;
-                }
-
-                return ['PangolinTrade', 'JoeTrade'].includes(trade.constructor.name)
-            })
             .sort((a, b) =>
                 a.to.tokenAmount.toNumber() > b.to.tokenAmount.toNumber() ? -1 : 1
             ) as OnChainTrade[]
@@ -151,13 +144,6 @@ const calculateBestTrade = async (
             (trade): trade is OnChainTrade => !trade?.error
         )
         .filter(trade => !['XyDexTrade'].includes(trade.constructor.name))
-        .filter(trade => {
-            if (!isDisburserAddress || trade.trade?.from.blockchain !== BLOCKCHAIN_NAME.AVALANCHE || trade.trade?.from.address !== DGNX_ADDRESS) {
-                return trade;
-            }
-
-            return ['PangolinTrade', 'JoeTrade'].includes(trade.constructor.name)
-        })
         .filter(trade => !!trade?.trade?.to)
         .sort((a, b) =>
             a.trade!.to.tokenAmount.toNumber() > b.trade!.to.tokenAmount.toNumber() ? -1 : 1
