@@ -16,6 +16,8 @@ import { BiSearch } from "react-icons/bi";
 import { TokenSelector } from "./TokenSelector";
 import { useState } from "react";
 import { Chain, Token } from "@/types";
+import { BsFillGearFill } from "react-icons/bs";
+import { SettingsDialog } from "./SettingsDialog";
 
 const navigation = [
     { name: "Trade", href: "/trade/trade" }
@@ -60,6 +62,7 @@ const ConnectedButton = () => {
 export const Navbar = (props: { onClickRecentTrades?: () => void; proMode: boolean; setToken: (x: Token) => void }) => {
     const [showSelector, setShowSelector] = useState(false);
     const [selectedChain, setSelectedChain] = useState<Chain>();
+    const [showSettings, setShowSettings] = useState(false);
 
     return (
         <Disclosure as="nav" className="absolute top-0 w-full">
@@ -133,6 +136,12 @@ export const Navbar = (props: { onClickRecentTrades?: () => void; proMode: boole
                                     );
                                 }}
                             </ConnectKitButton.Custom>
+                            <div
+                                className="bg-darkblue border-2 cursir-pointer border-activeblue px-3 py-2 flex gap-1 items-center rounded-full text-light-200 hover:bg-activeblue transition-colors cursor-pointer"
+                                onClick={() => setShowSettings(true)}
+                            >
+                                <BsFillGearFill className="text-2xl" />
+                            </div>
                         </div>
                     </div>
                     {props.proMode && <div className="flex lg:hidden flex-grow items-start justify-center w-full">
@@ -150,6 +159,10 @@ export const Navbar = (props: { onClickRecentTrades?: () => void; proMode: boole
                         setSelectedChain={setSelectedChain}
                         setToken={props.setToken}
                         noNative
+                    />
+                    <SettingsDialog
+                        show={showSettings}
+                        setShow={setShowSettings}
                     />
                 </>
             )}
