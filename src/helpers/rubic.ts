@@ -32,7 +32,6 @@ export const searchToken = async (network: Chain, filterTxt?: string, noNative?:
         const rest = await results[1].json();
         let data = [...dgnx.results, ...rest.results]
         if (noNative) {
-            console.log(data)
             data = data.filter((x: any) => x.address !== NULL_ADDRESS);
         }
         return data;
@@ -44,8 +43,7 @@ export const searchToken = async (network: Chain, filterTxt?: string, noNative?:
     let data = await result.json();
 
     if (noNative) {
-        console.log(data)
-        data = data.filter((x: any) => x.address !== NULL_ADDRESS);
+        data.results = data.results.filter((x: any) => x.address !== NULL_ADDRESS);
     }
 
     // If this is ETH or ARB and there is no filterTxt, Rubic comes up first, that's annoying

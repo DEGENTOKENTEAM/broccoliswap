@@ -59,7 +59,12 @@ const ConnectedButton = () => {
     );
 };
 
-export const Navbar = (props: { onClickRecentTrades?: () => void; proMode: boolean; setToken: (x: Token) => void }) => {
+export const Navbar = (props: {
+    onClickRecentTrades?: () => void;
+    proMode: boolean;
+    setToken: (x: Token) => void
+    setProMode: (x: boolean) => void
+}) => {
     const [showSelector, setShowSelector] = useState(false);
     const [selectedChain, setSelectedChain] = useState<Chain>();
     const [showSettings, setShowSettings] = useState(false);
@@ -163,6 +168,8 @@ export const Navbar = (props: { onClickRecentTrades?: () => void; proMode: boole
                     <SettingsDialog
                         show={showSettings}
                         setShow={setShowSettings}
+                        proMode={props.proMode}
+                        setProMode={props.setProMode}
                     />
                 </>
             )}

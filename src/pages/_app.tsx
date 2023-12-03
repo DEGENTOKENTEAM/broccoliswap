@@ -44,7 +44,8 @@ export default function App({ Component, pageProps, router }: AppProps) {
     }
 
     const qs = new URLSearchParams(window.location.search)
-    if (qs.get('pro')) {
+    if (qs.get('pro') || localStorage.getItem('proMode')) {
+        localStorage.setItem('proMode', 'true')
         setProMode(true);
     }
   }, []);
@@ -56,7 +57,12 @@ export default function App({ Component, pageProps, router }: AppProps) {
         <WagmiConfig config={config}>
           <ConnectKitProvider options={{initialChainId:0}}>
           <main className=" ">
-            <Navbar onClickRecentTrades={() => setShowRecentTrades(true)} proMode={proMode} setToken={setReprToken} />
+            <Navbar
+              onClickRecentTrades={() => setShowRecentTrades(true)}
+              proMode={proMode}
+              setToken={setReprToken}
+              setProMode={setProMode}
+            />
             <Component
               {...pageProps}
               showRecentTrades={showRecentTrades}

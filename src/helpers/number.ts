@@ -12,6 +12,6 @@ export const toPrecision = (x: number, precision = 2) => {
     return Intl.NumberFormat('en-US', {
         minimumSignificantDigits: 1,
         notation: x > 1e6 ? 'compact' : 'standard',
-        maximumSignificantDigits: x > 1e6 ? precision : Math.max(numberOfDigits, precision, 1),
+        maximumSignificantDigits: Math.max(1, x > 1e6 ? precision : Math.max(numberOfDigits, precision, 1)),
     }).format(x)
 };

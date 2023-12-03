@@ -19,7 +19,8 @@ export const TokenInput = (props: {
     selectedChain?: Chain;
     setSelectedChain?: (chain?: Chain) => void;
     otherToken?: Token;
-    disabled?: boolean
+    disabled?: boolean;
+    noNative?: boolean;
 }) => {
     const [showSelector, setShowSelector] = useState(false);
 
@@ -129,6 +130,7 @@ export const TokenInput = (props: {
                 setSelectedChain={props.setSelectedChain}
                 setToken={props.setToken}
                 otherToken={props.otherToken}
+                noNative={props.noNative}
             />
         </>
     );

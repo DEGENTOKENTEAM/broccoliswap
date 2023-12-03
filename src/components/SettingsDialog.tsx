@@ -6,7 +6,9 @@ import { SubHeader } from "./SubHeader";
 
 export const SettingsDialog = (props: {
     show?: boolean;
+    proMode?: boolean;
     setShow?: (show: boolean) => void;
+    setProMode?: (x: boolean) => void;
 }) => {
     const divRef = useRef<HTMLDivElement>(null);
     useOutsideClick([divRef], () => props.setShow?.(false));
@@ -35,9 +37,29 @@ export const SettingsDialog = (props: {
                         onClick={() => props.setShow?.(false)}
                     />
                 </div>
+
+                {props.proMode
+                    ? <div
+                        className="bg-dark border-2 cursir-pointer border-activeblue px-3 py-2 flex gap-1 items-center rounded-full text-light-200 hover:bg-activeblue transition-colors cursor-pointer"
+                        onClick={() => {
+                            props.setProMode?.(false);
+                            localStorage.removeItem('proMode')
+                        }}
+                    >
+                        Switch to simple mode
+                    </div>
+                    : <div
+                        className="bg-dark border-2 cursir-pointer border-activeblue px-3 py-2 flex gap-1 items-center rounded-full text-light-200 hover:bg-activeblue transition-colors cursor-pointer"
+                        onClick={() => {
+                            props.setProMode?.(true)
+                            localStorage.setItem('proMode', 'true')
+                        }}
+                    >
+                        Switch to pro mode
+                    </div>}
                 
                 <div
-                    className="bg-dark border-2 cursir-pointer border-activeblue px-3 py-2 flex gap-1 items-center rounded-full text-light-200 hover:bg-activeblue transition-colors cursor-pointer"
+                    className="bg-dark mt-3 border-2 cursir-pointer border-activeblue px-3 py-2 flex gap-1 items-center rounded-full text-light-200 hover:bg-activeblue transition-colors cursor-pointer"
                     onClick={() => clearLocalStorage()}
                 >
                     Clear local storage
