@@ -70,24 +70,16 @@ export const Navbar = (props: {
     const [showSettings, setShowSettings] = useState(false);
 
     return (
-        <Disclosure as="nav" className="absolute top-0 w-full">
-            {({ open }) => (
-                <>
-                    <div className="mx-auto">
-                        <div className="flex sm:hidden mt-1 flex-grow items-center justify-center">
-                            <div className="flex flex-shrink-0 items-center">
-                                <Image
-                                    src="/logo-full.svg"
-                                    alt="Swap image"
-                                    unoptimized
-                                    width="285"
-                                    height="50"
-                                />
-                            </div>
+        <>
+            <Disclosure as="nav" className="absolute top-0 w-full">
+                {({ open }) => (
+                    <>
+                        <div className="bg-dark w-full text-center flex justify-center items-center border-b-2 border-activeblue text-xs py-1">
+                            Always make sure you are connected on https://broccoliswap.com
                         </div>
-                        <div className="relative m-3 flex h-10 items-center justify-between gap-3">
-                            <div className="hidden sm:flex flex-grow items-start justify-start">
-                                <div className="flex flex-shrink-0 items-start">
+                        <div className="mx-auto">
+                            <div className="flex sm:hidden mt-1 flex-grow items-center justify-center">
+                                <div className="flex flex-shrink-0 items-center">
                                     <Image
                                         src="/logo-full.svg"
                                         alt="Swap image"
@@ -97,82 +89,98 @@ export const Navbar = (props: {
                                     />
                                 </div>
                             </div>
-                            {props.proMode && <div className="hidden lg:flex flex-grow items-start justify-start">
-                                <div
-                                    className="bg-dark border-2 cursor-pointer border-activeblue px-3 py-2 flex gap-1 items-center rounded-full text-light-200 hover:bg-activeblue transition-colors"
-                                    onClick={() => setShowSelector(true)}
-                                >
-                                    <BiSearch /> Select Token
+                            <div className="relative m-3 flex h-10 items-center justify-between gap-3">
+                                <div className="hidden sm:flex flex-grow items-start justify-start">
+                                    <div className="flex flex-shrink-0 items-start">
+                                        <Image
+                                            src="/logo-full.svg"
+                                            alt="Swap image"
+                                            unoptimized
+                                            width="285"
+                                            height="50"
+                                        />
+                                    </div>
                                 </div>
-                            </div>}
-                            <div className="flex-shrink-0 items-center">
-                                <button
-                                    onClick={() =>
-                                        props.onClickRecentTrades?.()
-                                    }
-                                    className="bg-darkblue border-2 border-activeblue px-3 py-2 flex gap-1 items-center rounded-full text-light-200 hover:bg-activeblue transition-colors"
-                                >
-                                    Trade History
-                                    <BridgeTokenStatusWarning
-                                        swapTx={
-                                            getMostRecentTxHistoryItem()?.swapTx
-                                        }
+                                {props.proMode && <div className="hidden lg:flex flex-grow items-start justify-start">
+                                    <div
+                                        className="bg-dark border-2 cursor-pointer border-activeblue px-3 py-2 flex gap-1 items-center rounded-full text-light-200 hover:bg-activeblue transition-colors"
+                                        onClick={() => setShowSelector(true)}
+                                    >
+                                        <BiSearch /> Select Token
+                                    </div>
+                                </div>}
+                                <div className="flex-shrink-0 items-center">
+                                    <button
                                         onClick={() =>
                                             props.onClickRecentTrades?.()
                                         }
-                                    />
-                                </button>
+                                        className="bg-darkblue border-2 border-activeblue px-3 py-2 flex gap-1 items-center rounded-full text-light-200 hover:bg-activeblue transition-colors"
+                                    >
+                                        Trade History
+                                        <BridgeTokenStatusWarning
+                                            swapTx={
+                                                getMostRecentTxHistoryItem()?.swapTx
+                                            }
+                                            onClick={() =>
+                                                props.onClickRecentTrades?.()
+                                            }
+                                        />
+                                    </button>
+                                </div>
+                                <ConnectKitButton.Custom>
+                                    {({ isConnected, show, address }) => {
+                                        return (
+                                            <button
+                                                onClick={show}
+                                                className={classNames(
+                                                    "bg-darkblue border-2 border-activeblue px-3 py-2 flex gap-1 items-center rounded-full text-light-200 hover:bg-activeblue transition-colors"
+                                                )}
+                                            >
+                                                {isConnected ? (
+                                                    <ConnectedButton />
+                                                ) : (
+                                                    <>
+                                                        <p className="inline sm:hidden">Connect</p>
+                                                        <p className="hidden sm:inline">Connect Wallet</p>
+                                                    </>
+                                                )}
+                                            </button>
+                                        );
+                                    }}
+                                </ConnectKitButton.Custom>
+                                <div
+                                    className="bg-darkblue border-2 cursir-pointer border-activeblue px-3 py-2 flex gap-1 items-center rounded-full text-light-200 hover:bg-activeblue transition-colors cursor-pointer"
+                                    onClick={() => setShowSettings(true)}
+                                >
+                                    <BsFillGearFill className="text-2xl" />
+                                </div>
                             </div>
-                            <ConnectKitButton.Custom>
-                                {({ isConnected, show, address }) => {
-                                    return (
-                                        <button
-                                            onClick={show}
-                                            className={classNames(
-                                                "bg-darkblue border-2 border-activeblue px-3 py-2 flex gap-1 items-center rounded-full text-light-200 hover:bg-activeblue transition-colors"
-                                            )}
-                                        >
-                                            {isConnected ? (
-                                                <ConnectedButton />
-                                            ) : (
-                                                "Connect Wallet"
-                                            )}
-                                        </button>
-                                    );
-                                }}
-                            </ConnectKitButton.Custom>
+                        </div>
+                        {props.proMode && <div className="flex lg:hidden flex-grow items-start justify-center w-full">
                             <div
-                                className="bg-darkblue border-2 cursir-pointer border-activeblue px-3 py-2 flex gap-1 items-center rounded-full text-light-200 hover:bg-activeblue transition-colors cursor-pointer"
-                                onClick={() => setShowSettings(true)}
+                                className="bg-dark border-2 cursor-pointer border-activeblue px-3 py-2 flex gap-1 items-center rounded-full text-light-200 hover:bg-activeblue transition-colors"
+                                onClick={() => setShowSelector(true)}
                             >
-                                <BsFillGearFill className="text-2xl" />
+                                <BiSearch /> Select Token
                             </div>
-                        </div>
-                    </div>
-                    {props.proMode && <div className="flex lg:hidden flex-grow items-start justify-center w-full">
-                        <div
-                            className="bg-dark border-2 cursor-pointer border-activeblue px-3 py-2 flex gap-1 items-center rounded-full text-light-200 hover:bg-activeblue transition-colors"
-                            onClick={() => setShowSelector(true)}
-                        >
-                            <BiSearch /> Select Token
-                        </div>
-                    </div>}
-                    <TokenSelector
-                        show={showSelector}
-                        setShow={setShowSelector}
-                        selectedChain={selectedChain}
-                        setSelectedChain={setSelectedChain}
-                        setToken={props.setToken}
-                        noNative
-                    />
-                    <SettingsDialog
-                        show={showSettings}
-                        setShow={setShowSettings}
-                        proMode={props.proMode}
-                        setProMode={props.setProMode}
-                    />
-                </>
-            )}
-        </Disclosure>
+                        </div>}
+                        <TokenSelector
+                            show={showSelector}
+                            setShow={setShowSelector}
+                            selectedChain={selectedChain}
+                            setSelectedChain={setSelectedChain}
+                            setToken={props.setToken}
+                            noNative
+                        />
+                        <SettingsDialog
+                            show={showSettings}
+                            setShow={setShowSettings}
+                            proMode={props.proMode}
+                            setProMode={props.setProMode}
+                        />
+                    </>
+                )}
+            </Disclosure>
+        </>
     );
 };

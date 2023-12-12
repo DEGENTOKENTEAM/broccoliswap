@@ -1,6 +1,7 @@
-import { Chain, NULL_ADDRESS, chainsInfo, rubicRPCEndpoints } from "@/types";
+import { Chain, NULL_ADDRESS, RubicToken, chainsInfo, rubicRPCEndpoints } from "@/types";
 import { fetchToken } from "wagmi/actions";
 import { Configuration, SDK } from "rubic-sdk";
+import { getTokenInfo } from "./coingecko";
 
 const config: Configuration = {
     rpcProviders: rubicRPCEndpoints,
@@ -13,7 +14,7 @@ const config: Configuration = {
 };
 const sdk = SDK.createSDK(config);
 
-export const searchToken = async (network: Chain, filterTxt?: string, noNative?: boolean) => {
+const searchTokenOnRubic = async (network: Chain, filterTxt?: string, noNative?: boolean): Promise<RubicToken[]> => {
     // if filter is an address, search on that instead
     let filter = '';
     if (filterTxt?.startsWith('0x') && filterTxt.length >= 32) {
@@ -65,12 +66,33 @@ export const searchToken = async (network: Chain, filterTxt?: string, noNative?:
                 symbol: token.symbol,
                 blockchainNetwork: chainsInfo[network].rubicSdkChainName,
                 decimals: token.decimals,
-                usePrice: '0',
+                usdPrice: '0',
             }]
         }
     }
 
     return data.results;
+}
+
+export const searchToken = async (network: Chain, filterTxt?: string, noNative?: boolean) => {
+    const tokens = await searchTokenOnRubic(network, filterTxt, noNative);
+
+    // Find images and append coingecko ones
+    await Promise.all(tokens.map(async (token) => {
+        if (token.image) {
+            return token;
+        }
+
+        if (token.coingeckoId) {
+            const coingeckoData = await getTokenInfo(token.coingeckoId);
+            token.image = coingeckoData.image.thumb;
+            return token;
+        }
+
+        return token;
+    }));
+
+    return tokens;
 }
 
 export const getSDK = () => {

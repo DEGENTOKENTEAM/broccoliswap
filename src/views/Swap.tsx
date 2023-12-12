@@ -388,7 +388,7 @@ export const SwapView = (props: {
 
     return (
         <>
-            <div className="flex flex-grow flex-col mt-36 sm:mt-20 mx-5 mb-5 gap-3 justify-center">
+            <div className="flex flex-grow flex-col mt-44 sm:mt-24 mx-5 mb-5 gap-3 justify-center">
                 <div className={classNames("flex flex-col-reverse lg:flex-row-reverse justify-center", props.proMode && reprToken && 'gap-5')}>
                     {props.proMode && reprToken && (<div className="flex flex-col h-full w-full lg:w-96 lg:mt-11 gap-5 order-first lg:order-none">
                         {reprToken && reprTokenInfo && reprTokenPairs && <TokenInfo token={reprToken} pairs={reprTokenPairs} info={reprTokenInfo} />}
@@ -616,14 +616,17 @@ export const SwapView = (props: {
 
                                     {swapSuccessTx?.inputChain !==
                                         swapSuccessTx?.outputChain && (
-                                        <div
-                                            onClick={() =>
-                                                props.setShowRecentTrades?.(true)
-                                            }
-                                            className="hover:underline bg-broccoli p-3 rounded-xl text-white mt-2 cursor-pointer border-success border-2 hover:bg-success font-bold transition-colors block text-center"
-                                        >
-                                            View Bridge Status
-                                        </div>
+                                            <>
+                                                <div
+                                                    onClick={() =>
+                                                        props.setShowRecentTrades?.(true)
+                                                    }
+                                                    className="hover:underline bg-broccoli p-3 rounded-xl text-white mt-2 cursor-pointer border-success border-2 hover:bg-success font-bold transition-colors block text-center"
+                                                >
+                                                    View Bridge Status
+                                                </div>
+                                                <p className="max-w-sm text-xs mt-3">Please note it can take between 5 and 30 minutes for your funds to arrive in the target chain.</p>
+                                            </>
                                     )}
 
                                     {swapSuccessTx?.inputChain === swapSuccessTx?.outputChain
