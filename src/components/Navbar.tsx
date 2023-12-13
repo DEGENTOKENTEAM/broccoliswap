@@ -75,7 +75,7 @@ export const Navbar = (props: {
                 {({ open }) => (
                     <>
                         <div className="bg-dark w-full text-center flex justify-center items-center border-b-2 border-activeblue text-xs py-1">
-                            Always make sure you are connected on https://broccoliswap.com
+                            Please verify that you&apos;re connected to https://broccoliswap.com
                         </div>
                         <div className="mx-auto">
                             <div className="flex sm:hidden mt-1 flex-grow items-center justify-center">

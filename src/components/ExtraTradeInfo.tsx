@@ -18,6 +18,10 @@ export const ExtraTradeInfo = (props: { trade?: OnChainTrade | CrossChainTrade |
                     <div>{toPrecision(trade.toTokenAmountMin.tokenAmount.toNumber(), 6)} {props.trade.to.symbol}</div>
                 </div>
                 <div className="flex w-full">
+                    <div className="flex-grow" />
+                    <div className="text-slate-500 text-xs">${toPrecision(trade.toTokenAmountMin.tokenAmount.toNumber() * trade.to.price.toNumber(), 6)}</div>
+                </div>
+                <div className="flex w-full">
                     <div className="flex-grow">Slippage</div>
                     <div>{(trade.slippageTolerance * 100).toFixed(2)}%</div>
                 </div>

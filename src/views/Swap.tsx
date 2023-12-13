@@ -396,7 +396,7 @@ export const SwapView = (props: {
                             <TwitterEmbed screenName={screenName} />
                         {/* </div> */}
                     </div>)}
-                    {props.proMode && reprToken && reprTokenInfo && reprTokenPairs && <div className="flex flex-col flex-grow gap-5 lg:mt-11 h-[600px] lg:h-[calc(100vh-350px)] lg:min-h-[400px] order-last lg:order-none">
+                    {props.proMode && reprToken && reprTokenInfo && reprTokenPairs && <div className="flex flex-col flex-grow gap-5 lg:mt-11 h-[600px] lg:h-[calc(100vh-350px)] lg:min-h-[400px] order-first lg:order-none">
                         <TokenInfoHeader token={reprToken} reprPair={reprTokenPairs.find((pair) => pair.data.address === reprTokenInfo.data.reprPair.id.pair)} info={reprTokenInfo} />
                         <div className="relative rounded-lg bg-dark flex-grow">
                             <iframe className="rounded-lg border-2 border-activeblue" src={`https://www.dextools.io/widget-chart/en/${chainsInfo[reprToken.chain].dextoolsSlug}/pe-light/${reprTokenInfo.data.reprPair.id.pair}?theme=dark&chartType=1&chartResolution=1d&headerColor=023148&tvPlatformColor=023148&tvPaneColor=023148`} style={{ width: '100%', height: '100%' }} />
@@ -582,8 +582,7 @@ export const SwapView = (props: {
 
                             {priceImpact > 5 ? (
                                 <div className="bg-dark border-2 border-warning p-3 rounded-xl text-center text-light-200 my-3 font-bold">
-                                    The price impact of this swap is high. Please evaluate your swap
-                                    and only proceed with caution.
+                                    The price impact of this swap is high, please consider swapping a lower amount.
                                 </div>
                             ) : ''}
 
