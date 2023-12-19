@@ -1,6 +1,5 @@
 import merge from 'deepmerge'
 import { TokenInput } from '@/components/TokenInput'
-import { SwapButton } from '@/components/SwapButton'
 import { SwapTokens } from '@/components/SwapTokens'
 import { Chain, NULL_ADDRESS, RubicToken, Token, chainsInfo } from '@/types'
 import { useEffect, useMemo, useState } from 'react'
@@ -33,6 +32,7 @@ import { TokenInfoHeader } from '@/components/Pro/TokenInfoHeader'
 import { TokenInfo } from '@/components/Pro/TokenInfo'
 import { TwitterEmbed } from '@/components/Pro/TwitterEmbed'
 import { Info, Pair } from '@/components/Pro/types'
+import Button from '@/components/buttons/MainButton'
 
 export const SwapView = (props: {
     showRecentTrades?: boolean
@@ -370,11 +370,11 @@ export const SwapView = (props: {
     }, [inputTokenSellTax, outputTokenBuyTax])
 
     const priceImpact = useMemo(() => {
-        if (!trades || typeof trades === 'string') {
+        if (!trades || typeof trades === 'string' || trades.type === 'bridge') {
             return 0;
         }
 
-        const _priceImpact = trades?.[0]?.getTradeInfo()?.priceImpact;
+        const _priceImpact = trades.trades?.[0]?.getTradeInfo()?.priceImpact;
         return _priceImpact ?? 0;
     }, [trades])
     
@@ -385,6 +385,24 @@ export const SwapView = (props: {
         }
         return link[link.length - 1];
     }, [reprTokenInfo]);
+
+    const getAmountFromTrades = (trades?: Awaited<Awaited<ReturnType<typeof calculateSwap>>['trade']>) => {
+        if (typeof trades === 'string' || !trades) {
+            return 0;
+        }
+
+        if (trades.type === 'bridge') {
+            if (trades.result === 'error') {
+                return 0;
+            }
+
+            return trades.estimation.estimatedReceiveAmountNumber;
+        }
+
+        return (trades.trades?.[0] as
+            | OnChainTrade
+            | CrossChainTrade)?.to?.tokenAmount?.toNumber()
+    }
 
     return (
         <>
@@ -537,15 +555,13 @@ export const SwapView = (props: {
                                 setToken={setOutputToken}
                                 isOtherToken
                                 tradeLoading={tradeLoading}
-                                amount={(trades?.[0] as
-                                    | OnChainTrade
-                                    | CrossChainTrade)?.to?.tokenAmount?.toNumber()}
+                                amount={getAmountFromTrades(trades)}
                                 otherToken={inputToken}
                                 disabled={props.proMode && outputToken && reprToken && outputToken.chain === reprToken?.chain && outputToken?.token.address === reprToken.token.address}
                                 noNative={props.proMode && !inputToken && !outputToken}
                             />
 
-                            <SwapButton
+                            <Button
                                 tradeLoading={tradeLoading}
                                 trades={trades}
                                 onSwapDone={(
@@ -567,6 +583,7 @@ export const SwapView = (props: {
                                 inputToken={inputToken}
                                 outputToken={outputToken}
                                 inputTokenSellTax={inputTokenSellTax}
+                                inputAmount={inputAmount}
                                 inputAmountInUsd={(inputAmount && inputToken) ? inputAmount * parseFloat(inputToken.token.usdPrice) : undefined}
                             />
 
@@ -640,7 +657,7 @@ export const SwapView = (props: {
                                 </div>
                             )}
                         </div>
-                        <ExtraTradeInfo trade={trades?.[0]} />
+                        <ExtraTradeInfo trade={(typeof trades !== 'string' && trades?.type === 'swap') ? trades.trades?.[0] : undefined} />
                     </div>
                 </div>
                 

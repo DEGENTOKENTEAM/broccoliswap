@@ -18,19 +18,18 @@ import {
     useSwitchNetwork,
     useWaitForTransaction
 } from "wagmi";
-import { notify, reportError } from "../helpers/errorReporting";
+import { notify, reportError } from "../../helpers/errorReporting";
 import { getErrorName } from "@/helpers/error";
 import { trackSwap } from "@/helpers/track";
 import { getSDK } from "@/helpers/rubic";
 import { getGas } from "@/helpers/gas";
-
-const buttonStyle = "w-full mt-10 px-3 py-3 rounded-xl my-3 text-lg flex items-center justify-center text-light-200 font-bold bg-dark border-activeblue border-2 uppercase transition-colors"
+import Button from "./Button";
 
 const tradeStatusToButtonStatus = (
     isConnected: boolean,
     chain: ReturnType<typeof useNetwork>["chain"],
     tradeLoading: boolean,
-    trades?: Awaited<Awaited<ReturnType<typeof calculateSwap>>['trade']>,
+    trades?: OnChainTrade[] | (CrossChainTrade | null)[] | string,
     inputChain?: Chain,
     outputChain?: Chain,
     inputAmountInUsd?: number
@@ -83,21 +82,17 @@ const tradeStatusToButtonStatus = (
     return { text: "Swap", disabled: false, trades: trades as (OnChainTrade[] | CrossChainTrade[]) };
 };
 
-const SwitchNetworkButton = (props: { targetChainId?: number }) => {
+export const SwitchNetworkButton = (props: { targetChainId?: number }) => {
     const { isLoading, switchNetwork } = useSwitchNetwork();
     return (
-        <div
+        <Button
             onClick={() => switchNetwork?.(props.targetChainId)}
-            className={classNames(
-                buttonStyle,
-                " ",
-                isLoading
-                    ? "animate-pulse cursor-not-allowed"
-                    : "cursor-pointer hover:bg-activeblue"
-            )}
+            active={!isLoading}
+            disabled={isLoading}
+            animating={isLoading}
         >
             Switch Network
-        </div>
+        </Button>
     );
 };
 
@@ -282,18 +277,15 @@ const MaybeSwapButton = (props:{
     if (showRefreshButton) {
         return (
             <>
-                <div
-                    className={classNames(
-                        buttonStyle,
-                        "hover:bg-activeblue cursor-pointer",
-                    )}
+                <Button
+                    active
                     onClick={() => {
                         localStorage.clear();
                         window.location.assign(`?inputChain=${props.inputToken?.chain}&inputToken=${props.inputToken?.token.address}&outputChain=${props.outputToken?.chain}&outputToken=${props.outputToken?.token.address}&amount=${props.trades?.[0]?.from?.tokenAmount?.toNumber()}`)
                     }}
                 >
                     Reload app
-                </div>
+                </Button>
                 <div className="bg-dark border-2 border-error p-3 rounded-xl text-light-200 flex flex-col gap-3">
                     {swapErrorMessage ? <div>{swapErrorMessage}</div> : <div>We could not execute your swap because of an error. Please refresh trade and try again.</div>}
                 </div>
@@ -313,14 +305,9 @@ const MaybeSwapButton = (props:{
         const tradeAmount = props.trades?.[0]?.from?.tokenAmount?.toNumber() * parseFloat(props.inputToken?.token.usdPrice || '0');
         return (
             <>
-                <div
-                    className={classNames(
-                        buttonStyle,
-                        "cursor-not-allowed"
-                    )}
-                >
+                <Button disabled>
                     Something went wrong.
-                </div>
+                </Button>
                 <div className="bg-dark border-2 border-error p-3 rounded-xl text-light-200 flex flex-col gap-3">
                     {swapErrorMessage ? <div>{swapErrorMessage}</div> : <div>We could not execute your swap because of an error. Please refresh trade and try again.</div>}
                 </div>
@@ -329,65 +316,23 @@ const MaybeSwapButton = (props:{
     }
 
     if (balanceIsLoading) {
-        return (<div
-                className={classNames(
-                    buttonStyle,
-                    "cursor-not-allowed animate-pulse"
-                )}
-            >
-                Loading balance
-            </div>
-        )
+        return <Button disabled animating>Loading balance</Button>;
     }
 
     if (approveTxLoading) {
-        return (<div
-                className={classNames(
-                    buttonStyle,
-                    "cursor-not-allowed animate-pulse"
-                )}
-            >
-                Approving...
-            </div>
-        )
+        return <Button disabled animating>Approving...</Button>
     }
 
     if (isSwapping) {
-        return (<div
-                className={classNames(
-                    buttonStyle,
-                    "cursor-not-allowed animate-pulse"
-                )}
-            >
-                Executing swap...
-            </div>
-        )
+        return <Button disabled animating>Executing swap...</Button>
     }
 
     if (balanceData && props.trades[0].from.tokenAmount.toNumber() > parseFloat(balanceData.formatted)) {
-        return (
-            <div
-                className={classNames(
-                    buttonStyle,
-                        "cursor-not-allowed"
-                )}
-            >
-                Balance Too Low
-            </div>
-        )
+        return <Button disabled>Balance too low</Button>
     }
 
     if (buttonAction) {
-        return (<div
-                className={classNames(
-                    buttonStyle,
-                    "hover:bg-activeblue cursor-pointer",
-                )}
-                onClick={() => buttonAction.action()}
-            >
-                {buttonAction.text}
-            </div>
-        )
+        return <Button active onClick={buttonAction.action}>{buttonAction.text}</Button>
     }
     
 
@@ -396,12 +341,13 @@ const MaybeSwapButton = (props:{
 
 export const SwapButton = (props: {
     tradeLoading: boolean;
-    trades?: Awaited<Awaited<ReturnType<typeof calculateSwap>>['trade']>;
+    trades?: OnChainTrade[] | (CrossChainTrade | null)[] | string;
     onSwapDone?: (tx: string, swapInputChain: Chain, swapOutputChain: Chain, swapInputToken: Token, swapOutputToken: Token) => void;
     inputToken?: Token,
     outputToken?: Token,
     inputTokenSellTax?: number,
     inputAmountInUsd?: number,
+    inputAmount?: number
 }) => {
     const { isConnected } = useAccount();
     const { chain } = useNetwork();
@@ -421,15 +367,12 @@ export const SwapButton = (props: {
             <ConnectKitButton.Custom>
                 {({ isConnected, show, address }) => {
                     return (
-                        <button
+                        <Button
                             onClick={show}
-                            className={classNames(
-                                buttonStyle,
-                                "hover:bg-activeblue cursor-pointer"
-                            )}
+                            active
                         >
                             Connect Wallet
-                        </button>
+                        </Button>
                     );
                 }}
             </ConnectKitButton.Custom>
@@ -443,15 +386,9 @@ export const SwapButton = (props: {
     }
 
     if (buttonStatus.disabled) {
-        return <div
-            className={classNames(
-                buttonStyle,
-                    "cursor-not-allowed",
-                props.tradeLoading && "animate-pulse"
-            )}
-        >
+        return <Button disabled animating={props.tradeLoading}>
             {buttonStatus?.text}
-        </div>
+        </Button>
     }
 
     if (buttonStatus.trades) {

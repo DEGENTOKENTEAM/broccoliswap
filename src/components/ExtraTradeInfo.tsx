@@ -8,7 +8,7 @@ export const ExtraTradeInfo = (props: { trade?: OnChainTrade | CrossChainTrade |
     }
 
     const info = props.trade.getTradeInfo();
-
+    
     if (props.trade.from.blockchain === props.trade.to.blockchain) {
         const trade = props.trade as OnChainTrade;
         return (

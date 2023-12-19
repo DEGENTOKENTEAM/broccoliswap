@@ -76,6 +76,7 @@ export const chainsInfo = {
         nativeTokenSymbol: 'ETH',
         dextoolsChartWidgetChainName: 'ether',
         dextoolsSlug: 'ether',
+        celerBridgeAddress: '0x5427FEFA711Eff984124bFBB1AB6fbf5E3DA1820' as const,
     },
     [Chain.BSC]: {
         chain: Chain.BSC,
@@ -94,6 +95,7 @@ export const chainsInfo = {
         nativeTokenSymbol: 'BNB',
         dextoolsChartWidgetChainName: 'bnb',
         dextoolsSlug: 'bsc',
+        celerBridgeAddress: '0xdd90E5E87A2081Dcf0391920868eBc2FFB81a1aF' as const,
     },
     [Chain.AVAX]: {
         chain: Chain.AVAX,
@@ -112,6 +114,7 @@ export const chainsInfo = {
         nativeTokenSymbol: 'AVAX',
         dextoolsChartWidgetChainName: 'avalanche',
         dextoolsSlug: 'avalanche',
+        celerBridgeAddress: '0xef3c714c9425a8F3697A9C969Dc1af30ba82e5d4' as const,
     },
     [Chain.ARBITRUM]: {
         chain: Chain.ARBITRUM,
@@ -130,6 +133,7 @@ export const chainsInfo = {
         nativeTokenSymbol: 'ETH',
         dextoolsChartWidgetChainName: 'arbitrum',
         dextoolsSlug: 'arbitrum',
+        celerBridgeAddress: '0x1619DE6B6B20eD217a58d00f37B9d47C7663feca' as const,
     },
     [Chain.POLYGON]: {
         chain: Chain.POLYGON,

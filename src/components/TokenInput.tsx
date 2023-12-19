@@ -107,7 +107,7 @@ export const TokenInput = (props: {
                         </div>
                     )}
                     <div className="text-sm font-normal text-slate-500 leading-5">
-                        {props.amount && props.token?.token?.usdPrice ? (
+                        {props.amount && props.token?.token?.usdPrice && parseFloat(props.token.token.usdPrice) > 0 ? (
                             <>
                                 $
                                 {toPrecision(
