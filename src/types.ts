@@ -5,6 +5,8 @@ export enum Chain {
     BSC = 'BSC',
     AVAX = 'AVAX',
     ARBITRUM = 'ARBITRUM',
+    POLYGON = 'POLYGON',
+    FANTOM = 'FANTOM',
 }
 
 export const NULL_ADDRESS = '0x0000000000000000000000000000000000000000'
@@ -21,6 +23,12 @@ export const rubicRPCEndpoints = {
     },
     [BLOCKCHAIN_NAME.ARBITRUM]: {
         rpcList: ['https://arb1.arbitrum.io/rpc']
+    },
+    [BLOCKCHAIN_NAME.POLYGON]: {
+        rpcList: ['https://1rpc.io/matic']
+    },
+    [BLOCKCHAIN_NAME.FANTOM]: {
+        rpcList: ['https://rpc.ftm.tools']
     }
 }
 
@@ -122,5 +130,41 @@ export const chainsInfo = {
         nativeTokenSymbol: 'ETH',
         dextoolsChartWidgetChainName: 'arbitrum',
         dextoolsSlug: 'arbitrum',
+    },
+    [Chain.POLYGON]: {
+        chain: Chain.POLYGON,
+        id: 137,
+        name: 'Polygon',
+        symbol: 'matic',
+        logo: 'polygon.svg',
+        rubicName: 'polygon',
+        explorer: 'https://polygonscan.com/',
+        rubicSdkChainName: BLOCKCHAIN_NAME.POLYGON,
+        bitqueryChainName: 'polygon',
+        honeyPotCheckerContract: '0xc817b3a104B7d48e3B9C4fbfd624e5D5F03757e0',
+        honeyPotCheckerRouter: '0xa5e0829caced8ffdd4de3c43696c57f7d7a678ff',
+        honeyPotCheckerAddress: '0x0d500b1d8e8ef31e21c99d1db9a6444d3adf1270',
+        rpc: 'https://1rpc.io/matic',
+        nativeTokenSymbol: 'MATIC',
+        dextoolsChartWidgetChainName: 'polygon',
+        dextoolsSlug: 'polygon',
+    },
+    [Chain.FANTOM]: {
+        chain: Chain.FANTOM,
+        id: 250,
+        name: 'Fantom',
+        symbol: 'ftm',
+        logo: 'fantom.svg',
+        rubicName: 'fantom',
+        explorer: 'https://ftmscan.com/',
+        rubicSdkChainName: BLOCKCHAIN_NAME.FANTOM,
+        bitqueryChainName: 'fantom',
+        honeyPotCheckerContract: '0x4208B737e8f3075fD2dCB9cE3358689452f98dCf',
+        honeyPotCheckerRouter: '0xf491e7b69e4244ad4002bc14e878a34207e38c29',
+        honeyPotCheckerAddress: '0x21be370d5312f44cb42ce377bc9b8a0cef1a4c83',
+        rpc: 'https://rpc.ftm.tools',
+        nativeTokenSymbol: 'FTM',
+        dextoolsChartWidgetChainName: 'fantom',
+        dextoolsSlug: 'fantom',
     },
 }

@@ -158,7 +158,7 @@ export const TokenSelector = (props: {
                         onClick={() => props.setShow?.(false)}
                     />
                 </div>
-                <div className="flex gap-3">
+                <div className="flex gap-3 flex-wrap">
                     {Object.entries(chainsInfo).map(([chain, chainInfo]) => {
                         return (
                             <div
