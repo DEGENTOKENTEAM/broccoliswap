@@ -83,9 +83,11 @@ export const getEstimation = async (
     }
 
     const estimatedReceiveAmount = new BigNumber(result.estimated_receive_amt);
-    const baseFee = new BigNumber(result.base_fee).div(Math.pow(10, decimals)); // Add 1% of the base fee
-    if (estimatedReceiveAmount.lt(0)) {
-        throw Error(`Bridge amount below minimum threshold. Please bridge at least ${toPrecision(baseFee.multipliedBy(1.01).toNumber(), 4)} ${tokenSymbol}.`);
+    const baseFee = new BigNumber(result.base_fee).div(Math.pow(10, decimals));
+
+    // Bridge at least so much so you get more than 0 tokens and bridge twice the base fee.
+    if (estimatedReceiveAmount.lt(0) || new BigNumber(amountInt).lt(new BigNumber(result.base_fee).multipliedBy(2))) {
+        throw Error(`Bridge amount below minimum threshold. Please bridge at least ${toPrecision(baseFee.multipliedBy(2).toNumber(), 4)} ${tokenSymbol}.`);
     }
 
     return {

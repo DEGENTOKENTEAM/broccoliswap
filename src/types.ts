@@ -152,6 +152,7 @@ export const chainsInfo = {
         nativeTokenSymbol: 'MATIC',
         dextoolsChartWidgetChainName: 'polygon',
         dextoolsSlug: 'polygon',
+        celerBridgeAddress: '0x88DCDC47D2f83a99CF0000FDF667A468bB958a78' as const,
     },
     [Chain.FANTOM]: {
         chain: Chain.FANTOM,
@@ -170,5 +171,6 @@ export const chainsInfo = {
         nativeTokenSymbol: 'FTM',
         dextoolsChartWidgetChainName: 'fantom',
         dextoolsSlug: 'fantom',
+        celerBridgeAddress: '0x374B8a9f3eC5eB2D97ECA84Ea27aCa45aa1C57EF' as const,
     },
 }

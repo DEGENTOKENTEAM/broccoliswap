@@ -585,6 +585,7 @@ export const SwapView = (props: {
                                 inputTokenSellTax={inputTokenSellTax}
                                 inputAmount={inputAmount}
                                 inputAmountInUsd={(inputAmount && inputToken) ? inputAmount * parseFloat(inputToken.token.usdPrice) : undefined}
+                                setShowRecentTrades={props.setShowRecentTrades}
                             />
 
                             {slippage && slippage < tokenTax && (
@@ -657,7 +658,7 @@ export const SwapView = (props: {
                                 </div>
                             )}
                         </div>
-                        <ExtraTradeInfo trade={(typeof trades !== 'string' && trades?.type === 'swap') ? trades.trades?.[0] : undefined} />
+                        <ExtraTradeInfo trade={trades} />
                     </div>
                 </div>
                 

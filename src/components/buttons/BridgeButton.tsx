@@ -9,6 +9,10 @@ import useBridgeSend from "@/hooks/useBridgeSend";
 import useWriteAllowance from "@/hooks/useWriteAllowance";
 import { useState } from "react";
 import { SwitchNetworkButton } from "./SwapButton";
+import { ImCross } from "react-icons/im";
+import { GoLinkExternal } from "react-icons/go";
+import Link from "next/link";
+import { chainsInfo } from "@/types";
 
 type BridgeButtonProps = { result: 'error', error: string } | {
     result: 'success',
@@ -20,7 +24,56 @@ type BridgeButtonProps = { result: 'error', error: string } | {
     }
 }
 
-const BridgeButtonStepBridge = (props: { result: Extract<BridgeButtonProps, { result: 'success' }> }) => {
+const BridgeSuccessBlock = (props: {
+    result: Extract<BridgeButtonProps, { result: 'success' }>,
+    bridgeTx: string,
+    setShowRecentTrades?: Function,
+}) => {
+    const [show, setShow] = useState(true);
+
+    if (!show) {
+        return null;
+    }
+
+    return (
+        <div className="bg-dark border-2 border-success p-3 rounded-xl text-light-200 my-3">
+            <div className="flex mb-3 items-center justify-center">
+                <div className="flex-grow">
+                    Bridge successful!
+                </div>
+                <ImCross
+                    className="cursor-pointer hover:text-activeblue transition-colors"
+                    onClick={() => setShow(false)}
+                />
+            </div>
+            <Link
+                target="_blank"
+                href={`${
+                    chainFromChainId(props.result.bridgeConfig.org_chain_id)!.explorer
+                }tx/${props.bridgeTx}`}
+                className="hover:underline bg-broccoli p-3 rounded-xl text-white mt-2 cursor-pointer border-success border-2 hover:bg-success font-bold transition-colors block text-center"
+            >
+                View on explorer{' '}
+                <GoLinkExternal className="inline" />
+            </Link>
+
+            <div
+                onClick={() =>
+                    props.setShowRecentTrades?.(true)
+                }
+                className="hover:underline bg-broccoli p-3 rounded-xl text-white mt-2 cursor-pointer border-success border-2 hover:bg-success font-bold transition-colors block text-center"
+            >
+                View Bridge Status
+            </div>
+            <p className="max-w-sm text-xs mt-3">Please note it can take between 5 and 30 minutes for your funds to arrive in the target chain.</p>
+        </div>
+    )
+}
+
+const BridgeButtonStepBridge = (props: {
+    result: Extract<BridgeButtonProps, { result: 'success' }>,
+    setShowRecentTrades?: Function
+}) => {
     const { data, isLoading, isSuccess, write } = useBridgeSend(
         props.result.bridgeConfig.org_chain_id,
         props.result.bridgeConfig.org_token.token.address,
@@ -33,9 +86,12 @@ const BridgeButtonStepBridge = (props: { result: Extract<BridgeButtonProps, { re
         return (
             <Button disabled animating>Bridging...</Button>
         )
-    } else if (isSuccess) {
-        console.log(data)
-        return <p>Success!</p>
+    } else if (isSuccess && data?.hash) {
+        return <BridgeSuccessBlock
+            result={props.result}
+            bridgeTx={data.hash}
+            setShowRecentTrades={props.setShowRecentTrades}
+        />
     } 
 
     return (
@@ -43,9 +99,10 @@ const BridgeButtonStepBridge = (props: { result: Extract<BridgeButtonProps, { re
     )
 }
 
-const BridgeButtonStepApprove = (props: { result: Extract<BridgeButtonProps, { result: 'success' }> }) => {
-    const [approveTx, setApproveTx] = useState('');
-
+const BridgeButtonStepApprove = (props: {
+    result: Extract<BridgeButtonProps, { result: 'success' }>,
+    setShowRecentTrades?: Function
+}) => {
     const celerAddress = chainFromChainId(props.result.bridgeConfig.org_chain_id)!.celerBridgeAddress;
     const { data, write } = useWriteAllowance(
         props.result.bridgeConfig.org_token.token.address,
@@ -73,11 +130,11 @@ const BridgeButtonStepApprove = (props: { result: Extract<BridgeButtonProps, { r
     } 
 
     return (
-        <BridgeButtonStepBridge result={props.result} />
+        <BridgeButtonStepBridge result={props.result} setShowRecentTrades={props.setShowRecentTrades} />
     )
 }
 
-export default function MainBridgeButton (props: { result: BridgeButtonProps }) {
+export default function MainBridgeButton (props: { result: BridgeButtonProps; setShowRecentTrades?: Function }) {
     const { chain } = useNetwork();
 
     if (props.result.result === 'error') {
@@ -95,5 +152,5 @@ export default function MainBridgeButton (props: { result: BridgeButtonProps }) 
         return <SwitchNetworkButton targetChainId={props.result.bridgeConfig.org_chain_id} />
     }
 
-    return <BridgeButtonStepApprove result={props.result} />
+    return <BridgeButtonStepApprove result={props.result} setShowRecentTrades={props.setShowRecentTrades} />
 }

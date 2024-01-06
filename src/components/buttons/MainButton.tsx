@@ -12,12 +12,14 @@ export default function MainButton(props: {
     outputToken?: Token,
     inputTokenSellTax?: number,
     inputAmountInUsd?: number,
-    inputAmount?: number
+    inputAmount?: number,
+    setShowRecentTrades?: Function
 }) {
     // Check bridge button
     if (typeof props.trades !== 'string' && props.trades?.type === 'bridge') {
         return <BridgeButton
             result={props.trades}
+            setShowRecentTrades={props.setShowRecentTrades}
         />
     }
 
