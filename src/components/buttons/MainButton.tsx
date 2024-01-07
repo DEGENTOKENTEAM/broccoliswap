@@ -2,7 +2,7 @@ import { calculateSwap } from "@/helpers/swap";
 import { Chain, Token, chainsInfo } from "@/types";
 import { SwapButton } from "./SwapButton";
 import { bridgeConfigs } from "@/helpers/celer";
-import BridgeButton from "./BridgeButton";
+import CelerBridgeButton from "./CelerBridgeButton";
 
 export default function MainButton(props: {
     tradeLoading: boolean;
@@ -17,7 +17,7 @@ export default function MainButton(props: {
 }) {
     // Check bridge button
     if (typeof props.trades !== 'string' && props.trades?.type === 'bridge') {
-        return <BridgeButton
+        return <CelerBridgeButton
             result={props.trades}
             setShowRecentTrades={props.setShowRecentTrades}
         />

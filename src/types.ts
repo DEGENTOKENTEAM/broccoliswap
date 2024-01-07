@@ -76,7 +76,7 @@ export const chainsInfo = {
         nativeTokenSymbol: 'ETH',
         dextoolsChartWidgetChainName: 'ether',
         dextoolsSlug: 'ether',
-        celerBridgeAddress: '0x5427FEFA711Eff984124bFBB1AB6fbf5E3DA1820' as const,
+        celerBridgeAddress: '0x7510792A3B1969F9307F3845CE88e39578f2bAE1' as const,
     },
     [Chain.BSC]: {
         chain: Chain.BSC,
@@ -95,7 +95,7 @@ export const chainsInfo = {
         nativeTokenSymbol: 'BNB',
         dextoolsChartWidgetChainName: 'bnb',
         dextoolsSlug: 'bsc',
-        celerBridgeAddress: '0xdd90E5E87A2081Dcf0391920868eBc2FFB81a1aF' as const,
+        celerBridgeAddress: '0x11a0c9270D88C99e221360BCA50c2f6Fda44A980' as const,
     },
     [Chain.AVAX]: {
         chain: Chain.AVAX,
@@ -114,7 +114,7 @@ export const chainsInfo = {
         nativeTokenSymbol: 'AVAX',
         dextoolsChartWidgetChainName: 'avalanche',
         dextoolsSlug: 'avalanche',
-        celerBridgeAddress: '0xef3c714c9425a8F3697A9C969Dc1af30ba82e5d4' as const,
+        celerBridgeAddress: '0xb51541df05DE07be38dcfc4a80c05389A54502BB' as const,
     },
     [Chain.ARBITRUM]: {
         chain: Chain.ARBITRUM,
@@ -133,7 +133,7 @@ export const chainsInfo = {
         nativeTokenSymbol: 'ETH',
         dextoolsChartWidgetChainName: 'arbitrum',
         dextoolsSlug: 'arbitrum',
-        celerBridgeAddress: '0x1619DE6B6B20eD217a58d00f37B9d47C7663feca' as const,
+        celerBridgeAddress: '0xEA4B1b0aa3C110c55f650d28159Ce4AD43a4a58b' as const,
     },
     [Chain.POLYGON]: {
         chain: Chain.POLYGON,
@@ -152,7 +152,7 @@ export const chainsInfo = {
         nativeTokenSymbol: 'MATIC',
         dextoolsChartWidgetChainName: 'polygon',
         dextoolsSlug: 'polygon',
-        celerBridgeAddress: '0x88DCDC47D2f83a99CF0000FDF667A468bB958a78' as const,
+        celerBridgeAddress: '0x4C882ec256823eE773B25b414d36F92ef58a7c0C' as const,
     },
     [Chain.FANTOM]: {
         chain: Chain.FANTOM,
@@ -171,6 +171,6 @@ export const chainsInfo = {
         nativeTokenSymbol: 'FTM',
         dextoolsChartWidgetChainName: 'fantom',
         dextoolsSlug: 'fantom',
-        celerBridgeAddress: '0x374B8a9f3eC5eB2D97ECA84Ea27aCa45aa1C57EF' as const,
+        celerBridgeAddress: '0xnoaddress' as const,
     },
 }

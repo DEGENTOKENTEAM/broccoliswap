@@ -1,4 +1,4 @@
-import { bridgeConfigs } from "@/helpers/celer";
+import { bridgeConfigs, putHistory } from "@/helpers/celer";
 import Button from "./Button";
 import BigNumber from "bignumber.js";
 
@@ -12,7 +12,6 @@ import { SwitchNetworkButton } from "./SwapButton";
 import { ImCross } from "react-icons/im";
 import { GoLinkExternal } from "react-icons/go";
 import Link from "next/link";
-import { chainsInfo } from "@/types";
 
 type BridgeButtonProps = { result: 'error', error: string } | {
     result: 'success',
@@ -48,9 +47,7 @@ const BridgeSuccessBlock = (props: {
             </div>
             <Link
                 target="_blank"
-                href={`${
-                    chainFromChainId(props.result.bridgeConfig.org_chain_id)!.explorer
-                }tx/${props.bridgeTx}`}
+                href={`https://celerscan.com/tx/${props.bridgeTx}`}
                 className="hover:underline bg-broccoli p-3 rounded-xl text-white mt-2 cursor-pointer border-success border-2 hover:bg-success font-bold transition-colors block text-center"
             >
                 View on explorer{' '}
@@ -74,19 +71,32 @@ const BridgeButtonStepBridge = (props: {
     result: Extract<BridgeButtonProps, { result: 'success' }>,
     setShowRecentTrades?: Function
 }) => {
-    const { data, isLoading, isSuccess, write } = useBridgeSend(
+    const { data, isLoading, isSuccess, write, address, txNonce } = useBridgeSend(
         props.result.bridgeConfig.org_chain_id,
         props.result.bridgeConfig.org_token.token.address,
         props.result.estimation.inputAmount,
         props.result.bridgeConfig.pegged_chain_id,
         props.result.estimation.slippage
     );
+    const bridged = useWaitForTransaction({
+        chainId: props.result.bridgeConfig.org_chain_id,
+        hash: data?.hash,
+    })
 
-    if (isLoading) {
+    if (isLoading || bridged.isLoading) {
         return (
             <Button disabled animating>Bridging...</Button>
         )
-    } else if (isSuccess && data?.hash) {
+    } else if (isSuccess && data?.hash && address && bridged.isSuccess) {
+        // Put history
+        putHistory({
+            hash: data.hash,
+            bridgeConfig: props.result.bridgeConfig,
+            estimation: props.result.estimation,
+            walletAddress: address,
+            nonce: txNonce,
+        })
+
         return <BridgeSuccessBlock
             result={props.result}
             bridgeTx={data.hash}
