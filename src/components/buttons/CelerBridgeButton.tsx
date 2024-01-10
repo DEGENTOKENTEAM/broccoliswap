@@ -12,6 +12,7 @@ import { SwitchNetworkButton } from "./SwapButton";
 import { ImCross } from "react-icons/im";
 import { GoLinkExternal } from "react-icons/go";
 import Link from "next/link";
+import useCelerBridgeCap from "@/hooks/useCelerBridgeCap";
 
 type BridgeButtonProps = { result: 'error', error: string } | {
     result: 'success',
@@ -147,6 +148,9 @@ const BridgeButtonStepApprove = (props: {
 export default function MainBridgeButton (props: { result: BridgeButtonProps; setShowRecentTrades?: Function }) {
     const { chain } = useNetwork();
 
+    // Check bridge cap
+    const { data } = useCelerBridgeCap();
+
     if (props.result.result === 'error') {
         return (
             <Button
@@ -154,6 +158,17 @@ export default function MainBridgeButton (props: { result: BridgeButtonProps; se
                 infoMessage={props.result.error}
                 infoMessageBorderColor="border-error">
                 Bridge estimation error
+            </Button>
+        )
+    }
+
+    if (data && data.cap - data.total - BigInt(props.result.estimation.inputAmount) < 0) {
+        return (
+            <Button
+                disabled
+                infoMessage="The bridge cap has been reached. You cannot bridge more DGNX this route"
+                infoMessageBorderColor="border-error">
+                Bridge cap error
             </Button>
         )
     }
