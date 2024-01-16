@@ -1,4 +1,4 @@
-import { bridgeConfigs, putHistory } from "@/helpers/celer";
+import { bridgeConfigs, getCelerAddress, putHistory } from "@/helpers/celer";
 import Button from "./Button";
 import BigNumber from "bignumber.js";
 
@@ -73,11 +73,11 @@ const BridgeButtonStepBridge = (props: {
     setShowRecentTrades?: Function
 }) => {
     const { data, isLoading, isSuccess, write, address, txNonce } = useBridgeSend(
-        props.result.bridgeConfig.org_chain_id,
+        props.result.bridgeConfig.type,
+        getCelerAddress(props.result.bridgeConfig),
         props.result.bridgeConfig.org_token.token.address,
         props.result.estimation.inputAmount,
         props.result.bridgeConfig.pegged_chain_id,
-        props.result.estimation.slippage
     );
     const bridged = useWaitForTransaction({
         chainId: props.result.bridgeConfig.org_chain_id,
@@ -114,7 +114,7 @@ const BridgeButtonStepApprove = (props: {
     result: Extract<BridgeButtonProps, { result: 'success' }>,
     setShowRecentTrades?: Function
 }) => {
-    const celerAddress = chainFromChainId(props.result.bridgeConfig.org_chain_id)!.celerBridgeAddress;
+    const celerAddress = getCelerAddress(props.result.bridgeConfig);
     const { data, write } = useWriteAllowance(
         props.result.bridgeConfig.org_token.token.address,
         celerAddress,
@@ -162,7 +162,7 @@ export default function MainBridgeButton (props: { result: BridgeButtonProps; se
         )
     }
 
-    if (data && data.cap - data.total - BigInt(props.result.estimation.inputAmount) < 0) {
+    if (data && props.result.bridgeConfig.type === 'mint' && data.cap - data.total - BigInt(props.result.estimation.inputAmount) < 0) {
         return (
             <Button
                 disabled

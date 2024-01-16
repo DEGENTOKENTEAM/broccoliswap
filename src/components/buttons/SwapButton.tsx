@@ -250,7 +250,7 @@ const MaybeSwapButton = (props:{
 
             if (e instanceof RubicSdkError) {
                 setSwapError(e);
-                setSwapErrorMessage(e.message);
+                setSwapErrorMessage(`Some error occured. Please wait a bit and try again. If the issue persists, open a support ticket on Discord. Full error: ${e.message}`);
                 setIsSwapping(false);
                 return;
             }

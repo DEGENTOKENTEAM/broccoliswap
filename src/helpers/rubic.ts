@@ -24,12 +24,16 @@ const searchTokenOnRubic = async (network: Chain, filterTxt?: string, noNative?:
     }
 
     // Add DGNX first if avax
-    if (network === Chain.AVAX && !filterTxt) {
+    if ((network === Chain.AVAX || network === Chain.ETH) && !filterTxt) {
         const results = await Promise.all([
             fetch(`https://tokens.rubic.exchange/api/v1/tokens?networks=${chainsInfo[network].rubicName}&pageSize=1&symbol=dgnx`),
             fetch(`https://tokens.rubic.exchange/api/v1/tokens?networks=${chainsInfo[network].rubicName}&pageSize=9${filter}`),
         ])
         const dgnx = await results[0].json();
+
+        // Override token logo because it doesn't exist yet on ETH
+        dgnx.results[0].image = 'https://assets.rubic.exchange/assets/avalanche/0x51e48670098173025c477d9aa3f0eff7bf9f7812/logo.png';
+
         const rest = await results[1].json();
         let data = [...dgnx.results, ...rest.results]
         if (noNative) {

@@ -2,22 +2,23 @@ import { chainFromChainId } from "@/helpers/chain";
 import { useAccount, useContractWrite } from "wagmi";
 
 import celerAbi from '../abi/celerVault.json';
+import celerPeggedTokenAbi from '../abi/celerPeggedToken.json';
 import { useState } from "react";
 
 export default function useBridgeSend(
-    srcChainId: number,
+    type: 'mint' | 'burn',
+    contractAddress: `0x${string}`,
     srcTokenAddress: string,
     inputAmount: string,
     dstChainId: number,
-    slippage: string
 ) {
     const [txNonce] = useState(Date.now());
 
     const { address } = useAccount();
     const { data, isLoading, isSuccess, write } = useContractWrite({
-        address: chainFromChainId(srcChainId)!.celerBridgeAddress,
-        abi: celerAbi,
-        functionName: 'deposit',
+        address: contractAddress,
+        abi: type === 'mint' ? celerAbi : celerPeggedTokenAbi,
+        functionName: type === 'mint' ? 'deposit' : 'burn',
         args: [
             srcTokenAddress,
             inputAmount,

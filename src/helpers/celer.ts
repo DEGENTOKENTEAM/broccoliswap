@@ -18,6 +18,12 @@ type CelerEstimationApiResult = {
     slippage_tolerance: number;
 }
 
+export const getCelerAddress = (bridgeConfig: typeof bridgeConfigs[number]) => {
+    return bridgeConfig.type === 'mint'
+        ? bridgeConfig.pegged_deposit_contract_addr
+        : bridgeConfig.pegged_burn_contract_addr;
+}
+
 export const bridgeConfigs = [
     {
         "org_chain_id": 43114,
@@ -63,38 +69,20 @@ export const bridgeConfigs = [
         "canonical_token_contract_addr": "",
         "vault_version": 2,
         "bridge_version": 2,
-        "migration_peg_burn_contract_addr": ""
+        "migration_peg_burn_contract_addr": "",
+        "type": "mint"
     },
     {
-        "org_chain_id": 56,
-        "org_token": {
-            "token": {
-                "symbol": "AI",
-                "address": "0xA9b038285F43cD6fE9E16B4C80B4B9bCcd3C161b" as const,
-                "decimal": 18,
-                "xfer_disabled": false
-            },
-            "name": "Flourishing AI",
-            "icon": "https://i.postimg.cc/vTzMmCVW/AI.png",
-            "inbound_lmt": "",
-            "inbound_epoch_cap": "",
-            "transfer_disabled": false,
-            "liq_add_disabled": false,
-            "liq_rm_disabled": false,
-            "liq_agg_rm_src_disabled": false,
-            "delay_threshold": "",
-            "delay_period": 0
-        },
         "pegged_chain_id": 43114,
         "pegged_token": {
             "token": {
-                "symbol": "AI",
-                "address": "0x10B3AAF66D90Cb54fca62Dd37d17022555399EE1",
+                "symbol": "DGNX",
+                "address": "0x51e48670098173025C477D9AA3f0efF7BF9f7812",
                 "decimal": 18,
                 "xfer_disabled": false
             },
-            "name": "Flourishing AI",
-            "icon": "https://i.postimg.cc/vTzMmCVW/AI.png",
+            "name": "DGNX",
+            "icon": "https://i.postimg.cc/cLK43csy/DGNX.png",
             "inbound_lmt": "",
             "inbound_epoch_cap": "",
             "transfer_disabled": false,
@@ -104,12 +92,32 @@ export const bridgeConfigs = [
             "delay_threshold": "",
             "delay_period": 0
         },
-        "pegged_deposit_contract_addr": "0x11a0c9270D88C99e221360BCA50c2f6Fda44A980",
-        "pegged_burn_contract_addr": "0xb774C6f82d1d5dBD36894762330809e512feD195",
+        "org_chain_id": 1,
+        "org_token": {
+            "token": {
+                "symbol": "DGNX",
+                "address": "0x0000000000300dd8B0230efcfEf136eCdF6ABCDE",
+                "decimal": 18,
+                "xfer_disabled": false
+            },
+            "name": "DGNX",
+            "icon": "https://i.postimg.cc/cLK43csy/DGNX.png",
+            "inbound_lmt": "",
+            "inbound_epoch_cap": "",
+            "transfer_disabled": false,
+            "liq_add_disabled": false,
+            "liq_rm_disabled": false,
+            "liq_agg_rm_src_disabled": false,
+            "delay_threshold": "",
+            "delay_period": 0
+        },
+        "pegged_deposit_contract_addr": "0xb51541df05DE07be38dcfc4a80c05389A54502BB",
+        "pegged_burn_contract_addr": "0x52E4f244f380f8fA51816c8a10A63105dd4De084",
         "canonical_token_contract_addr": "",
         "vault_version": 2,
         "bridge_version": 2,
-        "migration_peg_burn_contract_addr": ""
+        "migration_peg_burn_contract_addr": "",
+        "type": "burn"
     },
 ] as const;
 
@@ -192,6 +200,7 @@ export const getMostRecentBridgeHistoryItem = () => {
 }
 
 const getTransferId = (
+    bridgeConfig: typeof bridgeConfigs[number],
     wallet: string,
     peggedTokenAddress: string,
     amount: string,
@@ -219,7 +228,7 @@ const getTransferId = (
             wallet, /// Destination chain id
             nonce, /// Nonce
             orgChainId, /// Source chain id
-            chainFromChainId(orgChainId)!.celerBridgeAddress, /// Source chain id
+            getCelerAddress(bridgeConfig), /// Source chain id
         ],
     )
 }
@@ -266,6 +275,7 @@ export const getTransferStatus = async (item: BridgeHistoryItem) => {
     const response = await fetch('https://cbridge-prod2.celer.app/v2/getTransferStatus', {
         body: JSON.stringify({
             transfer_id: getTransferId(
+                item.bridgeConfig,
                 item.walletAddress,
                 item.bridgeConfig.pegged_token.token.address,
                 item.estimation.inputAmount,
