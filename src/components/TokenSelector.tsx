@@ -48,7 +48,7 @@ const TokenListItem = (props: {
             <div className="flex flex-col flex-grow">
                 <div className="flex items-center gap-4">
                     <div className="leading-5 text-light-200">{token.symbol}</div>
-                    {!token.address.startsWith("0x0000") && (
+                    {!token.address.startsWith("0x00000000000000") && (
                         <div className="text-xs bg-dark py-0.5 px-1.5 rounded">
                             <Link
                                 href={`${

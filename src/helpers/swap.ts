@@ -1,10 +1,11 @@
-import { Token, chainsInfo } from '@/types'
+import { Chain, Token, chainsInfo } from '@/types'
 import { debounce } from './debounce'
 import { BLOCKCHAIN_NAME, CROSS_CHAIN_TRADE_TYPE, CrossChainTradeType, OnChainTrade } from 'rubic-sdk'
 import { getSDK } from './rubic'
 import { DGNX_ADDRESS, addressHasDisburserRewards } from './dgnx'
+import { bridgeConfigs, getEstimation } from './celer'
 
-const calculateBestTrade = async (
+const calculateBestSwap = async (
     slippage: number,
     inputToken: Token,
     fromAmount: number,
@@ -92,7 +93,7 @@ const calculateBestTrade = async (
         const minimumMinimumOutputAmount = allTrades[0].toTokenAmountMin.tokenAmount.toNumber() * 0.95;
         const allValidTrades = allTrades.filter(trade => trade.toTokenAmountMin.tokenAmount.toNumber() >= minimumMinimumOutputAmount);
         console.log(allValidTrades)
-        return allValidTrades
+        return { type: 'swap' as const, trades: allValidTrades }
     }
 
     const [trades, tradesWithoutProxy] = await Promise.all([
@@ -158,7 +159,96 @@ const calculateBestTrade = async (
     // Filter trades where the min output amount is way too low
     const minimumMinimumOutputAmount = allOnChainTrades[0]!.toTokenAmountMin.toNumber() * 0.95;
     const allValidTrades = allOnChainTrades.filter(trade => trade && trade.toTokenAmountMin.toNumber() >= minimumMinimumOutputAmount);
-    return allValidTrades;
+    return { type: 'swap' as const, trades: allValidTrades };
+};
+
+const isBridgeRequest = (
+    inputChain?: Chain,
+    inputToken?: string,
+    outputChain?: Chain,
+    outputToken?: string
+) => {
+    if (!inputChain || !outputChain || !inputToken || !outputToken) {
+        return false;
+    }
+
+    // Try to find a Celer bridge config
+    const bridgeConfig = bridgeConfigs.find((config) => {
+        if (config.org_chain_id === chainsInfo[inputChain].id &&
+            config.org_token.token.address.toLowerCase() === inputToken.toLowerCase() &&
+            config.pegged_chain_id === chainsInfo[outputChain].id &&
+            config.pegged_token.token.address.toLowerCase() === outputToken.toLowerCase()
+        ) {
+            return true;
+        }
+    });
+
+    if (bridgeConfig) {
+        return bridgeConfig;
+    }
+
+    return false
+}
+
+const calculateBestBridge = async (
+    slippage: number,
+    inputToken: Token,
+    fromAmount: number,
+    inputTokenSellTax: number,
+    outputToken: Token,
+    bridgeConfig: typeof bridgeConfigs[number],
+    connectedAddress?: string
+) => {
+    try {
+        const estimation = await getEstimation(
+            chainsInfo[inputToken.chain].id,
+            chainsInfo[outputToken.chain].id,
+            bridgeConfig.org_token.token.symbol,
+            fromAmount,
+            bridgeConfig.org_token.token.decimal,
+            slippage,
+        );
+        return { type: 'bridge' as const, result: 'success' as const, bridgeConfig, estimation };
+    } catch (e: any) {
+        return { type: 'bridge' as const, result: 'error' as const, error: e.message }
+    }
+}
+
+const calculateBestTrade = async (
+    slippage: number,
+    inputToken: Token,
+    fromAmount: number,
+    inputTokenSellTax: number,
+    outputToken: Token,
+    connectedAddress?: string
+) => {
+    // Check if this is a bridge or a swap
+    const bridgeRequest = isBridgeRequest(
+        inputToken.chain,
+        inputToken.token.address,
+        outputToken.chain,
+        outputToken.token.address
+    );
+    if (bridgeRequest) {
+        return calculateBestBridge(
+            slippage,
+            inputToken,
+            fromAmount,
+            inputTokenSellTax,
+            outputToken,
+            bridgeRequest,
+            connectedAddress
+        )
+    }
+
+    return calculateBestSwap(
+        slippage,
+        inputToken,
+        fromAmount,
+        inputTokenSellTax,
+        outputToken,
+        connectedAddress
+    );
 }
 
 let cancel: Function

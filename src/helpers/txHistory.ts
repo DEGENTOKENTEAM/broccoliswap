@@ -8,6 +8,7 @@ export enum SwapType {
 }
 
 export type TxHistoryItem = {
+    type: 'rubicSwap',
     fromChain: Chain
     toChain: Chain
     swapTx: string
@@ -49,11 +50,11 @@ export const getMostRecentTxHistoryItem = () => {
     return getTxHistory().reverse()[0]
 }
 
-export const putHistory = (data: Omit<TxHistoryItem, 'date'>) => {
+export const putHistory = (data: Omit<TxHistoryItem, 'date' | 'type'>) => {
     console.log(data)
 
     const history = getTxHistory()
-    history.push({ ...data, date: Date.now() })
+    history.push({ ...data, type: 'rubicSwap', date: Date.now() })
 
     localStorage.setItem('txHistory', JSON.stringify(history))
     return history
@@ -94,8 +95,7 @@ const getBridgeTransferTokenStatus = async (
     const chain = chainsInfo[swap.toChain].bitqueryChainName
     const response = await fetch(
         `${process.env
-            .NEXT_PUBLIC_BACKEND_ENDPOINT!}/getBridgeTxInfo/${address}/${chain}/${
-            swap.finalDstHash
+            .NEXT_PUBLIC_BACKEND_ENDPOINT!}/getBridgeTxInfo/${address}/${chain}/${swap.finalDstHash
         }`
     )
     const bridgeTxStatus = await response.json()

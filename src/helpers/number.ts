@@ -1,3 +1,5 @@
+import BigNumber from "bignumber.js";
+
 /**
  * Show decimal digits maximum. Eg with precision = 2
  * 0.000022123 => 0.000022
@@ -15,3 +17,11 @@ export const toPrecision = (x: number, precision = 2) => {
         maximumSignificantDigits: Math.max(1, x > 1e6 ? precision : Math.max(numberOfDigits, precision, 1)),
     }).format(x)
 };
+
+export const toIntString = (x: number, decimals: number) => {
+    return new BigNumber(x).multipliedBy(new BigNumber(10).pow(decimals)).toFixed()
+}
+
+export const fromIntString = (x: string | BigNumber, decimals: number) => {
+    return new BigNumber(x).dividedBy(new BigNumber(10).pow(decimals)).toNumber();
+}
