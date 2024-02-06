@@ -33,6 +33,7 @@ import { TokenInfo } from '@/components/Pro/TokenInfo'
 import { TwitterEmbed } from '@/components/Pro/TwitterEmbed'
 import { Info, Pair } from '@/components/Pro/types'
 import Button from '@/components/buttons/MainButton'
+import MainPanel from '@/components/Pro/MainPanel'
 
 export const SwapView = (props: {
     showRecentTrades?: boolean
@@ -414,11 +415,9 @@ export const SwapView = (props: {
                             <TwitterEmbed screenName={screenName} />
                         {/* </div> */}
                     </div>)}
-                    {props.proMode && reprToken && reprTokenInfo && reprTokenPairs && <div className="flex flex-col flex-grow gap-5 lg:mt-11 h-[600px] lg:h-[calc(100vh-350px)] lg:min-h-[400px] order-first lg:order-none">
+                    {props.proMode && reprToken && reprTokenInfo && reprTokenPairs && <div className="flex flex-col flex-grow gap-5 lg:mt-11 min-h-[400px] order-first lg:order-none">
                         <TokenInfoHeader token={reprToken} reprPair={reprTokenPairs.find((pair) => pair.data.address === reprTokenInfo.data.reprPair.id.pair)} info={reprTokenInfo} />
-                        <div className="relative rounded-lg bg-dark flex-grow">
-                            <iframe className="rounded-lg border-2 border-activeblue" src={`https://www.dextools.io/widget-chart/en/${chainsInfo[reprToken.chain].dextoolsSlug}/pe-light/${reprTokenInfo.data.reprPair.id.pair}?theme=dark&chartType=1&chartResolution=1d&headerColor=023148&tvPlatformColor=023148&tvPaneColor=023148`} style={{ width: '100%', height: '100%' }} />
-                        </div>
+                        <MainPanel token={reprToken} tokenInfo={reprTokenInfo} />
                     </div>}
                     <div className="flex flex-col gap-3 h-full">
                         <div className="flex h-8 gap-2">

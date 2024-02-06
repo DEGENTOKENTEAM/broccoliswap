@@ -19,6 +19,7 @@ import 'react-tooltip/dist/react-tooltip.css'
 import { IoMdHelpCircle, IoMdHelpCircleOutline } from 'react-icons/io';
 import { PiWarningBold } from 'react-icons/pi';
 import { IoClose } from 'react-icons/io5';
+import Address from '../Address';
 
 const SocialLink = (props: { children: any; link: string }) => {
     return (
@@ -53,17 +54,7 @@ const InfoTab = (props: { token: Token; info: Info, pairs: Pair[] }) => {
 
                 <div className="font-bold">Contract</div>
                 <div className="flex items-center"> 
-                    <Link
-                        href={`${
-                            chainsInfo[props.token.chain].explorer
-                        }token/${props.token.token.address}`}
-                        target="_blank"
-                        onClick={e => e.stopPropagation()}
-                        className="flex items-center gap-1"
-                    >
-                            {subAddress(props.token.token.address)}{" "}
-                            <BiLinkExternal />
-                    </Link>
+                    <Address chain={props.token.chain} address={props.token.token.address} isToken />
                 </div>
 
                 <div className="font-bold">Market cap</div>

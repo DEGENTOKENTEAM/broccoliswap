@@ -11,6 +11,20 @@ type TokenInfo = {
     external_call: string;
     hidden_owner: string;
     holder_count: string;
+    holders: {
+        address: string;
+        balance: string;
+        is_contract: number;
+        is_locked: number;
+        percent: string;
+    }[];
+    lp_holders: {
+        address: string;
+        balance: string;
+        is_contract: number;
+        is_locked: number;
+        percent: string;
+    }[];
     honeypot_with_same_creator: string;
     is_anti_whale: string;
     is_blacklisted: string;
@@ -46,7 +60,6 @@ export type GoPlusTokenReponse = {
 }
 
 const cache: Record<string, GoPlusTokenReponse> = {}
-
 export const getTokenSecurity = async (chainId: number, tokenAddress: string): Promise<GoPlusTokenReponse> => {
     if (cache[`${chainId}-${tokenAddress}`]) {
         return cache[`${chainId}-${tokenAddress}`];
@@ -58,7 +71,7 @@ export const getTokenSecurity = async (chainId: number, tokenAddress: string): P
 
     const buyTax = 100 * parseFloat(tokenInfo?.buy_tax || '0');
     const sellTax = 100 * parseFloat(tokenInfo?.sell_tax || '0');
-    const whitelisted = whitelistedTokens[chainId]?.[tokenAddress.toLowerCase()].secure;
+    const whitelisted = whitelistedTokens[chainId]?.[tokenAddress.toLowerCase()]?.secure;
 
     const hasWarning = !whitelisted && (
         buyTax > 10
@@ -90,7 +103,6 @@ export const getTokenSecurity = async (chainId: number, tokenAddress: string): P
         || tokenInfo.personal_slippage_modifiable === '1'
     );
 
-    
     cache[`${chainId}-${tokenAddress}`] = {
         buy_tax: buyTax,
         sell_tax: sellTax,
