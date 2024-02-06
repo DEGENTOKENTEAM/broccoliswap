@@ -419,7 +419,7 @@ export const SwapView = (props: {
                         <TokenInfoHeader token={reprToken} reprPair={reprTokenPairs.find((pair) => pair.data.address === reprTokenInfo.data.reprPair.id.pair)} info={reprTokenInfo} />
                         <MainPanel token={reprToken} tokenInfo={reprTokenInfo} />
                     </div>}
-                    <div className="flex flex-col gap-3 h-full">
+                    {(!props.proMode || (props.proMode && reprToken)) ? <div className="flex flex-col gap-3 h-full">
                         <div className="flex h-8 gap-2">
                             <RefreshButton
                                 tradeLoading={tradeLoading}
@@ -658,7 +658,10 @@ export const SwapView = (props: {
                             )}
                         </div>
                         <ExtraTradeInfo trade={trades} />
-                    </div>
+                    </div> : <div className="bg-darkblue border-activeblue border-2 p-5 rounded-xl">
+                        Welcome to Broccoliswap PRO. <br />
+                        Please select a token from the selector above.
+                    </div>}
                 </div>
                 
             </div>

@@ -45,10 +45,10 @@ export const ExtraTradeInfo = (props: {
                     <div className="flex-grow">Minimum received</div>
                     <div>{toPrecision(crossChainTrade.toTokenAmountMin.toNumber(), 6)} {crossChainTrade.to.symbol}</div>
                 </div>
-                {info.priceImpact && info.priceImpact > 0 && <div className="flex w-full">
+                {(info.priceImpact && info.priceImpact > 0) ? <div className="flex w-full">
                     <div className="flex-grow">Price impact</div>
                     <div className={classNames(info.priceImpact > 5 && 'text-red-700 font-bold')}>{info.priceImpact.toFixed(2)}%</div>
-                </div>}
+                </div> : ''}
             </div>
         )
     }
