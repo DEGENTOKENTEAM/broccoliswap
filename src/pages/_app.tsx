@@ -12,6 +12,7 @@ import { ConnectKitProvider, getDefaultConfig } from 'connectkit'
 import * as errorReporting from '../helpers/errorReporting';
 import { setUTMParameters, trackStartVisit } from '@/helpers/track'
 import { Token } from '@/types'
+import { QueryClient, QueryClientProvider } from 'react-query'
 
 const { chains } = configureChains(
   [mainnet, avalanche, bsc, arbitrum, polygon, fantom],
@@ -50,32 +51,36 @@ export default function App({ Component, pageProps, router }: AppProps) {
     }
   }, []);
 
+  const queryClient = new QueryClient();
+
   return (
     <NonSSR>
       {/* @ts-ignore */}
       <ErrorBoundary>
-        <WagmiConfig config={config}>
-          <ConnectKitProvider options={{initialChainId:0}}>
-          <main className=" ">
-            <Navbar
-              onClickRecentTrades={() => setShowRecentTrades(true)}
-              proMode={proMode}
-              setToken={setReprToken}
-              setProMode={setProMode}
-            />
-            <Component
-              {...pageProps}
-              showRecentTrades={showRecentTrades}
-              setShowRecentTrades={setShowRecentTrades}
-              proMode={proMode}
-              setProMode={setProMode}
-              reprToken={reprToken}
-              setReprToken={setReprToken}
-            />
-            <BottomBar />
-          </main>
-          </ConnectKitProvider>
-        </WagmiConfig>
+          <QueryClientProvider client={queryClient}>
+          <WagmiConfig config={config}>
+            <ConnectKitProvider options={{initialChainId:0}}>
+            <main className=" ">
+              <Navbar
+                onClickRecentTrades={() => setShowRecentTrades(true)}
+                proMode={proMode}
+                setToken={setReprToken}
+                setProMode={setProMode}
+              />
+              <Component
+                {...pageProps}
+                showRecentTrades={showRecentTrades}
+                setShowRecentTrades={setShowRecentTrades}
+                proMode={proMode}
+                setProMode={setProMode}
+                reprToken={reprToken}
+                setReprToken={setReprToken}
+              />
+              <BottomBar />
+            </main>
+            </ConnectKitProvider>
+          </WagmiConfig>
+        </QueryClientProvider>
       </ErrorBoundary>
     </NonSSR>
   )

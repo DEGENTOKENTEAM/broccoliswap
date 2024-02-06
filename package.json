@@ -35,6 +35,8 @@
     "react": "18.2.0",
     "react-dom": "18.2.0",
     "react-icons": "^4.11.0",
+    "react-query": "^3.39.3",
+    "react-tooltip": "^5.26.0",
     "react-twitter-embed": "^4.0.4",
     "rubic-sdk": "^4.31.0",
     "typescript": "^5",
