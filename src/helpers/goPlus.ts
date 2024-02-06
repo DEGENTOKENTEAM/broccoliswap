@@ -1,3 +1,5 @@
+import { whitelistedTokens } from "./whitelist";
+
 type TokenInfo = {
     anti_whale_modifiable: string;
     can_take_back_ownership: string;
@@ -40,6 +42,7 @@ export type GoPlusTokenReponse = {
     tokenInfo: TokenInfo;
     hasWarning?: boolean;
     hasError?: boolean;
+    whitelisted?: boolean;
 }
 
 const cache: Record<string, GoPlusTokenReponse> = {}
@@ -55,8 +58,10 @@ export const getTokenSecurity = async (chainId: number, tokenAddress: string): P
 
     const buyTax = 100 * parseFloat(tokenInfo?.buy_tax || '0');
     const sellTax = 100 * parseFloat(tokenInfo?.sell_tax || '0');
+    const whitelisted = whitelistedTokens[chainId]?.[tokenAddress.toLowerCase()].secure;
 
-    const hasWarning = buyTax > 3
+    const hasWarning = !whitelisted && (
+        buyTax > 10
         || sellTax > 3
         || parseFloat(tokenInfo?.creator_percent || '0') > GOPLUS_CREATOR_PERCENT_WARNING_THRESHOLD
         || parseFloat(tokenInfo?.honeypot_with_same_creator || '0') > GOPLUS_HONEYPOTS_WARNING_THRESHOLD
@@ -71,8 +76,10 @@ export const getTokenSecurity = async (chainId: number, tokenAddress: string): P
         || tokenInfo.is_whitelisted === '1'
         || tokenInfo.selfdestruct === '1'
         || tokenInfo.trading_cooldown === '1'
-        || tokenInfo.transfer_pausable === '1';
-    const hasError = buyTax > 10
+        || tokenInfo.transfer_pausable === '1'
+    );
+    const hasError = !whitelisted && (
+        buyTax > 10
         || sellTax > 10
         || parseFloat(tokenInfo.creator_percent) >= GOPLUS_CREATOR_PERCENT_ERROR_THRESHOLD
         || parseFloat(tokenInfo.honeypot_with_same_creator) >= GOPLUS_HONEYPOTS_WARNING_THRESHOLD
@@ -80,7 +87,8 @@ export const getTokenSecurity = async (chainId: number, tokenAddress: string): P
         || tokenInfo.is_open_source === '0'
         || tokenInfo.owner_change_balance === '1'
         || tokenInfo.is_proxy === '1'
-        || tokenInfo.personal_slippage_modifiable === '1';
+        || tokenInfo.personal_slippage_modifiable === '1'
+    );
 
     
     cache[`${chainId}-${tokenAddress}`] = {
@@ -88,7 +96,8 @@ export const getTokenSecurity = async (chainId: number, tokenAddress: string): P
         sell_tax: sellTax,
         tokenInfo,
         hasWarning,
-        hasError
+        hasError,
+        whitelisted,
     }
 
     return cache[`${chainId}-${tokenAddress}`];

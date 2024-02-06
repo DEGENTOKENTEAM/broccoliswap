@@ -6,7 +6,7 @@ import { useAsyncEffect } from "@/hooks/useAsyncEffect";
 import { Token, chainsInfo } from "@/types";
 import Link from "next/link";
 import { useMemo, useState } from "react";
-import { BiLinkExternal } from "react-icons/bi";
+import { BiCheckCircle, BiLinkExternal } from "react-icons/bi";
 import { Info, Pair } from "./types";
 import { FaGlobe, FaDiscord, FaTelegram, FaTiktok, FaInstagram, FaGithub, FaReddit, FaMedium, FaYoutube, FaCheck } from "react-icons/fa";
 import { FaXTwitter } from "react-icons/fa6";
@@ -128,6 +128,7 @@ const SecurityTabItem = (props: {
     descriptionExtended?: string;
     isWarning?: boolean;
     isError?: boolean;
+    isSuccess?: boolean;
 }) => {
     return (
         props.condition ? (
@@ -151,6 +152,7 @@ const SecurityTabItem = (props: {
                     <div className={classNames(
                         props.isWarning && !props.isError && 'text-warning font-bold',
                         props.isError && 'text-error font-bold',
+                        props.isSuccess && 'text-success font-bold',
                     )}>{props.value}</div>
                 </div>
                 {props.description && <Tooltip opacity={1} className="z-[9999]" id={`tooltip-${props.title}`}>
@@ -178,6 +180,13 @@ const SecurityTab = (props: { token: Token; data: UseQueryResult<GoPlusTokenRepo
             {props.data?.tokenInfo
                 ? (
                     <div className="flex flex-col gap-1">
+                        <SecurityTabItem
+                            condition={!!props.data.whitelisted}
+                            title="Whitelisted"
+                            description="If this token is whitelisted on Broccoliswap."
+                            value={props.data.whitelisted ? 'Yes' : 'No'}
+                            isSuccess={props.data.whitelisted}
+                        />
                         <SecurityTabItem
                             condition={!!props.data.buy_tax}
                             title="Buy tax"
@@ -357,8 +366,9 @@ export const TokenInfo = (props: { token: Token; info: Info, pairs: Pair[] }) =>
         { 
             name: <div className="justify-center flex items-center gap-1">
                 Security
-                {securityData?.hasWarning && !securityData?.hasError && <PiWarningBold className="text-warning" />}
-                {securityData?.hasError && <PiWarningBold className="text-error" />}
+                {(securityData?.whitelisted || (!securityData?.hasWarning && !securityData?.hasError)) && <BiCheckCircle className="text-success text-xl" />}
+                {securityData?.hasWarning && !securityData?.hasError && <PiWarningBold className="text-warning text-xl" />}
+                {securityData?.hasError && <PiWarningBold className="text-error text-xl" />}
             </div>,
             current: selectedTab === 1
         },
