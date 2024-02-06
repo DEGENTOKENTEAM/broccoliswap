@@ -447,7 +447,7 @@ export const SwapView = (props: {
                                 )}
                             </div>}
                         </div>
-                        <div className="bg-darkblue border-activeblue border-2 p-5 rounded-xl w-full h-full">
+                        <div className="bg-darkblue border-activeblue border-2 p-5 rounded-xl w-full h-full max-w-lg">
                             <div className="flex items-end gap-1">
                                 <div className="flex-grow">You pay</div>
                                 {address && inputToken && (
