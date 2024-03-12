@@ -1,6 +1,6 @@
 import { Chain, Token, chainsInfo } from '@/types'
 import { debounce } from './debounce'
-import { BLOCKCHAIN_NAME, CROSS_CHAIN_TRADE_TYPE, CrossChainTradeType, OnChainTrade } from 'rubic-sdk'
+import { BLOCKCHAIN_NAME, CROSS_CHAIN_TRADE_TYPE, CrossChainTradeType, OnChainTrade, WrappedOnChainTradeOrNull } from 'rubic-sdk'
 import { getSDK } from './rubic'
 import { DGNX_ADDRESS, addressHasDisburserRewards } from './dgnx'
 import { bridgeConfigs, getEstimation } from './celer'
@@ -66,8 +66,12 @@ const calculateBestSwap = async (
 
         const availableTrades = trades
             .filter(
-                // @ts-expect-error error type
-                (trade): trade is OnChainTrade => !trade?.error
+                (trade): trade is WrappedOnChainTradeOrNull => !trade?.error
+            )
+
+            .map(t => t?.trade)
+            .filter(
+                (trade): trade is OnChainTrade => !!trade
             )
             .filter(trade => !['PangolinTrade', 'JoeTrade', 'XyDexTrade'].includes(trade.constructor.name))
             .filter(trade => trade?.type !== 'XY_DEX')
@@ -77,8 +81,11 @@ const calculateBestSwap = async (
 
         const availableTradesWithoutProxy = tradesWithoutProxy
             .filter(
-                // @ts-expect-error error type
-                (trade): trade is OnChainTrade => !trade?.error
+                (trade): trade is WrappedOnChainTradeOrNull => !trade?.error
+            )
+            .map(t => t?.trade)
+            .filter(
+                (trade): trade is OnChainTrade => !!trade
             )
             .filter(trade => !['XyDexTrade'].includes(trade.constructor.name))
             .sort((a, b) =>
