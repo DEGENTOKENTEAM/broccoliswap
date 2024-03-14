@@ -22,10 +22,10 @@ export const ExtraTradeInfo = (props: {
                         <div className="flex-grow">Minimum received</div>
                         <div>{toPrecision(onChainTrade.toTokenAmountMin.tokenAmount.toNumber(), 6)} {trade.to.symbol}</div>
                     </div>
-                    <div className="flex w-full">
+                    {!isNaN(trade.to.price.toNumber()) && <div className="flex w-full">
                         <div className="flex-grow" />
                         <div className="text-slate-500 text-xs">${toPrecision(onChainTrade.toTokenAmountMin.tokenAmount.toNumber() * trade.to.price.toNumber(), 6)}</div>
-                    </div>
+                    </div>}
                     <div className="flex w-full">
                         <div className="flex-grow">Slippage</div>
                         <div>{(onChainTrade.slippageTolerance * 100).toFixed(2)}%</div>
