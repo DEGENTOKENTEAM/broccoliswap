@@ -140,9 +140,11 @@ const calculateBestSwap = async (
             (trade): trade is OnChainTrade => !trade?.error
         )
         .filter(trade => !!trade?.trade?.to)
-        .sort((a, b) =>
-            a.trade!.to.tokenAmount.toNumber() > b.trade!.to.tokenAmount.toNumber() ? -1 : 1
-        )
+        .sort((a, b) => {
+            // If debridge, put in first
+            if (a.tradeType === CROSS_CHAIN_TRADE_TYPE.DEBRIDGE) return -1
+            return a.trade!.to.tokenAmount.toNumber() > b.trade!.to.tokenAmount.toNumber() ? -1 : 1
+        })
         // @ts-expect-error onChainTrade is not a prop but exists sometimes
         .filter(trade => !trade.trade?.onChainTrade || !['PangolinTrade', 'JoeTrade', 'XyDexTrade'].includes(trade.trade?.onChainTrade.constructor.name))
 
@@ -153,15 +155,19 @@ const calculateBestSwap = async (
         )
         .filter(trade => !['XyDexTrade'].includes(trade.constructor.name))
         .filter(trade => !!trade?.trade?.to)
-        .sort((a, b) =>
-            a.trade!.to.tokenAmount.toNumber() > b.trade!.to.tokenAmount.toNumber() ? -1 : 1
-        )
+        .sort((a, b) => {
+            // If debridge, put in first
+            if (a.tradeType === CROSS_CHAIN_TRADE_TYPE.DEBRIDGE) return -1
+            return a.trade!.to.tokenAmount.toNumber() > b.trade!.to.tokenAmount.toNumber() ? -1 : 1
+        })
 
     const tradesToUse = availableTrades.concat(availableTradesWithoutProxy);
 
     if (!tradesToUse || tradesToUse.length === 0) return 'No trades available'
 
     const allOnChainTrades = tradesToUse.map(tradeToUse => tradeToUse.trade);
+
+    console.log(allOnChainTrades)
 
     // Filter trades where the min output amount is way too low
     const minimumMinimumOutputAmount = allOnChainTrades[0]!.toTokenAmountMin.toNumber() * 0.95;
