@@ -54,6 +54,20 @@ export type RubicToken = {
     }
 }
 
+export type SolanaTokenInfo = {
+    type: 'solana';
+    address: string;
+    chainId: number;
+    decimals: number;
+    name: number;
+    symbol: string;
+    logoURI: string;
+    tags: string[];
+    extensions?: {
+        coingeckoId?: string;
+    };
+}
+
 export type Token = {
     type: 'evm';
     chain: Chain;
@@ -61,9 +75,7 @@ export type Token = {
 } | {
     type: 'solana';
     chain: Chain;
-    token: {
-        mint: string;
-    };
+    token: SolanaTokenInfo;
 }
 
 export type EVMToken = Extract<Token, { type: 'evm' }>;

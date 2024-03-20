@@ -35,24 +35,25 @@ import { Info, Pair } from '@/components/Pro/types'
 import Button from '@/components/buttons/MainButton'
 import MainPanel from '@/components/Pro/MainPanel'
 import { guardEVM } from '@/helpers/guard'
+import useTokenPrice from '@/hooks/useTokenPrice'
 
 export const SwapView = (props: {
     showRecentTrades?: boolean
     setShowRecentTrades?: (show: boolean) => void
     proMode: boolean;
     setProMode: (x: boolean) => void;
-    reprToken: EVMToken;
-    setReprToken: (x: EVMToken) => void;
+    reprToken: Token;
+    setReprToken: (x: Token) => void;
 }) => {
     const { reprToken, setReprToken } = props;
     const [reprTokenInfo, setReprTokenInfo] = useState<Info | undefined>()
     const [reprTokenPairs, setReprTokenPairs] = useState<Pair[] | undefined>()
 
-    const [inputToken, setInputToken] = useState<EVMToken | undefined>()
+    const [inputToken, setInputToken] = useState<Token | undefined>()
     const [inputChain, setInputChain] = useState<Chain>()
     const [shared, setShared] = useState(false);
     const [shareLoading, setShareLoading] = useState(false);
-    const [outputToken, setOutputToken] = useState<EVMToken | undefined>()
+    const [outputToken, setOutputToken] = useState<Token | undefined>()
     const [outputChain, setOutputChain] = useState<Chain>()
     const [inputAmount, setInputAmount] = useState<number>()
 
@@ -62,6 +63,9 @@ export const SwapView = (props: {
     const signer = useEthersSigner()
     const { chain } = useNetwork();
     const web3 = useWeb3Signer({ chainId: chain?.id });
+
+    const { data: inputTokenPrice } = useTokenPrice(inputToken);
+    const { data: outputTokenPrice } = useTokenPrice(outputToken);
 
 
     const [slippage, setSlippage] = useState<number>()
@@ -90,7 +94,7 @@ export const SwapView = (props: {
     const { address } = useAccount()
 
     const swapTokens = () => {
-        const _input = inputToken ? merge({}, inputToken) : undefined
+        const _input = inputToken ? JSON.parse(JSON.stringify(inputToken)) : undefined
         setInputToken(outputToken)
         setOutputToken(_input)
     }
@@ -118,7 +122,7 @@ export const SwapView = (props: {
             return;
         }
 
-        let _reprToken: EVMToken | undefined = props.reprToken;
+        let _reprToken: Token | undefined = props.reprToken;
         if (!reprToken) {
             _reprToken = inputToken || outputToken;
         }
@@ -410,13 +414,15 @@ export const SwapView = (props: {
         <>
             <div className="flex flex-grow flex-col mt-44 sm:mt-24 mx-5 mb-5 gap-3 justify-center">
                 <div className={classNames("flex flex-col-reverse lg:flex-row-reverse justify-center", props.proMode && reprToken && 'gap-5')}>
-                    {props.proMode && reprToken && (<div className="flex flex-col h-full w-full lg:w-96 lg:mt-11 gap-5 order-first lg:order-none">
+                    {/* @TODO: Remove evm filter */}
+                    {props.proMode && reprToken && reprToken.type === 'evm' && (<div className="flex flex-col h-full w-full lg:w-96 lg:mt-11 gap-5 order-first lg:order-none">
                         {reprToken && reprTokenInfo && reprTokenPairs && <TokenInfo token={reprToken} pairs={reprTokenPairs} info={reprTokenInfo} />}
                         {/* <div className=" bg-darkblue border-activeblue border-2 p-5 rounded-xl"> */}
                             <TwitterEmbed screenName={screenName} />
                         {/* </div> */}
                     </div>)}
-                    {props.proMode && reprToken && reprTokenInfo && reprTokenPairs && <div className="flex flex-col flex-grow gap-5 lg:mt-11 min-h-[400px] order-first lg:order-none">
+                    {/* @TODO: Remove evm filter */}
+                    {props.proMode && reprToken && reprToken.type === 'evm' && reprTokenInfo && reprTokenPairs && <div className="flex flex-col flex-grow gap-5 lg:mt-11 min-h-[400px] order-first lg:order-none">
                         <TokenInfoHeader token={reprToken} reprPair={reprTokenPairs.find((pair) => pair.data.address === reprTokenInfo.data.reprPair.id.pair)} info={reprTokenInfo} />
                         <MainPanel token={reprToken} tokenInfo={reprTokenInfo} />
                     </div>}
@@ -584,7 +590,7 @@ export const SwapView = (props: {
                                 outputToken={outputToken}
                                 inputTokenSellTax={inputTokenSellTax}
                                 inputAmount={inputAmount}
-                                inputAmountInUsd={(inputAmount && inputToken) ? inputAmount * parseFloat(inputToken.token.usdPrice) : undefined}
+                                inputAmountInUsd={(inputAmount && inputToken) ? inputAmount * (inputTokenPrice ?? 0) : undefined}
                                 setShowRecentTrades={props.setShowRecentTrades}
                             />
 

@@ -1,5 +1,5 @@
 import { classNames } from "@/helpers/classNames";
-import { Chain, NULL_ADDRESS, EVMToken, chainsInfo } from "@/types";
+import { Chain, NULL_ADDRESS, EVMToken, chainsInfo, Token } from "@/types";
 import Image from "next/image";
 import { useEffect, useRef, useState } from "react";
 import { RxCaretDown } from "react-icons/rx";
@@ -7,6 +7,7 @@ import { TokenSelector } from "./TokenSelector";
 import { TokenImage } from "./TokenImage";
 import { toPrecision } from "@/helpers/number";
 import { TokenImageWithChain } from "./TokenImageWithChain";
+import useTokenPrice from "@/hooks/useTokenPrice";
 
 export const TokenInput = (props: {
     isOtherToken?: boolean;
@@ -14,17 +15,18 @@ export const TokenInput = (props: {
     amount?: number;
     externalAmount?: number;
     setInputAmount?: (amount: number) => void;
-    token?: EVMToken;
-    setToken: (token: EVMToken) => void;
+    token?: Token;
+    setToken: (token: Token) => void;
     selectedChain?: Chain;
     setSelectedChain?: (chain?: Chain) => void;
-    otherToken?: EVMToken;
+    otherToken?: Token;
     disabled?: boolean;
     noNative?: boolean;
 }) => {
     const [showSelector, setShowSelector] = useState(false);
 
     const inputRef = useRef<HTMLInputElement>(null);
+    const { data: price } = useTokenPrice(props.token);
 
     useEffect(() => {
         if (!inputRef.current || !props.externalAmount) {
@@ -107,12 +109,11 @@ export const TokenInput = (props: {
                         </div>
                     )}
                     <div className="text-sm font-normal text-slate-500 leading-5">
-                        {props.amount && props.token?.token?.usdPrice && parseFloat(props.token.token.usdPrice) > 0 ? (
+                        {props.amount && price && price > 0 ? (
                             <>
                                 $
                                 {toPrecision(
-                                    props.amount *
-                                        parseFloat(props.token.token.usdPrice),
+                                    props.amount * price,
                                     4
                                 )}
                             </>

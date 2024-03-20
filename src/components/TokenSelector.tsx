@@ -2,7 +2,7 @@ import Image from "next/image";
 import { classNames } from "@/helpers/classNames";
 import { useAsyncEffect } from "@/hooks/useAsyncEffect";
 import useOutsideClick from "@/hooks/useOutsideClick";
-import { Chain, NULL_ADDRESS, RubicToken, EVMToken, chainsInfo } from "@/types";
+import { NULL_ADDRESS, RubicToken, EVMToken, chainsInfo, Token, Chain } from "@/types";
 import { useEffect, useRef, useState } from "react";
 import { ImCross } from "react-icons/im";
 import { BiLinkExternal } from "react-icons/bi";
@@ -91,8 +91,8 @@ export const TokenSelector = (props: {
     setShow?: (show: boolean) => void;
     selectedChain?: Chain;
     setSelectedChain?: (chain?: Chain) => void;
-    setToken: (token: EVMToken) => void;
-    otherToken?: EVMToken
+    setToken: (token: Token) => void;
+    otherToken?: Token
     noNative?: boolean;
 }) => {
     const [tokens, setTokens] = useState<RubicToken[] | null>();

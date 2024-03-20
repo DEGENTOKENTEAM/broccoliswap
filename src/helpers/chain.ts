@@ -1,4 +1,4 @@
-import { chainsInfo } from '@/types'
+import { Chain, Token, chainsInfo } from '@/types'
 
 export const chainFromChainId = (id?: number) => {
     if (!id) {
@@ -44,4 +44,21 @@ export const blockchainNameToChain = (blockchain?: string) => {
     }
 
     return chain
+}
+
+export const getTokenLogo = (token: Token) => {
+    if (token.type === 'solana') {
+        return token.token.logoURI;
+    }
+
+    return token.token.image;
+}
+
+
+export const getChainLogo = (token: Token) => {
+    if (token.type === 'solana') {
+        return 'solana.svg';
+    }
+
+    return chainsInfo[token.chain].logo;
 }

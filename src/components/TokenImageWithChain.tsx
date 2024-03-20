@@ -1,11 +1,12 @@
-import { Chain, NULL_ADDRESS, EVMToken, chainsInfo } from "@/types"
+import { Chain, NULL_ADDRESS, EVMToken, chainsInfo, Token } from "@/types"
 import { TokenImage } from "./TokenImage"
+import { getChainLogo, getTokenLogo } from "@/helpers/chain"
 
-export const TokenImageWithChain = (props: { token: EVMToken, size?: number }) => {
+export const TokenImageWithChain = (props: { token: Token, size?: number }) => {
     return (
         <div className="relative">
             <TokenImage
-                src={props.token.token.image}
+                src={getTokenLogo(props.token)}
                 symbol={props.token.token.symbol}
                 size={props.size || 24}
             />
@@ -13,10 +14,7 @@ export const TokenImageWithChain = (props: { token: EVMToken, size?: number }) =
             {(props.token.token.address !== NULL_ADDRESS || props.token.chain === Chain.ARBITRUM) && (
                 <div className="absolute left-2 top-2">
                     <TokenImage
-                        src={`/chains/${
-                            chainsInfo[props.token.chain]
-                                .logo
-                        }`}
+                        src={`/chains/${getChainLogo(props.token)}`}
                         symbol={props.token.token.symbol}
                         size={14}
                     />
