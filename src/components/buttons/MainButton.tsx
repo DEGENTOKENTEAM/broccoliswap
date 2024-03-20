@@ -1,5 +1,5 @@
 import { calculateSwap } from "@/helpers/swap";
-import { Chain, Token, chainsInfo } from "@/types";
+import { Chain, EVMToken, chainsInfo } from "@/types";
 import { SwapButton } from "./SwapButton";
 import { bridgeConfigs } from "@/helpers/celer";
 import CelerBridgeButton from "./CelerBridgeButton";
@@ -7,9 +7,9 @@ import CelerBridgeButton from "./CelerBridgeButton";
 export default function MainButton(props: {
     tradeLoading: boolean;
     trades?: Awaited<Awaited<ReturnType<typeof calculateSwap>>['trade']>;
-    onSwapDone?: (tx: string, swapInputChain: Chain, swapOutputChain: Chain, swapInputToken: Token, swapOutputToken: Token) => void;
-    inputToken?: Token,
-    outputToken?: Token,
+    onSwapDone?: (tx: string, swapInputChain: Chain, swapOutputChain: Chain, swapInputToken: EVMToken, swapOutputToken: EVMToken) => void;
+    inputToken?: EVMToken,
+    outputToken?: EVMToken,
     inputTokenSellTax?: number,
     inputAmountInUsd?: number,
     inputAmount?: number,

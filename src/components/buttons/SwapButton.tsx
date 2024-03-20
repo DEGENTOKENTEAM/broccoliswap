@@ -1,11 +1,7 @@
 import { blockchainNameToChain, blockchainNameToChainID, chainFromChainId } from "@/helpers/chain";
-import { classNames } from "@/helpers/classNames";
-import { toPrecision } from "@/helpers/number";
-import { calculateSwap } from "@/helpers/swap";
-import { SwapType, putHistory } from "@/helpers/txHistory";
+import { putHistory } from "@/helpers/txHistory";
 import { useAsyncEffect } from "@/hooks/useAsyncEffect";
-import { Chain, NULL_ADDRESS, Token, chainsInfo } from "@/types";
-import { waitForTransaction } from "@wagmi/core";
+import { Chain, NULL_ADDRESS, EVMToken, chainsInfo } from "@/types";
 import { ConnectKitButton } from "connectkit";
 import Image from "next/image";
 import { useState } from "react";
@@ -98,9 +94,9 @@ export const SwitchNetworkButton = (props: { targetChainId?: number }) => {
 
 const MaybeSwapButton = (props:{
     trades: OnChainTrade[] | CrossChainTrade[],
-    onSwapDone?: (tx: string, swapInputChain: Chain, swapOutputChain: Chain, swapInputToken: Token, swapOutputToken: Token) => void ,
-    inputToken?: Token,
-    outputToken?: Token,
+    onSwapDone?: (tx: string, swapInputChain: Chain, swapOutputChain: Chain, swapInputToken: EVMToken, swapOutputToken: EVMToken) => void ,
+    inputToken?: EVMToken,
+    outputToken?: EVMToken,
     inputTokenSellTax?: number
 }) => {
     const { address } = useAccount();
@@ -342,9 +338,9 @@ const MaybeSwapButton = (props:{
 export const SwapButton = (props: {
     tradeLoading: boolean;
     trades?: OnChainTrade[] | (CrossChainTrade | null)[] | string;
-    onSwapDone?: (tx: string, swapInputChain: Chain, swapOutputChain: Chain, swapInputToken: Token, swapOutputToken: Token) => void;
-    inputToken?: Token,
-    outputToken?: Token,
+    onSwapDone?: (tx: string, swapInputChain: Chain, swapOutputChain: Chain, swapInputToken: EVMToken, swapOutputToken: EVMToken) => void;
+    inputToken?: EVMToken,
+    outputToken?: EVMToken,
     inputTokenSellTax?: number,
     inputAmountInUsd?: number,
     inputAmount?: number

@@ -65,6 +65,7 @@ const searchTokenOnRubic = async (network: Chain, filterTxt?: string, noNative?:
 
         if (token) {
             return [{
+                type: 'evm',
                 address: filterTxt,
                 name: token.name,
                 symbol: token.symbol,

@@ -1,16 +1,17 @@
-import { Chain, Token, chainsInfo } from '@/types'
+import { Chain, EVMToken, Token, chainsInfo } from '@/types'
 import { debounce } from './debounce'
 import { BLOCKCHAIN_NAME, CROSS_CHAIN_TRADE_TYPE, CrossChainTradeType, OnChainTrade, WrappedOnChainTradeOrNull } from 'rubic-sdk'
 import { getSDK } from './rubic'
 import { DGNX_ADDRESS, addressHasDisburserRewards } from './dgnx'
 import { bridgeConfigs, getEstimation } from './celer'
+import { guardEVM } from './guard'
 
 const calculateBestSwap = async (
     slippage: number,
-    inputToken: Token,
+    inputToken: EVMToken,
     fromAmount: number,
     inputTokenSellTax: number,
-    outputToken: Token,
+    outputToken: EVMToken,
     connectedAddress?: string
 ) => {
     const fromToken = {
@@ -229,12 +230,13 @@ const calculateBestBridge = async (
 
 const calculateBestTrade = async (
     slippage: number,
-    inputToken: Token,
+    inputToken: EVMToken,
     fromAmount: number,
     inputTokenSellTax: number,
-    outputToken: Token,
+    outputToken: EVMToken,
     connectedAddress?: string
 ) => {
+
     // Check if this is a bridge or a swap
     const bridgeRequest = isBridgeRequest(
         inputToken.chain,
@@ -267,8 +269,8 @@ const calculateBestTrade = async (
 let cancel: Function
 const calculate = async (
     connectedAddress: string | undefined,
-    inputToken: Token,
-    outputToken: Token,
+    inputToken: EVMToken,
+    outputToken: EVMToken,
     inputAmount: number,
     inputTokenSellTax: number,
     slippage: number,

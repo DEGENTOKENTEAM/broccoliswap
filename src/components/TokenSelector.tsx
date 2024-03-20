@@ -2,7 +2,7 @@ import Image from "next/image";
 import { classNames } from "@/helpers/classNames";
 import { useAsyncEffect } from "@/hooks/useAsyncEffect";
 import useOutsideClick from "@/hooks/useOutsideClick";
-import { Chain, NULL_ADDRESS, RubicToken, Token, chainsInfo } from "@/types";
+import { Chain, NULL_ADDRESS, RubicToken, EVMToken, chainsInfo } from "@/types";
 import { useEffect, useRef, useState } from "react";
 import { ImCross } from "react-icons/im";
 import { BiLinkExternal } from "react-icons/bi";
@@ -20,7 +20,7 @@ import { subAddress } from "@/helpers/address";
 const TokenListItem = (props: {
     token: RubicToken;
     selectedChain?: Chain;
-    onSelectToken: (token: Token) => void;
+    onSelectToken: (token: EVMToken) => void;
 }) => {
     const { address } = useAccount();
     const { data: balanceData } = useBalance({
@@ -41,7 +41,7 @@ const TokenListItem = (props: {
         <div
             className="hover:bg-activeblue p-3 m-2 rounded-xl cursor-pointer flex gap-3 items-center"
             onClick={() =>
-                props.onSelectToken({ chain: props.selectedChain!, token })
+                props.onSelectToken({ type: 'evm', chain: props.selectedChain!, token })
             }
         >
             <TokenImage src={token.image} symbol={token.symbol} />
@@ -91,8 +91,8 @@ export const TokenSelector = (props: {
     setShow?: (show: boolean) => void;
     selectedChain?: Chain;
     setSelectedChain?: (chain?: Chain) => void;
-    setToken: (token: Token) => void;
-    otherToken?: Token
+    setToken: (token: EVMToken) => void;
+    otherToken?: EVMToken
     noNative?: boolean;
 }) => {
     const [tokens, setTokens] = useState<RubicToken[] | null>();
@@ -212,7 +212,7 @@ export const TokenSelector = (props: {
                                           key={token.address}
                                           token={token}
                                           selectedChain={props.selectedChain}
-                                          onSelectToken={(token: Token) => {
+                                          onSelectToken={(token: EVMToken) => {
                                               props.setToken(token);
                                               props.setShow?.(false);
                                           }}

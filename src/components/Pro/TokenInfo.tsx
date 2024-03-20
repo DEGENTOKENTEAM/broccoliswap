@@ -1,14 +1,12 @@
 import { Tooltip } from 'react-tooltip'
-import { subAddress } from "@/helpers/address";
 import { toPrecision } from "@/helpers/number";
 import { getTokenTaxes } from "@/helpers/tokenTax";
 import { useAsyncEffect } from "@/hooks/useAsyncEffect";
-import { Token, chainsInfo } from "@/types";
-import Link from "next/link";
+import { EVMToken, chainsInfo } from "@/types";
 import { useMemo, useState } from "react";
-import { BiCheckCircle, BiLinkExternal } from "react-icons/bi";
+import { BiCheckCircle } from "react-icons/bi";
 import { Info, Pair } from "./types";
-import { FaGlobe, FaDiscord, FaTelegram, FaTiktok, FaInstagram, FaGithub, FaReddit, FaMedium, FaYoutube, FaCheck } from "react-icons/fa";
+import { FaGlobe, FaDiscord, FaTelegram, FaTiktok, FaInstagram, FaGithub, FaReddit, FaMedium, FaYoutube } from "react-icons/fa";
 import { FaXTwitter } from "react-icons/fa6";
 import Tabs from "../Tabs";
 import { UseQueryResult, useQuery } from "react-query";
@@ -16,9 +14,8 @@ import { GOPLUS_CREATOR_PERCENT_ERROR_THRESHOLD, GOPLUS_CREATOR_PERCENT_WARNING_
 import { classNames } from "@/helpers/classNames";
 
 import 'react-tooltip/dist/react-tooltip.css'
-import { IoMdHelpCircle, IoMdHelpCircleOutline } from 'react-icons/io';
+import { IoMdHelpCircleOutline } from 'react-icons/io';
 import { PiWarningBold } from 'react-icons/pi';
-import { IoClose } from 'react-icons/io5';
 import Address from '../Address';
 
 const SocialLink = (props: { children: any; link: string }) => {
@@ -27,7 +24,7 @@ const SocialLink = (props: { children: any; link: string }) => {
     )
 }
 
-const InfoTab = (props: { token: Token; info: Info, pairs: Pair[] }) => {
+const InfoTab = (props: { token: EVMToken; info: Info, pairs: Pair[] }) => {
     const { info, pairs } = props;
     const [tokenTax, setTokenTax] = useState<Awaited<ReturnType<typeof getTokenTaxes>>>()
 
@@ -163,7 +160,7 @@ const SecurityTabItem = (props: {
     )
 };
 
-const SecurityTab = (props: { token: Token; data: UseQueryResult<GoPlusTokenReponse>['data'] }) => {
+const SecurityTab = (props: { token: EVMToken; data: UseQueryResult<GoPlusTokenReponse>['data'] }) => {
     // Descriptions: https://pkg.go.dev/github.com/GoPlusSecurity/goplus-sdk-go/pkg/gen/models
     return (
         <div>
@@ -345,7 +342,7 @@ const SecurityTab = (props: { token: Token; data: UseQueryResult<GoPlusTokenRepo
     );
 }
 
-export const TokenInfo = (props: { token: Token; info: Info, pairs: Pair[] }) => {
+export const TokenInfo = (props: { token: EVMToken; info: Info, pairs: Pair[] }) => {
     const [selectedTab, setSelectedTab] = useState(0);
 
     const { data: securityData } = useQuery(['tokenSecurity', props.token.token.address, props.token.chain], async () => {

@@ -1,7 +1,7 @@
 import merge from 'deepmerge'
 import { TokenInput } from '@/components/TokenInput'
 import { SwapTokens } from '@/components/SwapTokens'
-import { Chain, NULL_ADDRESS, RubicToken, Token, chainsInfo } from '@/types'
+import { Chain, EVMToken, NULL_ADDRESS, RubicToken, Token, chainsInfo } from '@/types'
 import { useEffect, useMemo, useState } from 'react'
 import { calculateSwap } from '@/helpers/swap'
 import { useAsyncEffect } from '@/hooks/useAsyncEffect'
@@ -34,24 +34,25 @@ import { TwitterEmbed } from '@/components/Pro/TwitterEmbed'
 import { Info, Pair } from '@/components/Pro/types'
 import Button from '@/components/buttons/MainButton'
 import MainPanel from '@/components/Pro/MainPanel'
+import { guardEVM } from '@/helpers/guard'
 
 export const SwapView = (props: {
     showRecentTrades?: boolean
     setShowRecentTrades?: (show: boolean) => void
     proMode: boolean;
     setProMode: (x: boolean) => void;
-    reprToken: Token;
-    setReprToken: (x: Token) => void;
+    reprToken: EVMToken;
+    setReprToken: (x: EVMToken) => void;
 }) => {
     const { reprToken, setReprToken } = props;
     const [reprTokenInfo, setReprTokenInfo] = useState<Info | undefined>()
     const [reprTokenPairs, setReprTokenPairs] = useState<Pair[] | undefined>()
 
-    const [inputToken, setInputToken] = useState<Token | undefined>()
+    const [inputToken, setInputToken] = useState<EVMToken | undefined>()
     const [inputChain, setInputChain] = useState<Chain>()
     const [shared, setShared] = useState(false);
     const [shareLoading, setShareLoading] = useState(false);
-    const [outputToken, setOutputToken] = useState<Token | undefined>()
+    const [outputToken, setOutputToken] = useState<EVMToken | undefined>()
     const [outputChain, setOutputChain] = useState<Chain>()
     const [inputAmount, setInputAmount] = useState<number>()
 
@@ -69,8 +70,8 @@ export const SwapView = (props: {
         tx: string
         inputChain: Chain
         outputChain: Chain,
-        inputToken: Token,
-        outputToken: Token,
+        inputToken: EVMToken,
+        outputToken: EVMToken,
     }>()
 
     const [forceRefreshVar, forceRefresh] = useState(0)
@@ -94,7 +95,8 @@ export const SwapView = (props: {
         setOutputToken(_input)
     }
 
-    const addTokenToWallet = (token: Token) => {
+    const addTokenToWallet = (_token: Token) => {
+        const token = guardEVM(_token);
         // @ts-ignore
         window.ethereum?.request({
             "method": "wallet_watchAsset",
@@ -116,7 +118,7 @@ export const SwapView = (props: {
             return;
         }
 
-        let _reprToken: Token | undefined = props.reprToken;
+        let _reprToken: EVMToken | undefined = props.reprToken;
         if (!reprToken) {
             _reprToken = inputToken || outputToken;
         }
@@ -160,9 +162,8 @@ export const SwapView = (props: {
             if (result.pro) {
                 setInputChain(result.inputChain)
                 const inputToken = await searchToken(result.inputChain, result.inputToken);
-                setInputToken({ token: inputToken[0], chain: result.inputChain })
+                setInputToken({ type: 'evm', token: inputToken[0], chain: result.inputChain })
                 props.setProMode(true);
-
             } else {
                 setInputChain(result.inputChain)
                 setOutputChain(result.outputChain)
@@ -170,8 +171,8 @@ export const SwapView = (props: {
                     searchToken(result.inputChain, result.inputToken),
                     searchToken(result.outputChain, result.outputToken),
                 ])
-                setInputToken({ token: inputToken[0], chain: result.inputChain })
-                setOutputToken({ token: outputToken[0], chain: result.outputChain })
+                setInputToken({ type: 'evm', token: inputToken[0], chain: result.inputChain })
+                setOutputToken({ type: 'evm', token: outputToken[0], chain: result.outputChain })
                 setInputAmount(parseFloat(result.amount!))
                 setExternallySetAmount(parseFloat(result.amount!))
             }
@@ -187,7 +188,7 @@ export const SwapView = (props: {
                     qs.get('inputToken') || undefined
                 )
                 if (token) {
-                    setInputToken({ token, chain: inputChain })
+                    setInputToken({ type: 'evm', token, chain: inputChain })
                 }
             }
         }
@@ -204,7 +205,7 @@ export const SwapView = (props: {
                     qs.get('outputToken') || undefined
                 )
                 if (token) {
-                    setOutputToken({ token, chain: outputChain })
+                    setOutputToken({ type: 'evm', token, chain: outputChain })
                 }
             }
         }
@@ -567,8 +568,8 @@ export const SwapView = (props: {
                                     tx: string,
                                     swapInputChain: Chain,
                                     swapOutputChain: Chain,
-                                    swapInputToken: Token,
-                                    swapOutputToken: Token
+                                    swapInputToken: EVMToken,
+                                    swapOutputToken: EVMToken
                                 ) => {
                                     setSwapSuccessTx({
                                         tx,

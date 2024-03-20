@@ -1,4 +1,4 @@
-import { Token, chainsInfo } from "@/types";
+import { EVMToken, chainsInfo } from "@/types";
 import { Info } from "./types";
 import { useState } from "react";
 import Tabs from "../Tabs";
@@ -12,7 +12,7 @@ import { Tooltip } from "react-tooltip";
 import Link from "next/link";
 import { BiLinkExternal } from "react-icons/bi";
 
-const HoldersPanel = (props: { token: Token }) => {
+const HoldersPanel = (props: { token: EVMToken }) => {
     const { data } = useQuery(['tokenSecurity', props.token.token.address, props.token.chain], async () => {
         return getTokenSecurity(chainsInfo[props.token.chain].id, props.token.token.address);
     });
@@ -131,7 +131,7 @@ const HoldersPanel = (props: { token: Token }) => {
     )
 }
 
-export default function MainPanel(props: { token: Token; tokenInfo: Info }) {
+export default function MainPanel(props: { token: EVMToken; tokenInfo: Info }) {
     const [selectedTab, setSelectedTab] = useState(0);
 
     const tabs = [

@@ -1,20 +1,15 @@
-import { Token, chainsInfo } from "@/types";
-import { TokenImage } from "../TokenImage";
+import { EVMToken, chainsInfo } from "@/types";
 import { TokenImageWithChain } from "../TokenImageWithChain";
 import { BsShareFill } from "react-icons/bs";
 import { toPrecision } from "@/helpers/number";
-import { FaDiscord, FaGithub, FaGlobe, FaInstagram, FaMedium, FaReddit, FaTelegram, FaTiktok, FaYoutube } from "react-icons/fa";
-import { FaXTwitter } from "react-icons/fa6";
 import React, { useMemo, useState } from "react";
-import { linkSync } from "fs";
-import { IconType } from "react-icons";
 import { BiTrendingDown, BiTrendingUp } from "react-icons/bi";
 import { classNames } from "@/helpers/classNames";
 import { Info, Pair } from "./types";
 import { notify } from "@/helpers/errorReporting";
 import { Spinner } from "../Spinner";
 
-export const TokenInfoHeader = (props: { token: Token; reprPair?: Pair, info: Info }) => {
+export const TokenInfoHeader = (props: { token: EVMToken; reprPair?: Pair, info: Info }) => {
     const { reprPair, info } = props;
     const [shared, setShared] = useState(false);
     const [shareLoading, setShareLoading] = useState(false);

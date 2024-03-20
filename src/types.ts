@@ -33,6 +33,7 @@ export const rubicRPCEndpoints = {
 }
 
 export type RubicToken = {
+    type: 'evm';
     address: string;
     name: string;
     symbol: string;
@@ -54,9 +55,19 @@ export type RubicToken = {
 }
 
 export type Token = {
+    type: 'evm';
     chain: Chain;
     token: RubicToken;
+} | {
+    type: 'solana';
+    chain: Chain;
+    token: {
+        mint: string;
+    };
 }
+
+export type EVMToken = Extract<Token, { type: 'evm' }>;
+export type SolanaToken = Extract<Token, { type: 'solana' }>;
 
 export const chainsInfo = {
     [Chain.ETH]: {
@@ -174,3 +185,18 @@ export const chainsInfo = {
         celerBridgeAddress: '0xnoaddress' as const,
     },
 }
+
+export const solanaChainInfo = {
+    type: 'solana',
+    name: 'Solana',
+    symbol: 'sol',
+    logo: 'solana.svg',
+    rubicName: 'solana',
+    explorer: 'https://solscan.io/',
+    rubicSdkChainName: BLOCKCHAIN_NAME.SOLANA,
+    bitqueryChainName: 'solana',
+    rpc: 'https://mainnet.helius-rpc.com/?api-key=b6347ea3-e68f-4bea-88c7-e4d9daee0cef',
+    nativeTokenSymbol: 'SOL',
+    dextoolsChartWidgetChainName: 'solana',
+    dextoolsSlug: 'solana',
+};

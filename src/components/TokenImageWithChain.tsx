@@ -1,7 +1,7 @@
-import { Chain, NULL_ADDRESS, Token, chainsInfo } from "@/types"
+import { Chain, NULL_ADDRESS, EVMToken, chainsInfo } from "@/types"
 import { TokenImage } from "./TokenImage"
 
-export const TokenImageWithChain = (props: { token: Token, size?: number }) => {
+export const TokenImageWithChain = (props: { token: EVMToken, size?: number }) => {
     return (
         <div className="relative">
             <TokenImage

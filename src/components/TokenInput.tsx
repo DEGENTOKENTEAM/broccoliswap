@@ -1,5 +1,5 @@
 import { classNames } from "@/helpers/classNames";
-import { Chain, NULL_ADDRESS, Token, chainsInfo } from "@/types";
+import { Chain, NULL_ADDRESS, EVMToken, chainsInfo } from "@/types";
 import Image from "next/image";
 import { useEffect, useRef, useState } from "react";
 import { RxCaretDown } from "react-icons/rx";
@@ -14,11 +14,11 @@ export const TokenInput = (props: {
     amount?: number;
     externalAmount?: number;
     setInputAmount?: (amount: number) => void;
-    token?: Token;
-    setToken: (token: Token) => void;
+    token?: EVMToken;
+    setToken: (token: EVMToken) => void;
     selectedChain?: Chain;
     setSelectedChain?: (chain?: Chain) => void;
-    otherToken?: Token;
+    otherToken?: EVMToken;
     disabled?: boolean;
     noNative?: boolean;
 }) => {
