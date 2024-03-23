@@ -53,14 +53,14 @@ type TokenInfo = {
 export type GoPlusTokenReponse = {
     buy_tax: number;
     sell_tax: number;
-    tokenInfo: TokenInfo;
+    tokenInfo?: TokenInfo;
     hasWarning?: boolean;
     hasError?: boolean;
     whitelisted?: boolean;
 }
 
 const cache: Record<string, GoPlusTokenReponse> = {}
-export const getTokenSecurity = async (chainId: number, tokenAddress: string): Promise<GoPlusTokenReponse> => {
+export const getTokenSecurity = async (chainId: number, tokenAddress: string): Promise<GoPlusTokenReponse | undefined> => {
     if (cache[`${chainId}-${tokenAddress}`]) {
         return cache[`${chainId}-${tokenAddress}`];
     }
@@ -68,6 +68,10 @@ export const getTokenSecurity = async (chainId: number, tokenAddress: string): P
     const response = await fetch(`https://api.gopluslabs.io/api/v1/token_security/${chainId}?contract_addresses=${tokenAddress}`)
     const { result }= await response.json();
     const tokenInfo = Object.values(result)[0] as any;
+
+    if (!tokenInfo) {
+        return undefined;
+    }
 
     const buyTax = 100 * parseFloat(tokenInfo?.buy_tax || '0');
     const sellTax = 100 * parseFloat(tokenInfo?.sell_tax || '0');

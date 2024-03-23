@@ -7,6 +7,7 @@ export enum Chain {
     ARBITRUM = 'ARBITRUM',
     POLYGON = 'POLYGON',
     FANTOM = 'FANTOM',
+    BASE = 'BASE',
 }
 
 export const NULL_ADDRESS = '0x0000000000000000000000000000000000000000'
@@ -29,6 +30,9 @@ export const rubicRPCEndpoints = {
     },
     [BLOCKCHAIN_NAME.FANTOM]: {
         rpcList: ['https://rpc.ftm.tools']
+    },
+    [BLOCKCHAIN_NAME.BASE]: {
+        rpcList: ['https://base.gateway.tenderly.co']
     }
 }
 
@@ -194,6 +198,25 @@ export const chainsInfo = {
         nativeTokenSymbol: 'FTM',
         dextoolsChartWidgetChainName: 'fantom',
         dextoolsSlug: 'fantom',
+        celerBridgeAddress: '0xnoaddress' as const,
+    },
+    [Chain.BASE]: {
+        chain: Chain.BASE,
+        id: 8453,
+        name: 'Base',
+        symbol: 'base',
+        logo: 'base.svg',
+        rubicName: 'base',
+        explorer: 'https://basescan.org/',
+        rubicSdkChainName: BLOCKCHAIN_NAME.BASE,
+        bitqueryChainName: 'base',
+        honeyPotCheckerContract: '',
+        honeyPotCheckerRouter: '',
+        honeyPotCheckerAddress: '',
+        rpc: 'https://base.gateway.tenderly.co',
+        nativeTokenSymbol: 'ETH',
+        dextoolsChartWidgetChainName: 'base',
+        dextoolsSlug: 'base',
         celerBridgeAddress: '0xnoaddress' as const,
     },
 }

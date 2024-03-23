@@ -95,6 +95,18 @@ export const getTokenTaxes = async (
   chain: Chain,
   token: string
 ) => {
+  if (!chainsInfo[chain].honeyPotCheckerContract
+    || !chainsInfo[chain].honeyPotCheckerRouter
+    || !chainsInfo[chain].honeyPotCheckerAddress) {
+    return {
+      buyTax: -1,
+      sellTax: -1,
+      buyGasCost: 0,
+      sellGasCost: 0,
+      isHoneypot: 0,
+    }
+  }
+
     if (cache[`${chain}-${token}`]) {
         return cache[`${chain}-${token}`];
     }

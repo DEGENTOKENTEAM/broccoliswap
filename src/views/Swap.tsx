@@ -272,8 +272,8 @@ export const SwapView = (props: {
                 ),
             ])
 
-            _inputTokenSellTax = _inputGPSec.sell_tax;
-            _outputTokenBuyTax = _outputGPSec.buy_tax;
+            _inputTokenSellTax = _inputGPSec?.sell_tax ?? 0;
+            _outputTokenBuyTax = _outputGPSec?.buy_tax ?? 0;
         } else {
             _inputTokenSellTax = inputTokenTaxes.sellTax;
             _outputTokenBuyTax = outputTokenTaxes.buyTax;

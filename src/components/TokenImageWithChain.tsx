@@ -11,7 +11,7 @@ export const TokenImageWithChain = (props: { token: Token, size?: number }) => {
                 size={props.size || 24}
             />
             {/* Arb should always show the chain logo as the native is also ETH */}
-            {(props.token.token.address !== NULL_ADDRESS || props.token.chain === Chain.ARBITRUM) && (
+            {(props.token.token.address !== NULL_ADDRESS || props.token.chain === Chain.ARBITRUM || props.token.chain === Chain.BASE) && (
                 <div className="absolute left-2 top-2">
                     <TokenImage
                         src={`/chains/${getChainLogo(props.token)}`}
