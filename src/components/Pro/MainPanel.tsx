@@ -17,7 +17,7 @@ const HoldersPanel = (props: { token: EVMToken }) => {
         return getTokenSecurity(chainsInfo[props.token.chain].id, props.token.token.address);
     });
 
-    if (!data?.tokenInfo.holders) {
+    if (!data?.tokenInfo?.holders) {
         return <div className="p-5">Loading...</div>
     }
 
