@@ -2,7 +2,7 @@ import Image from "next/image";
 import { classNames } from "@/helpers/classNames";
 import { useAsyncEffect } from "@/hooks/useAsyncEffect";
 import useOutsideClick from "@/hooks/useOutsideClick";
-import { NULL_ADDRESS, RubicToken, EVMToken, chainsInfo, Token, Chain } from "@/types";
+import { NULL_ADDRESS, RubicToken, EVMToken, chainsInfo, Token, Chain, SolanaToken, SolanaTokenInfo, solanaChainInfo } from "@/types";
 import { useEffect, useRef, useState } from "react";
 import { ImCross } from "react-icons/im";
 import { BiLinkExternal } from "react-icons/bi";
@@ -17,7 +17,7 @@ import { SubHeader } from "./SubHeader";
 import { chainFromChainId } from "@/helpers/chain";
 import { subAddress } from "@/helpers/address";
 
-const TokenListItem = (props: {
+const RubicTokenListItem = (props: {
     token: RubicToken;
     selectedChain?: Chain;
     onSelectToken: (token: EVMToken) => void;
@@ -74,6 +74,54 @@ const TokenListItem = (props: {
     );
 };
 
+const SolanaTokenListItem = (props: {
+    token: SolanaTokenInfo;
+    selectedChain?: 'solana';
+    onSelectToken: (token: SolanaToken) => void;
+}) => {
+    const { address } = useAccount();
+
+    if (!props.selectedChain) {
+        return null;
+    }
+
+    const token = props.token;
+    return (
+        <div
+            className="hover:bg-activeblue p-3 m-2 rounded-xl cursor-pointer flex gap-3 items-center"
+            onClick={() =>
+                props.onSelectToken({ type: 'solana', chain: 'solana', token })
+            }
+        >
+            <TokenImage src={token.logoURI} symbol={token.symbol} />
+            <div className="flex flex-col flex-grow">
+                <div className="flex items-center gap-4">
+                    <div className="leading-5 text-light-200">{token.symbol}</div>
+                    {!token.address.startsWith("0x00000000000000") && (
+                        <div className="text-xs bg-dark py-0.5 px-1.5 rounded">
+                            <Link
+                                href={`${solanaChainInfo.explorer}token/${token.address}`}
+                                target="_blank"
+                                onClick={e => e.stopPropagation()}
+                                className="flex items-center gap-1"
+                            >
+                                    {subAddress(token.address)}{" "}
+                                    <BiLinkExternal />
+                            </Link>
+                        </div>
+                    )}
+                </div>
+                <div className="text-xs leading-5">{token.name}</div>
+            </div>
+            {/* @TODO add balance */}
+            {/* {(balanceData?.value || 0) > 0 && <div className="flex flex-col gap-0 text-right">
+                <div className="text-light-200 text-lg leading-5">{toPrecision(parseFloat(balanceData?.formatted || ''), 4)}</div>
+                <div className="text-sm">{props.token.usdPrice && props.token.usdPrice !== '0' && `$${toPrecision(parseFloat(balanceData?.formatted || '') * parseFloat(props.token.usdPrice), 4)}`}</div>
+            </div>} */}
+        </div>
+    );
+};
+
 const TokenListSkeletonItem = () => {
     return (
         <div className="hover:bg-slate-500 p-3 mr-2 rounded-xl cursor-pointer flex gap-3 items-center">
@@ -89,14 +137,13 @@ const TokenListSkeletonItem = () => {
 export const TokenSelector = (props: {
     show?: boolean;
     setShow?: (show: boolean) => void;
-    selectedChain?: Chain;
-    setSelectedChain?: (chain?: Chain) => void;
     setToken: (token: Token) => void;
     otherToken?: Token
     noNative?: boolean;
 }) => {
-    const [tokens, setTokens] = useState<RubicToken[] | null>();
+    const [tokens, setTokens] = useState<(RubicToken | SolanaTokenInfo)[] | null>();
     const [searchFilter, setSearchFilter] = useState("");
+    const [selectedChain, setSelectedChain] = useState<Chain | 'solana'>();
 
     const { chain } = useNetwork();
 
@@ -115,28 +162,39 @@ export const TokenSelector = (props: {
         if (props.show) {
             setTokens(null)
             setSearchFilter('')
-            props.setSelectedChain?.(chain && chainFromChainId(chain.id)?.chain)
+            setSelectedChain?.(chain && chainFromChainId(chain.id)?.chain)
         }
     }, [props.show])
     useDisableScroll(props.show);
 
     useAsyncEffect(async () => {
-        if (!props.show || !props.selectedChain) {
+        if (!props.show || !selectedChain) {
             return;
         }
 
         setTokens(null);
-        const tokens: RubicToken[] = await searchToken(props.selectedChain, searchFilter, props.noNative);
+
+        if (selectedChain === 'solana') {
+            // @TODO filter tokens using token list api
+            setTokens([]);
+            return;
+        }
+
+        const tokens: RubicToken[] = await searchToken(selectedChain, searchFilter, props.noNative);
 
         // Filter other token
         setTokens(tokens.filter(token => {
-            if (props.otherToken && props.otherToken.chain === props.selectedChain && props.otherToken.token.address === token.address) {
+            if (props.otherToken?.type !== 'evm') {
+                return true;
+            }
+
+            if (props.otherToken && props.otherToken.chain === selectedChain && props.otherToken.token.address === token.address) {
                 return false;
             }
 
             return true;
         }));
-    }, [props.show, props.selectedChain, searchFilter]);
+    }, [props.show, selectedChain, searchFilter]);
 
     const debouncedSearchFilter = debounce(setSearchFilter, 500);
 
@@ -164,17 +222,17 @@ export const TokenSelector = (props: {
                             <div
                                 key={chainInfo.id}
                                 onClick={() => {
-                                    if (props.selectedChain === chain) {
+                                    if (selectedChain === chain) {
                                         return;
                                     }
-                                    props.setSelectedChain?.(
+                                    setSelectedChain?.(
                                         Chain[chain as keyof typeof Chain]
                                     );
                                     setTokens(null);
                                 }}
                                 className={classNames(
                                     "p-3 border-2 rounded-xl cursor-pointer transition-colors ease-in flex flex-col items-center w-20 gap-2",
-                                    props.selectedChain === chain
+                                    selectedChain === chain
                                         ? "bg-activeblue border-activeblue"
                                         : "border-activeblue hover:bg-activeblue"
                                 )}
@@ -189,9 +247,32 @@ export const TokenSelector = (props: {
                             </div>
                         );
                     })}
+                    {/* <div
+                        onClick={() => {
+                            if (selectedChain === 'solana') {
+                                return;
+                            }
+                            setSelectedChain('solana');
+                            setTokens(null);
+                        }}
+                        className={classNames(
+                            "p-3 border-2 rounded-xl cursor-pointer transition-colors ease-in flex flex-col items-center w-20 gap-2",
+                            selectedChain === 'solana'
+                                ? "bg-activeblue border-activeblue"
+                                : "border-activeblue hover:bg-activeblue"
+                        )}
+                    >
+                        <Image
+                            width={36}
+                            height={36}
+                            alt={'Solana'}
+                            src={`/chains/${solanaChainInfo.logo}`}
+                        />
+                        {solanaChainInfo.symbol.toUpperCase()}
+                    </div> */}
                 </div>
 
-                {props.selectedChain && (
+                {selectedChain && (
                     <>
                         <SubHeader className="my-3 text-light-200">
                             Select Token
@@ -205,13 +286,13 @@ export const TokenSelector = (props: {
                                 debouncedSearchFilter(e.target.value)
                             }
                         />
-                        <div className="max-h-[calc(80vh-200px)] overflow-auto scrollbar-thin scrollbar-thumb-activeblue">
+                        {selectedChain !== 'solana' && <div className="max-h-[calc(80vh-200px)] overflow-auto scrollbar-thin scrollbar-thumb-activeblue">
                             {tokens
-                                ? tokens.map(token => (
-                                      <TokenListItem
+                                ? tokens.filter((token): token is RubicToken => !!token).map((token) => (
+                                      <RubicTokenListItem
                                           key={token.address}
                                           token={token}
-                                          selectedChain={props.selectedChain}
+                                          selectedChain={selectedChain}
                                           onSelectToken={(token: EVMToken) => {
                                               props.setToken(token);
                                               props.setShow?.(false);
@@ -223,7 +304,27 @@ export const TokenSelector = (props: {
                                       .map((_, i) => (
                                           <TokenListSkeletonItem key={i} />
                                       ))}
-                        </div>
+                        </div>}
+
+                        {selectedChain === 'solana' && <div className="max-h-[calc(80vh-200px)] overflow-auto scrollbar-thin scrollbar-thumb-activeblue">
+                            {tokens
+                                ? tokens.filter((token): token is SolanaTokenInfo => !!token).map((token) => (
+                                      <SolanaTokenListItem
+                                          key={token.address}
+                                          token={token}
+                                          selectedChain={selectedChain}
+                                          onSelectToken={(token: SolanaToken) => {
+                                              props.setToken(token);
+                                              props.setShow?.(false);
+                                          }}
+                                      />
+                                  ))
+                                : Array(10)
+                                      .fill(null)
+                                      .map((_, i) => (
+                                          <TokenListSkeletonItem key={i} />
+                                      ))}
+                        </div>}
                     </>
                 )}
             </div>

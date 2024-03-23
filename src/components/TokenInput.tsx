@@ -17,8 +17,6 @@ export const TokenInput = (props: {
     setInputAmount?: (amount: number) => void;
     token?: Token;
     setToken: (token: Token) => void;
-    selectedChain?: Chain;
-    setSelectedChain?: (chain?: Chain) => void;
     otherToken?: Token;
     disabled?: boolean;
     noNative?: boolean;
@@ -127,8 +125,6 @@ export const TokenInput = (props: {
             <TokenSelector
                 show={showSelector}
                 setShow={setShowSelector}
-                selectedChain={props.selectedChain}
-                setSelectedChain={props.setSelectedChain}
                 setToken={props.setToken}
                 otherToken={props.otherToken}
                 noNative={props.noNative}

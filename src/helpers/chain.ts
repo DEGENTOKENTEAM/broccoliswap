@@ -1,4 +1,4 @@
-import { Chain, Token, chainsInfo } from '@/types'
+import { Chain, Token, chainsInfo, solanaChainInfo } from '@/types'
 
 export const chainFromChainId = (id?: number) => {
     if (!id) {
@@ -54,7 +54,6 @@ export const getTokenLogo = (token: Token) => {
     return token.token.image;
 }
 
-
 export const getChainLogo = (token: Token) => {
     if (token.type === 'solana') {
         return 'solana.svg';
@@ -62,3 +61,12 @@ export const getChainLogo = (token: Token) => {
 
     return chainsInfo[token.chain].logo;
 }
+
+export const getDextoolsSlug = (token: Token) => {
+    if (token.type === 'solana') {
+        return solanaChainInfo.dextoolsSlug;
+    }
+
+    return chainsInfo[token.chain].dextoolsSlug;
+}
+

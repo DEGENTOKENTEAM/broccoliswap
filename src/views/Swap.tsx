@@ -36,6 +36,7 @@ import Button from '@/components/buttons/MainButton'
 import MainPanel from '@/components/Pro/MainPanel'
 import { guardEVM } from '@/helpers/guard'
 import useTokenPrice from '@/hooks/useTokenPrice'
+import { getDextoolsSlug } from '@/helpers/chain'
 
 export const SwapView = (props: {
     showRecentTrades?: boolean
@@ -50,11 +51,9 @@ export const SwapView = (props: {
     const [reprTokenPairs, setReprTokenPairs] = useState<Pair[] | undefined>()
 
     const [inputToken, setInputToken] = useState<Token | undefined>()
-    const [inputChain, setInputChain] = useState<Chain>()
     const [shared, setShared] = useState(false);
     const [shareLoading, setShareLoading] = useState(false);
     const [outputToken, setOutputToken] = useState<Token | undefined>()
-    const [outputChain, setOutputChain] = useState<Chain>()
     const [inputAmount, setInputAmount] = useState<number>()
 
     const [inputTokenSellTax, setInputTokenSellTax] = useState<number>()
@@ -132,13 +131,13 @@ export const SwapView = (props: {
         }
 
         const tokenAddress = _reprToken.token.address === NULL_ADDRESS ? '0x0' : _reprToken.token.address;
-        const tokenResponse = await fetch(`${process.env.NEXT_PUBLIC_BACKEND_ENDPOINT}/dextools/token/${chainsInfo[_reprToken.chain].dextoolsSlug}/${tokenAddress}`);
+        const tokenResponse = await fetch(`${process.env.NEXT_PUBLIC_BACKEND_ENDPOINT}/dextools/token/${getDextoolsSlug(_reprToken)}/${tokenAddress}`);
         const tokenResult: { result: Info } = await tokenResponse.json();
         setReprTokenInfo(tokenResult.result);
         
         const pairs = tokenResult.result.data.pairs.length > 0 ? tokenResult.result.data.pairs.slice(0, 5) : [{ address: tokenResult.result.data.reprPair.id.pair }];
         const pairResponses = await Promise.all(pairs.map(pair =>
-            fetch(`${process.env.NEXT_PUBLIC_BACKEND_ENDPOINT}/dextools/pair/${chainsInfo[_reprToken!.chain].dextoolsSlug}/${pair.address}`)
+            fetch(`${process.env.NEXT_PUBLIC_BACKEND_ENDPOINT}/dextools/pair/${getDextoolsSlug(_reprToken!)}/${pair.address}`)
         ));
         const pairResult: { result: Pair }[] = await Promise.all(pairResponses.map((pairResponse) => pairResponse.json()));
         setReprTokenPairs(pairResult.map(({ result }) => result));
@@ -164,13 +163,10 @@ export const SwapView = (props: {
             const { link: result } = await response.json();
 
             if (result.pro) {
-                setInputChain(result.inputChain)
                 const inputToken = await searchToken(result.inputChain, result.inputToken);
                 setInputToken({ type: 'evm', token: inputToken[0], chain: result.inputChain })
                 props.setProMode(true);
             } else {
-                setInputChain(result.inputChain)
-                setOutputChain(result.outputChain)
                 const [inputToken, outputToken] = await Promise.all([
                     searchToken(result.inputChain, result.inputToken),
                     searchToken(result.outputChain, result.outputToken),
@@ -185,7 +181,6 @@ export const SwapView = (props: {
         if (qs.get('inputChain')) {
             const inputChain =
                 Chain[qs.get('inputChain')?.toUpperCase() as keyof typeof Chain]
-            setInputChain(inputChain)
             if (inputChain && qs.get('inputToken')) {
                 const [token]: RubicToken[] = await searchToken(
                     inputChain,
@@ -202,7 +197,6 @@ export const SwapView = (props: {
                 Chain[
                     qs.get('outputChain')?.toUpperCase() as keyof typeof Chain
                 ]
-            setOutputChain(outputChain)
             if (outputChain && qs.get('outputToken')) {
                 const [token]: RubicToken[] = await searchToken(
                     outputChain,
@@ -224,7 +218,7 @@ export const SwapView = (props: {
     }, [])
 
     useAsyncEffect(async () => {
-        if (!address || !inputChain || !signer) {
+        if (!address || !inputToken || !signer) {
             return;
         }
 
@@ -233,7 +227,7 @@ export const SwapView = (props: {
             address,
         })
         forceRefresh(Math.random())
-    }, [address, inputChain, signer])
+    }, [address, inputToken, signer])
 
     useEffect(() => {
         setSlippage(undefined);
@@ -242,6 +236,11 @@ export const SwapView = (props: {
     useAsyncEffect(async () => {
         if (!inputToken || !outputToken || !inputAmount) {
             return
+        }
+
+        // @TODO remove this and make the stuff below compatible
+        if (inputToken.type === 'solana' || outputToken.type === 'solana') {
+            return;
         }
 
         setTrades(undefined)
@@ -336,6 +335,10 @@ export const SwapView = (props: {
 
     const share = () => {
         if(typeof ClipboardItem && navigator.clipboard.write) {
+            if (inputToken?.type === 'solana' || outputToken?.type === 'solana') {
+                // @TODO make solana swap links working
+                return;
+            }
             // NOTE: Safari locks down the clipboard API to only work when triggered
             //   by a direct user interaction. You can't use it async in a promise.
             //   But! You can wrap the promise in a ClipboardItem, and give that to
@@ -460,7 +463,7 @@ export const SwapView = (props: {
                                 {address && inputToken && (
                                     <div className="flex items-center gap-1 text-xs">
                                         <FaWallet />{' '}
-                                        {inputToken && (
+                                        {inputToken && inputToken.type === 'evm' && (
                                             <>
                                                 <BalanceAmount
                                                     refreshProp={forceRefreshVar}
@@ -517,15 +520,13 @@ export const SwapView = (props: {
                                 We make sure at least 0.1 {inputToken?.token.symbol} is in your wallet for gas fees.
                             </div>}
                             <TokenInput
-                                selectedChain={inputChain}
-                                setSelectedChain={setInputChain}
                                 token={inputToken}
                                 setToken={setInputToken}
                                 setInputAmount={setInputAmount}
                                 amount={inputAmount}
                                 externalAmount={externallySetAmount}
                                 otherToken={outputToken}
-                                disabled={props.proMode && inputToken && reprToken && inputToken.chain === reprToken?.chain && inputToken?.token.address === reprToken.token.address}
+                                disabled={props.proMode && inputToken && reprToken && inputToken?.chain === reprToken?.chain && inputToken?.token.address === reprToken.token.address}
                                 noNative={props.proMode && !inputToken && !outputToken}
                             />
 
@@ -536,7 +537,7 @@ export const SwapView = (props: {
                                 {address && outputToken && (
                                     <div className="flex items-center gap-1 text-xs">
                                         <FaWallet />{' '}
-                                        {outputToken && (
+                                        {outputToken && outputToken.type === 'evm' && (
                                             <>
                                                 <BalanceAmount
                                                     refreshProp={forceRefreshVar}
@@ -555,8 +556,6 @@ export const SwapView = (props: {
                                 )}
                             </div>
                             <TokenInput
-                                selectedChain={outputChain}
-                                setSelectedChain={setOutputChain}
                                 token={outputToken}
                                 setToken={setOutputToken}
                                 isOtherToken

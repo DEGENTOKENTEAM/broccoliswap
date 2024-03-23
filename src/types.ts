@@ -74,7 +74,7 @@ export type Token = {
     token: RubicToken;
 } | {
     type: 'solana';
-    chain: Chain;
+    chain: 'solana';
     token: SolanaTokenInfo;
 }
 

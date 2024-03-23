@@ -66,7 +66,6 @@ export const Navbar = (props: {
     setProMode: (x: boolean) => void
 }) => {
     const [showSelector, setShowSelector] = useState(false);
-    const [selectedChain, setSelectedChain] = useState<Chain>();
     const [showSettings, setShowSettings] = useState(false);
 
     return (
@@ -167,8 +166,6 @@ export const Navbar = (props: {
                         <TokenSelector
                             show={showSelector}
                             setShow={setShowSelector}
-                            selectedChain={selectedChain}
-                            setSelectedChain={setSelectedChain}
                             setToken={props.setToken}
                             noNative
                         />

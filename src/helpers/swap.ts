@@ -206,10 +206,10 @@ const isBridgeRequest = (
 
 const calculateBestBridge = async (
     slippage: number,
-    inputToken: Token,
+    inputToken: EVMToken,
     fromAmount: number,
     inputTokenSellTax: number,
-    outputToken: Token,
+    outputToken: EVMToken,
     bridgeConfig: typeof bridgeConfigs[number],
     connectedAddress?: string
 ) => {
