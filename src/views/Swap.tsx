@@ -603,7 +603,7 @@ export const SwapView = (props: {
                                 </div>
                             )}
 
-                            {priceImpact > 5 ? (
+                            {priceImpact > 50 ? (
                                 <div className="bg-dark border-2 border-warning p-3 rounded-xl text-center text-light-200 my-3 font-bold">
                                     The price impact of this swap is high, please consider swapping a lower amount.
                                 </div>
