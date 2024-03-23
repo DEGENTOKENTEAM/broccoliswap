@@ -5,7 +5,7 @@ import type { AppProps } from 'next/app'
 import { useEffect, useState } from 'react'
 import { WagmiConfig, configureChains, createConfig } from 'wagmi'
 import { publicProvider } from 'wagmi/providers/public'
-import { avalanche, bsc, mainnet, arbitrum, polygon, fantom } from 'wagmi/chains'
+import { avalanche, bsc, mainnet, arbitrum, polygon, fantom, base } from 'wagmi/chains'
 import NonSSR from '@/components/NonSSR'
 import { infuraProvider } from 'wagmi/providers/infura'
 import { ConnectKitProvider, getDefaultConfig } from 'connectkit'
@@ -15,7 +15,7 @@ import { Token } from '@/types'
 import { QueryClient, QueryClientProvider } from 'react-query'
 
 const { chains } = configureChains(
-  [mainnet, avalanche, bsc, arbitrum, polygon, fantom],
+  [mainnet, avalanche, bsc, arbitrum, polygon, fantom, base],
   [infuraProvider({ apiKey: process.env.NEXT_PUBLIC_INFURA_ID! }), publicProvider()],
 )
 
