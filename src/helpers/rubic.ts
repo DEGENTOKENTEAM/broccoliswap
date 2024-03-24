@@ -2,6 +2,7 @@ import { Chain, NULL_ADDRESS, RubicToken, chainsInfo, rubicRPCEndpoints } from "
 import { fetchToken } from "wagmi/actions";
 import { Configuration, SDK } from "rubic-sdk";
 import { getTokenInfo } from "./coingecko";
+import { whitelistedTokens } from "./whitelist";
 
 const config: Configuration = {
     rpcProviders: rubicRPCEndpoints,
@@ -35,7 +36,7 @@ const searchTokenOnRubic = async (network: Chain, filterTxt?: string, noNative?:
         dgnx.results[0].image = 'https://assets.rubic.exchange/assets/avalanche/0x51e48670098173025c477d9aa3f0eff7bf9f7812/logo.png';
 
         const rest = await results[1].json();
-        let data = [...dgnx.results, ...rest.results]
+        let data = [...dgnx.results, ...rest.results, ...Object.values(whitelistedTokens[chainsInfo[network].id]).map(x => x.searchInfo).filter(Boolean)]
         if (noNative) {
             data = data.filter((x: any) => x.address !== NULL_ADDRESS);
         }
@@ -55,6 +56,8 @@ const searchTokenOnRubic = async (network: Chain, filterTxt?: string, noNative?:
     if ([Chain.ETH, Chain.ARBITRUM].includes(network) && !filterTxt) {
         return data.results.slice(1)
     }
+
+    data.results = [...data.results, ...Object.values(whitelistedTokens[chainsInfo[network].id]).map(x => x.searchInfo).filter(Boolean)]
 
     // If there are no results and the input is an address, try direct import
     if (data.results.length === 0 && filterTxt?.startsWith('0x')) {
