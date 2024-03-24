@@ -32,7 +32,7 @@ export const rubicRPCEndpoints = {
         rpcList: ['https://rpc.ftm.tools']
     },
     [BLOCKCHAIN_NAME.BASE]: {
-        rpcList: ['https://base.gateway.tenderly.co']
+        rpcList: ['https://base-rpc.publicnode.com']
     }
 }
 
@@ -213,7 +213,7 @@ export const chainsInfo = {
         honeyPotCheckerContract: '',
         honeyPotCheckerRouter: '',
         honeyPotCheckerAddress: '',
-        rpc: 'https://base.gateway.tenderly.co',
+        rpc: 'https://base-rpc.publicnode.com',
         nativeTokenSymbol: 'ETH',
         dextoolsChartWidgetChainName: 'base',
         dextoolsSlug: 'base',
