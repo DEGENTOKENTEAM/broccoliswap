@@ -176,7 +176,7 @@ export const TokenSelector = (props: {
 
         setTokens(null);
 
-        let tokens: RubicToken[] | SolanaTokenInfo[] = [];
+        let tokens: (RubicToken | SolanaTokenInfo)[] = [];
 
         if (selectedChain === 'solana') {
             if (searchFilter) {
@@ -196,7 +196,7 @@ export const TokenSelector = (props: {
 
 
         // Filter other token
-        setTokens(tokens.filter(token => {
+        setTokens((tokens).filter((token) => {
             if (props.otherToken?.type !== 'evm') {
                 return true;
             }

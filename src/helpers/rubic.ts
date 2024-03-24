@@ -48,6 +48,8 @@ const searchTokenOnRubic = async (network: Chain, filterTxt?: string, noNative?:
     );
     let data = await result.json();
 
+    data.results = [...data.results, ...Object.values(whitelistedTokens[chainsInfo[network].id]).map(x => x.searchInfo).filter(Boolean)]
+
     if (noNative) {
         data.results = data.results.filter((x: any) => x.address !== NULL_ADDRESS);
     }
@@ -56,8 +58,6 @@ const searchTokenOnRubic = async (network: Chain, filterTxt?: string, noNative?:
     if ([Chain.ETH, Chain.ARBITRUM].includes(network) && !filterTxt) {
         return data.results.slice(1)
     }
-
-    data.results = [...data.results, ...Object.values(whitelistedTokens[chainsInfo[network].id]).map(x => x.searchInfo).filter(Boolean)]
 
     // If there are no results and the input is an address, try direct import
     if (data.results.length === 0 && filterTxt?.startsWith('0x')) {
