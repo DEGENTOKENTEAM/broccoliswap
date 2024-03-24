@@ -260,7 +260,7 @@ export const TokenSelector = (props: {
                             </div>
                         );
                     })}
-                    <div
+                    {/* <div
                         onClick={() => {
                             if (selectedChain === 'solana') {
                                 return;
@@ -282,7 +282,7 @@ export const TokenSelector = (props: {
                             src={`/chains/${solanaChainInfo.logo}`}
                         />
                         {solanaChainInfo.symbol.toUpperCase()}
-                    </div>
+                    </div> */}
                 </div>
 
                 {selectedChain && (
