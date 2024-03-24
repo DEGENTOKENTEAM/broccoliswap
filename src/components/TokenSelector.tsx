@@ -16,6 +16,7 @@ import useDisableScroll from "@/hooks/useDisableScroll";
 import { SubHeader } from "./SubHeader";
 import { chainFromChainId } from "@/helpers/chain";
 import { subAddress } from "@/helpers/address";
+import useTokenList from "@/hooks/solana/useTokenList";
 
 const RubicTokenListItem = (props: {
     token: RubicToken;
@@ -146,6 +147,7 @@ export const TokenSelector = (props: {
     const [selectedChain, setSelectedChain] = useState<Chain | 'solana'>();
 
     const { chain } = useNetwork();
+    const { data: solanaTokenList } = useTokenList();
 
     const searchRef = useRef<HTMLInputElement>(null);
     const divRef = useRef<HTMLDivElement>(null);
@@ -174,13 +176,24 @@ export const TokenSelector = (props: {
 
         setTokens(null);
 
+        let tokens: RubicToken[] | SolanaTokenInfo[] = [];
+
         if (selectedChain === 'solana') {
-            // @TODO filter tokens using token list api
-            setTokens([]);
-            return;
+            if (searchFilter) {
+                tokens = solanaTokenList?.filter(token => {
+                    return (
+                        token.name.toLowerCase().includes(searchFilter.toLowerCase()) ||
+                        token.symbol.toLowerCase().includes(searchFilter.toLowerCase()) ||
+                        token.address.toLowerCase().includes(searchFilter.toLowerCase())
+                    );
+                }) ?? [];
+            } else {
+                tokens = solanaTokenList?.slice(0, 10) ?? [];
+            }
+        } else {
+            tokens = await searchToken(selectedChain, searchFilter, props.noNative);
         }
 
-        const tokens: RubicToken[] = await searchToken(selectedChain, searchFilter, props.noNative);
 
         // Filter other token
         setTokens(tokens.filter(token => {
@@ -247,7 +260,7 @@ export const TokenSelector = (props: {
                             </div>
                         );
                     })}
-                    {/* <div
+                    <div
                         onClick={() => {
                             if (selectedChain === 'solana') {
                                 return;
@@ -269,7 +282,7 @@ export const TokenSelector = (props: {
                             src={`/chains/${solanaChainInfo.logo}`}
                         />
                         {solanaChainInfo.symbol.toUpperCase()}
-                    </div> */}
+                    </div>
                 </div>
 
                 {selectedChain && (

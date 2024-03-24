@@ -3,7 +3,7 @@ import { useQuery } from "react-query";
 
 export default function useTokenPrice(token?: Token) {
     return useQuery({
-        queryKey: ['tokenPrice', token?.token.address],
+        queryKey: ['tokenPrice', token?.chain, token?.token.address],
         queryFn: async () => {
             if (!token) {
                 return 0;

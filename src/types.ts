@@ -63,7 +63,7 @@ export type SolanaTokenInfo = {
     address: string;
     chainId: number;
     decimals: number;
-    name: number;
+    name: string;
     symbol: string;
     logoURI: string;
     tags: string[];

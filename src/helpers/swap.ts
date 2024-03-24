@@ -5,6 +5,7 @@ import { getSDK } from './rubic'
 import { DGNX_ADDRESS, addressHasDisburserRewards } from './dgnx'
 import { bridgeConfigs, getEstimation } from './celer'
 import { guardEVM } from './guard'
+import getSolToSolRoute from './solana/getSolToSolRoute'
 
 const calculateBestSwap = async (
     slippage: number,
@@ -230,12 +231,24 @@ const calculateBestBridge = async (
 
 const calculateBestTrade = async (
     slippage: number,
-    inputToken: EVMToken,
+    inputToken: Token,
     fromAmount: number,
     inputTokenSellTax: number,
-    outputToken: EVMToken,
+    outputToken: Token,
     connectedAddress?: string
 ) => {
+    if (inputToken.type === 'solana' && outputToken.type === 'solana') {
+        const route = await getSolToSolRoute(
+            inputToken,
+            outputToken,
+            fromAmount,
+            slippage
+        );
+        return { type: 'sol2sol' as const, route, inputToken, outputToken };
+    } else if (inputToken.type === 'solana' || outputToken.type === 'solana') {
+        console.log('Calculate sol bridge')
+        return;
+    }
 
     // Check if this is a bridge or a swap
     const bridgeRequest = isBridgeRequest(
@@ -269,8 +282,8 @@ const calculateBestTrade = async (
 let cancel: Function
 const calculate = async (
     connectedAddress: string | undefined,
-    inputToken: EVMToken,
-    outputToken: EVMToken,
+    inputToken: Token,
+    outputToken: Token,
     inputAmount: number,
     inputTokenSellTax: number,
     slippage: number,

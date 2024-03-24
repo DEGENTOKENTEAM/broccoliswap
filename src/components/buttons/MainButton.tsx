@@ -16,8 +16,10 @@ export default function MainButton(props: {
     setShowRecentTrades?: Function
 }) {
     // Check Solana
-    if (props.inputToken?.type === 'solana' || props.outputToken?.type === 'solana') {
-        return null;;
+    if (props.inputToken?.type === 'solana' || props.outputToken?.type === 'solana' || (typeof props.trades !== 'string' && props.trades?.type === 'sol2sol')) {
+        console.log('sol to sol')
+
+        return null;
     }
 
     // Check bridge button

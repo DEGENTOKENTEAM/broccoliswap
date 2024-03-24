@@ -37,6 +37,7 @@ import MainPanel from '@/components/Pro/MainPanel'
 import { guardEVM } from '@/helpers/guard'
 import useTokenPrice from '@/hooks/useTokenPrice'
 import { getDextoolsSlug } from '@/helpers/chain'
+import BigNumber from 'bignumber.js'
 
 export const SwapView = (props: {
     showRecentTrades?: boolean
@@ -238,75 +239,87 @@ export const SwapView = (props: {
             return
         }
 
-        // @TODO remove this and make the stuff below compatible
-        if (inputToken.type === 'solana' || outputToken.type === 'solana') {
-            return;
-        }
-
         setTrades(undefined)
 
-        let _inputTokenSellTax;
-        let _outputTokenBuyTax;
+        // @TODO remove this and make the stuff below compatible
+        if (inputToken.type === 'solana' && outputToken.type === 'solana') {
+            // SOL to SOL
+            const {
+                trade: _trades,
+            } = await calculateSwap(
+                address,
+                inputToken,
+                outputToken,
+                inputAmount,
+                0,
+                slippage ?? 0.5,
+                setTradeLoading,
+            )
 
-        const [inputTokenTaxes, outputTokenTaxes] = await Promise.all([
-            getTokenTaxes(
-                inputToken.chain,
-                inputToken.token.address,
-            ),
-            getTokenTaxes(
-                outputToken.chain,
-                outputToken.token.address,
-            ),
-        ]);
-
-        if (inputTokenTaxes.sellTax === -1 || outputTokenTaxes.buyTax === -1) {
-            // Goplus security
-            const [_inputGPSec, _outputGPSec] = await Promise.all([
-                getTokenSecurity(
-                    chainsInfo[inputToken.chain].id,
-                    inputToken.token.address
+            setTrades(_trades)
+            return;
+        } else if (inputToken.type !== 'solana' && outputToken.type !== 'solana') {
+            let _inputTokenSellTax;
+            let _outputTokenBuyTax;
+            const [inputTokenTaxes, outputTokenTaxes] = await Promise.all([
+                getTokenTaxes(
+                    inputToken.chain,
+                    inputToken.token.address,
                 ),
-                getTokenSecurity(
-                    chainsInfo[outputToken.chain].id,
-                    outputToken.token.address
+                getTokenTaxes(
+                    outputToken.chain,
+                    outputToken.token.address,
                 ),
-            ])
+            ]);
 
-            _inputTokenSellTax = _inputGPSec?.sell_tax ?? 0;
-            _outputTokenBuyTax = _outputGPSec?.buy_tax ?? 0;
-        } else {
-            _inputTokenSellTax = inputTokenTaxes.sellTax;
-            _outputTokenBuyTax = outputTokenTaxes.buyTax;
-        }
+            if (inputTokenTaxes.sellTax === -1 || outputTokenTaxes.buyTax === -1) {
+                // Goplus security
+                const [_inputGPSec, _outputGPSec] = await Promise.all([
+                    getTokenSecurity(
+                        chainsInfo[inputToken.chain].id,
+                        inputToken.token.address
+                    ),
+                    getTokenSecurity(
+                        chainsInfo[outputToken.chain].id,
+                        outputToken.token.address
+                    ),
+                ])
 
-        setInputTokenSellTax(_inputTokenSellTax);
-        setOutputTokenBuyTax(_outputTokenBuyTax);
-        
-
-        let tradeSlippage = slippage;
-        if (!tradeSlippage) {
-            tradeSlippage = (_inputTokenSellTax + _outputTokenBuyTax + (inputToken.chain  === outputToken.chain ? 1 : 4));
-
-            if (_inputTokenSellTax + _outputTokenBuyTax > 6) {
-                tradeSlippage += 1;
+                _inputTokenSellTax = _inputGPSec?.sell_tax ?? 0;
+                _outputTokenBuyTax = _outputGPSec?.buy_tax ?? 0;
+            } else {
+                _inputTokenSellTax = inputTokenTaxes.sellTax;
+                _outputTokenBuyTax = outputTokenTaxes.buyTax;
             }
+
+            setInputTokenSellTax(_inputTokenSellTax);
+            setOutputTokenBuyTax(_outputTokenBuyTax);
             
-            setSlippage(tradeSlippage)
+            let tradeSlippage = slippage;
+            if (!tradeSlippage) {
+                tradeSlippage = (_inputTokenSellTax + _outputTokenBuyTax + (inputToken.chain  === outputToken.chain ? 1 : 4));
+
+                if (_inputTokenSellTax + _outputTokenBuyTax > 6) {
+                    tradeSlippage += 1;
+                }
+                
+                setSlippage(tradeSlippage)
+            }
+
+            const {
+                trade: _trades,
+            } = await calculateSwap(
+                address,
+                inputToken,
+                outputToken,
+                inputAmount,
+                _inputTokenSellTax,
+                tradeSlippage,
+                setTradeLoading,
+            )
+
+            setTrades(_trades)
         }
-
-        const {
-            trade: _trades,
-        } = await calculateSwap(
-            address,
-            inputToken,
-            outputToken,
-            inputAmount,
-            _inputTokenSellTax,
-            tradeSlippage,
-            setTradeLoading,
-        )
-
-        setTrades(_trades)
     }, [inputToken, outputToken, inputAmount, slippage, forceRefreshVar])
 
     const setInputFromBalance = async (
@@ -383,6 +396,10 @@ export const SwapView = (props: {
             return 0;
         }
 
+        if (trades.type === 'sol2sol') {
+            return parseInt(trades.route.priceImpactPct);
+        }
+
         const _priceImpact = trades.trades?.[0]?.getTradeInfo()?.priceImpact;
         return _priceImpact ?? 0;
     }, [trades])
@@ -406,6 +423,10 @@ export const SwapView = (props: {
             }
 
             return trades.estimation.estimatedReceiveAmountNumber;
+        }
+
+        if (trades.type === 'sol2sol') {
+            return new BigNumber(trades.route.outAmount).div(10 ** trades.outputToken.token.decimals).toNumber();
         }
 
         return (trades.trades?.[0] as
