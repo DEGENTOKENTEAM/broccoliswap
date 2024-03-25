@@ -21,7 +21,7 @@ export const whitelistedTokens: Record<number, Record<string, Whitelist>> = {
             secure: true,
             searchInfo: {
                 type: 'evm',
-                image: 'https://basescan.org/token/images/brettbased_32.png',
+                image: 'https://assets.coingecko.com/coins/images/35529/standard/1000050750.png',
                 address: '0x532f27101965dd16442E59d40670FaF5eBB142E4',
                 name: 'BRETT',
                 symbol: 'BRETT',
