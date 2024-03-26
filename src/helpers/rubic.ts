@@ -36,7 +36,11 @@ const searchTokenOnRubic = async (network: Chain, filterTxt?: string, noNative?:
         dgnx.results[0].image = 'https://assets.rubic.exchange/assets/avalanche/0x51e48670098173025c477d9aa3f0eff7bf9f7812/logo.png';
 
         const rest = await results[1].json();
-        let data = [...dgnx.results, ...rest.results, ...Object.values(whitelistedTokens[chainsInfo[network].id]).map(x => x.searchInfo).filter(Boolean)]
+        let data = [
+            ...dgnx.results,
+            ...rest.results.filter((token: any) => !Object.values(whitelistedTokens[chainsInfo[network].id]).map(wl => wl.searchInfo?.address.toLowerCase()).includes(token.address.toLowerCase())),
+            ...Object.values(whitelistedTokens[chainsInfo[network].id]).map(x => x.searchInfo).filter(Boolean)
+        ]
         if (noNative) {
             data = data.filter((x: any) => x.address !== NULL_ADDRESS);
         }
@@ -48,7 +52,10 @@ const searchTokenOnRubic = async (network: Chain, filterTxt?: string, noNative?:
     );
     let data = await result.json();
 
-    data.results = [...data.results, ...Object.values(whitelistedTokens[chainsInfo[network].id]).map(x => x.searchInfo).filter(Boolean)]
+    data.results = [
+        ...data.results.filter((token: any) => !Object.values(whitelistedTokens[chainsInfo[network].id]).map(wl => wl.searchInfo?.address.toLowerCase()).includes(token.address.toLowerCase())),
+        ...Object.values(whitelistedTokens[chainsInfo[network].id]).map(x => x.searchInfo).filter(Boolean)
+    ]
 
     if (noNative) {
         data.results = data.results.filter((x: any) => x.address !== NULL_ADDRESS);

@@ -14,6 +14,19 @@ export const whitelistedTokens: Record<number, Record<string, Whitelist>> = {
     43114: {
         '0x51e48670098173025c477d9aa3f0eff7bf9f7812': {
             secure: true,
+        },
+        '0xEbB5d4959B2FbA6318FbDa7d03cd44aE771fc999': {
+            secure: true,
+            searchInfo: {
+                type: 'evm',
+                image: 'https://dd.dexscreener.com/ds-data/tokens/avalanche/0xebb5d4959b2fba6318fbda7d03cd44ae771fc999.png',
+                address: '0xEbB5d4959B2FbA6318FbDa7d03cd44aE771fc999',
+                name: 'KONG',
+                symbol: 'KONG',
+                blockchainNetwork: 'avalanche',
+                decimals: 18,
+                usdPrice: '0',
+            }
         }
     },
     8453: {
