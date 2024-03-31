@@ -39,7 +39,7 @@ const searchTokenOnRubic = async (network: Chain, filterTxt?: string, noNative?:
         let data = [
             ...dgnx.results,
             ...rest.results.filter((token: any) => !Object.values(whitelistedTokens[chainsInfo[network].id] || {}).map(wl => wl.searchInfo?.address.toLowerCase()).includes(token.address.toLowerCase())),
-            ...Object.values(whitelistedTokens[chainsInfo[network].id] || {}).map(x => x.searchInfo).filter(Boolean)
+            ...Object.values(whitelistedTokens[chainsInfo[network].id] || {}).map(x => x.searchInfo).filter(Boolean).filter(x => x?.symbol.toLowerCase().includes((filterTxt ?? '').toLowerCase()))
         ]
         if (noNative) {
             data = data.filter((x: any) => x.address !== NULL_ADDRESS);
@@ -54,7 +54,7 @@ const searchTokenOnRubic = async (network: Chain, filterTxt?: string, noNative?:
 
     data.results = [
         ...data.results.filter((token: any) => !Object.values(whitelistedTokens[chainsInfo[network].id] || {}).map(wl => wl.searchInfo?.address.toLowerCase()).includes(token.address.toLowerCase())),
-        ...Object.values(whitelistedTokens[chainsInfo[network].id] || {}).map(x => x.searchInfo).filter(Boolean)
+        ...Object.values(whitelistedTokens[chainsInfo[network].id] || {}).map(x => x.searchInfo).filter(Boolean).filter(x => x?.symbol.toLowerCase().includes((filterTxt ?? '').toLowerCase()))
     ]
 
     if (noNative) {
