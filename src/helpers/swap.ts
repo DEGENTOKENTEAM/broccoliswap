@@ -156,6 +156,7 @@ const calculateBestSwap = async (
             (trade): trade is OnChainTrade => !trade?.error
         )
         .filter(trade => !['XyDexTrade'].includes(trade.constructor.name))
+        .filter(trade => trade.tradeType !== CROSS_CHAIN_TRADE_TYPE.STARGATE)
         .filter(trade => !!trade?.trade?.to)
         .sort((a, b) => {
             // If debridge, put in first
