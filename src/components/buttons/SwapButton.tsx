@@ -132,6 +132,10 @@ const MaybeSwapButton = (props:{
         setIsSwapping(true);
         try {
             const gas = await getGas(blockchainNameToChain(currentTrade.from.blockchain)!.chain)
+            console.log(await currentTrade.needApprove())
+            if (await currentTrade.needApprove()) {
+                await currentTrade.approve({});
+            }
             const tx = await currentTrade.swap({
                 gasPriceOptions: parseInt(gas.gasPrice || gas.baseFee || '0') > 0 ? gas : undefined,
             });

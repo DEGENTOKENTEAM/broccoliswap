@@ -142,6 +142,8 @@ const calculateBestSwap = async (
             (trade): trade is OnChainTrade => !trade?.error
         )
         .filter(trade => !!trade?.trade?.to)
+        .filter(trade => trade.tradeType !== CROSS_CHAIN_TRADE_TYPE.STARGATE)
+        .filter(trade => trade.tradeType !== CROSS_CHAIN_TRADE_TYPE.DEBRIDGE)
         .sort((a, b) => {
             // If debridge, put in first
             if (a.tradeType === CROSS_CHAIN_TRADE_TYPE.DEBRIDGE) return -1
@@ -156,6 +158,8 @@ const calculateBestSwap = async (
             (trade): trade is OnChainTrade => !trade?.error
         )
         .filter(trade => !['XyDexTrade'].includes(trade.constructor.name))
+        .filter(trade => trade.tradeType !== CROSS_CHAIN_TRADE_TYPE.STARGATE)
+        .filter(trade => trade.tradeType !== CROSS_CHAIN_TRADE_TYPE.DEBRIDGE)
         .filter(trade => !!trade?.trade?.to)
         .sort((a, b) => {
             // If debridge, put in first
@@ -163,7 +167,7 @@ const calculateBestSwap = async (
             return a.trade!.to.tokenAmount.toNumber() > b.trade!.to.tokenAmount.toNumber() ? -1 : 1
         })
 
-    const tradesToUse = availableTrades.concat(availableTradesWithoutProxy);
+    const tradesToUse = availableTradesWithoutProxy//availableTrades.concat(availableTradesWithoutProxy);
 
     if (!tradesToUse || tradesToUse.length === 0) return 'No trades available'
 
