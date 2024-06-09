@@ -142,6 +142,7 @@ const calculateBestSwap = async (
             (trade): trade is OnChainTrade => !trade?.error
         )
         .filter(trade => !!trade?.trade?.to)
+        .filter(trade => trade.tradeType !== CROSS_CHAIN_TRADE_TYPE.STARGATE)
         .sort((a, b) => {
             // If debridge, put in first
             if (a.tradeType === CROSS_CHAIN_TRADE_TYPE.DEBRIDGE) return -1
