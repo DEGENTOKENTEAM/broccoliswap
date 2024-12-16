@@ -91,15 +91,20 @@ export const DeBridgeComponent = () => {
             )
 
             const { link: result } = await response.json()
-
-            initDebridgeWidget({
-                inputChain: blockchainNameToChainID(result.inputChain),
-                outputChain: blockchainNameToChainID(result.outputChain),
-                inputCurrency:
-                    result.inputToken == zeroAddress ? '' : result.inputToken,
-                outputCurrency:
-                    result.outputToken == zeroAddress ? '' : result.outputToken,
-            })
+            if (result) {
+                initDebridgeWidget({
+                    inputChain: blockchainNameToChainID(result.inputChain),
+                    outputChain: blockchainNameToChainID(result.outputChain),
+                    inputCurrency:
+                        result.inputToken == zeroAddress
+                            ? ''
+                            : result.inputToken,
+                    outputCurrency:
+                        result.outputToken == zeroAddress
+                            ? ''
+                            : result.outputToken,
+                })
+            } else initDebridgeWidget()
         } else initDebridgeWidget()
     }, [scriptLoaded])
 
